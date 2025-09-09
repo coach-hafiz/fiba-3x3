@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FIBA 3x3 Rules — MCQ Trainer (200 items)</title>
+<title>FIBA 3x3 Rules — MCQ Trainer (signals use images only)</title>
 <style>
   :root{
     --bg:#0e1117; --card:#141925; --ink:#e8edf2; --muted:#9aa3ad; --accent:#3874ff; --good:#10b981; --bad:#ef4444;
@@ -81,70 +81,40 @@
    Helpers
    ============================================================ */
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; };
-const uniq = arr => [...new Map(arr.map(x=>[JSON.stringify([x.q,x.options]),x])).values()];
+const uniqByKey = (arr, keyFn) => {
+  const m = new Map(); arr.forEach(x=>{const k=keyFn(x); if(!m.has(k)) m.set(k,x)}); return [...m.values()];
+};
 const sampleUnique = (arr, n) => shuffle(arr.slice()).slice(0, n);
 
 /* ============================================================
    Referee SIGNALS (answers are EXACTLY the image file names)
-   Place these image files in the same folder as this HTML.
+   >>> Image-based questions are created ONLY from this list <<<
    ============================================================ */
 const signalFiles = [
-  "1. Stop the clock.jpeg",
-  "2. Stop the clock for foul.jpeg",
-  "3. 1 Point.jpeg",
-  "4. 2 points.jpeg",
-  "5. Charged time-out.jpeg",
-  "6. TV time-out.jpeg",
-  "7. Cancel score, cancel play.jpeg",
-  "8. Visible count.jpeg",
-  "9. Communication.jpeg",
-  "10. Shot clock reset.jpeg",
-  "11. Out-of-bounds.jpeg",
-  "12. Held ball:jump ball situation.jpeg",
-  "13. Travelling.jpeg",
-  "14. Illegal Dribble_Double dribbling.jpeg",
-  "15. Illegal dribble_Carrying the ball.jpeg",
-  "16. 3 seconds.jpeg",
-  "17. 5 seconds.jpeg",
-  "18. 12 seconds.jpeg",
-  "19. Deliberate kick or block of the ball.jpeg",
-  "20. Ball not cleared.jpeg",
-  "31. Holding.jpeg",
-  "32. Blocking (defense)_Illegal screen (offense).jpeg",
-  "33. Pushing or charging without the ball.jpeg",
-  "34. Handchecking.jpeg",
-  "35. Illegal use of hands.jpeg",
-  "36. Charging with the ball.jpeg",
-  "37. Illegal contact to the hand.jpeg",
-  "38. Hooking.jpeg",
-  "39. Excessive swinging of the elbow.jpeg",
-  "40. Hit to the head.jpeg",
-  "41. Foul by team in control of the ball.jpeg",
-  "42. Foul on the act of shooting.jpeg",
-  "43. Foul not on the act of shooting.jpeg",
-  "44. Double foul.jpeg",
-  "45. Technical foul.jpeg",
-  "46. Unsportsmanlike foul.jpeg",
-  "47. Disqualifying foul.jpeg",
-  "48. Fake a foul.jpeg",
-  "49. IRS review.jpeg",
-  "50. Challenge.jpeg",
-  "51. After foul without free throw(s).jpeg",
-  "52. After foul by team in control of the ball.jpeg",
-  "53. 1 free throw.jpeg",
-  "54. 2 free throws.jpeg",
-  "55. 1 free throw.jpeg",
-  "56. 2 free throws.jpeg"
+  "1. Stop the clock.jpeg","2. Stop the clock for foul.jpeg","3. 1 Point.jpeg","4. 2 points.jpeg",
+  "5. Charged time-out.jpeg","6. TV time-out.jpeg","7. Cancel score, cancel play.jpeg","8. Visible count.jpeg",
+  "9. Communication.jpeg","10. Shot clock reset.jpeg","11. Out-of-bounds.jpeg","12. Held ball:jump ball situation.jpeg",
+  "13. Travelling.jpeg","14. Illegal Dribble_Double dribbling.jpeg","15. Illegal dribble_Carrying the ball.jpeg",
+  "16. 3 seconds.jpeg","17. 5 seconds.jpeg","18. 12 seconds.jpeg","19. Deliberate kick or block of the ball.jpeg",
+  "20. Ball not cleared.jpeg","31. Holding.jpeg","32. Blocking (defense)_Illegal screen (offense).jpeg",
+  "33. Pushing or charging without the ball.jpeg","34. Handchecking.jpeg","35. Illegal use of hands.jpeg",
+  "36. Charging with the ball.jpeg","37. Illegal contact to the hand.jpeg","38. Hooking.jpeg",
+  "39. Excessive swinging of the elbow.jpeg","40. Hit to the head.jpeg","41. Foul by team in control of the ball.jpeg",
+  "42. Foul on the act of shooting.jpeg","43. Foul not on the act of shooting.jpeg","44. Double foul.jpeg",
+  "45. Technical foul.jpeg","46. Unsportsmanlike foul.jpeg","47. Disqualifying foul.jpeg",
+  "48. Fake a foul.jpeg","49. IRS review.jpeg","50. Challenge.jpeg",
+  "51. After foul without free throw(s).jpeg","52. After foul by team in control of the ball.jpeg",
+  "53. 1 free throw.jpeg","54. 2 free throws.jpeg","55. 1 free throw.jpeg","56. 2 free throws.jpeg"
 ];
 
-/* Derive clean label from filename: drop the leading number and extension ONLY */
+/* Clean label from filename: remove the leading number and extension ONLY */
 const labelFromFile = f => f.replace(/^\s*\d+\.\s*/,'').replace(/\.(jpeg|jpg|png|gif)$/i,'');
 
 /* Build image questions — the correct answer is the EXACT label (from filename). */
 function buildSignalQuestions(){
   const labels = signalFiles.map(labelFromFile);
   return signalFiles.map((file, idx) => {
-    const correct = labels[idx];               // <- exact answer
+    const correct = labels[idx];
     const wrongs = shuffle(labels.filter((_,i)=>i!==idx)).slice(0,3);
     const options = shuffle([correct, ...wrongs]);
     return {
@@ -153,425 +123,135 @@ function buildSignalQuestions(){
       q:"What does this referee signal indicate?",
       img: file,
       options,
-      answer: options.indexOf(correct)         // <- index of the correct label
+      answer: options.indexOf(correct)
     };
   });
 }
 
 /* ============================================================
-   Text question bank (recall-level; phrasing kept simple).
-   Where possible, stems mirror the wording used in the FIBA 3x3 Rules.
+   Text question bank (recall-level). Questions use clear,
+   document-consistent wording; no trickery; no images here.
    ============================================================ */
 const baseFacts = [
-  {
-    cat:"Playing time",
-    correct:"The game shall consist of a single period of 10 minutes.",
-    alts:[
-      "The game shall consist of two periods of 8 minutes.",
-      "The game shall consist of four periods of 10 minutes.",
-      "The game shall consist of a single period of 12 minutes."
-    ],
-    stems:[
-      "Select the official statement about playing time:",
-      "Which sentence matches the regulation playing time?",
-      "According to the rules, how is playing time defined?"
-    ]
-  },
-  {
-    cat:"Winning the game",
-    correct:"The first team to score 21 points wins the game if this occurs before the end of regular playing time.",
-    alts:[
-      "The first team to score 20 points wins regardless of game time.",
-      "Teams must win by two points in regulation.",
-      "A team must reach 22 points to end the game early."
-    ],
-    stems:[
-      "Choose the correct early-ending condition:",
-      "Which sentence states when the game ends before time expires?",
-      "According to the rules, when can a team win before 10:00?"
-    ]
-  },
-  {
-    cat:"Shot clock",
-    correct:"The shot clock shall be 12 seconds.",
-    alts:[
-      "The shot clock shall be 14 seconds.",
-      "The shot clock shall be 24 seconds.",
-      "The shot clock shall be 10 seconds."
-    ],
-    stems:[
-      "Select the official shot-clock duration:",
-      "Which sentence states the correct shot-clock value?",
-      "According to the rules, what is the shot clock?"
-    ]
-  },
-  {
-    cat:"Scoring",
-    correct:"A field goal from inside the arc is worth 1 point.",
-    alts:[
-      "A field goal from inside the arc is worth 2 points.",
-      "A field goal from inside the arc is worth 3 points.",
-      "A field goal from inside the arc is worth 1 or 2 points depending on contact."
-    ],
-    stems:[
-      "Pick the correct statement about scoring inside the arc:",
-      "According to the rules, what is the value of a made basket inside the arc?",
-      "Which sentence about inside-arc scoring is correct?"
-    ]
-  },
-  {
-    cat:"Scoring",
-    correct:"A field goal from behind the arc is worth 2 points.",
-    alts:[
-      "A field goal from behind the arc is worth 1 point.",
-      "A field goal from behind the arc is worth 3 points.",
-      "A field goal from behind the arc is worth 2 points only in overtime."
-    ],
-    stems:[
-      "Choose the correct sentence about behind-the-arc scoring:",
-      "According to the rules, what is the value of a basket from behind the arc?",
-      "Select the official statement for long-range field goals:"
-    ]
-  },
-  {
-    cat:"Free throw",
-    correct:"Each successful free throw is worth 1 point.",
-    alts:[
-      "Each successful free throw is worth 2 points.",
-      "Each successful free throw is worth 1 or 2 points depending on the foul.",
-      "Each successful free throw has no point value in 3x3."
-    ],
-    stems:[
-      "Pick the correct statement about free throws:",
-      "According to the rules, how many points is a free throw worth?",
-      "Select the official sentence about free throw scoring:"
-    ]
-  },
-  {
-    cat:"Team composition",
-    correct:"A team is composed of 4 players: 3 on the court and 1 substitute.",
-    alts:[
-      "A team is composed of 5 players: 3 on the court and 2 substitutes.",
-      "A team is composed of 3 players without substitutes.",
-      "A team is composed of 4 players: 2 on the court and 2 substitutes."
-    ],
-    stems:[
-      "Choose the official statement about team composition:",
-      "Which sentence correctly describes the number of players in a team?",
-      "According to the rules, how many players are on a team?"
-    ]
-  },
-  {
-    cat:"Check-ball",
-    correct:"The check-ball shall be administered at the top of the arc.",
-    alts:[
-      "The check-ball shall be administered on the sideline.",
-      "The check-ball shall be administered at midcourt.",
-      "The check-ball shall be administered on the endline corner."
-    ],
-    stems:[
-      "Select the correct sentence about where the check-ball is administered:",
-      "According to the rules, the check-ball location is:",
-      "Pick the official statement about check-ball position:"
-    ]
-  },
-  {
-    cat:"Check-ball",
-    correct:"The defensive player hands the ball to the offensive player to start the check-ball.",
-    alts:[
-      "The offensive player hands the ball to the defensive player to start the check-ball.",
-      "The referee always bounces the ball to start the check-ball.",
-      "The table official hands the ball to the offensive player to start the check-ball."
-    ],
-    stems:[
-      "Choose the correct sentence about how a check-ball starts:",
-      "Which statement describes the proper check-ball exchange?",
-      "According to the rules, who hands the ball at the check-ball?"
-    ]
-  },
-  {
-    cat:"Clearance",
-    correct:"After a defensive rebound or steal, the ball must be cleared behind the arc.",
-    alts:[
-      "After a defensive rebound or steal, play continues without clearing.",
-      "After a defensive rebound or steal, the ball must be dribbled to midcourt.",
-      "After a defensive rebound or steal, the ball must be passed to the referee."
-    ],
-    stems:[
-      "Pick the correct sentence about clearing after a rebound or steal:",
-      "According to the rules, what must happen after a change of possession?",
-      "Choose the official requirement after a defensive rebound:"
-    ]
-  },
-  {
-    cat:"After a made basket",
-    correct:"After a made basket, play restarts without a check-ball as the non-scoring team takes the ball directly under the basket and clears behind the arc.",
-    alts:[
-      "After a made basket, play restarts with a check-ball at the top.",
-      "After a made basket, the scoring team throws in from the endline.",
-      "After a made basket, the referee must hand the ball to the new offense."
-    ],
-    stems:[
-      "Select the correct restart procedure after a made basket:",
-      "Which sentence matches the rule for play after a made basket?",
-      "According to the rules, what happens immediately after a successful goal?"
-    ]
-  },
-  {
-    cat:"Held ball",
-    correct:"A held-ball situation results in possession for the defensive team.",
-    alts:[
-      "A held-ball situation results in a jump ball.",
-      "A held-ball situation uses the alternating-possession arrow.",
-      "A held-ball situation goes to the offensive team."
-    ],
-    stems:[
-      "Choose the correct sentence about held-ball situations:",
-      "According to the rules, who receives the ball on a held-ball?",
-      "Pick the official statement for held-ball outcomes:"
-    ]
-  },
-  {
-    cat:"Not cleared",
-    correct:"If the ball is not cleared behind the arc after a change of possession, any made basket is cancelled and the ball is awarded to the defense.",
-    alts:[
-      "If the ball is not cleared, a technical foul is automatic.",
-      "If the ball is not cleared, play continues and the basket counts.",
-      "If the ball is not cleared, the penalty is a jump ball."
-    ],
-    stems:[
-      "Select the correct sentence about the ‘ball not cleared’ violation:",
-      "Which statement describes the penalty for failing to clear the ball?",
-      "According to the rules, what happens if a team scores without clearing?"
-    ]
-  },
-  {
-    cat:"Penalty fouls",
-    correct:"Team fouls 7, 8 and 9 are penalized with two free throws.",
-    alts:[
-      "Team fouls 7, 8 and 9 are penalized with one free throw.",
-      "Team fouls 7, 8 and 9 are penalized with two free throws and possession.",
-      "Team fouls 7, 8 and 9 are penalized with a single technical foul."
-    ],
-    stems:[
-      "Choose the correct sentence about team-foul penalties (7–9):",
-      "According to the rules, what is the penalty for the 7th–9th team fouls?",
-      "Pick the official sanction for team fouls seven to nine:"
-    ]
-  },
-  {
-    cat:"Penalty fouls",
-    correct:"Team fouls 10 and more are penalized with two free throws and possession.",
-    alts:[
-      "Team fouls 10 and more are penalized with two free throws only.",
-      "Team fouls 10 and more are penalized with one free throw and possession.",
-      "Team fouls 10 and more are penalized with a jump ball."
-    ],
-    stems:[
-      "Select the correct sentence about penalties for team fouls 10+:",
-      "According to the rules, what is the sanction after the 10th team foul?",
-      "Choose the official statement for excessive team fouls (10+):"
-    ]
-  },
-  {
-    cat:"Team-control foul",
-    correct:"A foul by the team in control of the ball results in a check-ball for the defensive team.",
-    alts:[
-      "A foul by the team in control results in two free throws.",
-      "A foul by the team in control results in one free throw.",
-      "A foul by the team in control results in an alternating-possession throw-in."
-    ],
-    stems:[
-      "Pick the correct sentence about a team-control foul:",
-      "According to the rules, what happens after an offensive foul?",
-      "Choose the official outcome for a foul by the team in control:"
-    ]
-  },
-  {
-    cat:"Coin toss",
-    correct:"A coin toss determines which team has the initial possession.",
-    alts:[
-      "The home team automatically has initial possession.",
-      "Initial possession is decided by a jump ball.",
-      "Initial possession is chosen by the referee."
-    ],
-    stems:[
-      "Select the correct sentence about initial possession:",
-      "According to the rules, how is the first possession decided?",
-      "Pick the official procedure to start the game:"
-    ]
-  },
-  {
-    cat:"Overtime",
-    correct:"In overtime, the first team to score 2 points wins.",
-    alts:[
-      "In overtime, teams play two minutes with no target score.",
-      "In overtime, the first team to score 3 points wins.",
-      "In overtime, the first team to lead by two points wins."
-    ],
-    stems:[
-      "Choose the correct sentence about the overtime win condition:",
-      "According to the rules, what ends the overtime?",
-      "Pick the official statement about overtime scoring:"
-    ]
-  },
-  {
-    cat:"Time-out",
-    correct:"Each team is granted 1 time-out of 30 seconds.",
-    alts:[
-      "Each team is granted 2 time-outs of 60 seconds each.",
-      "Each team is granted 1 time-out of 60 seconds.",
-      "Each team is granted unlimited 30-second time-outs."
-    ],
-    stems:[
-      "Select the correct sentence about team time-outs:",
-      "According to the rules, how many time-outs and how long?",
-      "Pick the official statement regarding time-outs:"
-    ]
-  },
-  {
-    cat:"TV time-out",
-    correct:"TV time-outs are taken at the first dead ball after 6:59 and 3:59.",
-    alts:[
-      "TV time-outs are taken exactly at 7:00 and 4:00.",
-      "TV time-outs are taken only once at 5:00.",
-      "There are no TV time-outs in 3x3."
-    ],
-    stems:[
-      "Choose the correct sentence about TV time-outs:",
-      "According to the rules, when are TV time-outs taken?",
-      "Pick the official statement on TV time-out timing:"
-    ]
-  },
-  {
-    cat:"Substitution",
-    correct:"Substitutions may occur on any dead ball before a check-ball or a free throw, and substitutes enter from behind the endline without referee action.",
-    alts:[
-      "Substitutions may occur at any time while the ball is live.",
-      "Substitutions require the referee to beckon players from the table.",
-      "Substitutions are allowed only between periods."
-    ],
-    stems:[
-      "Select the correct sentence about substitutions:",
-      "Which statement describes when and how substitutes may enter?",
-      "According to the rules, what are the conditions for substitutions?"
-    ]
-  },
-  {
-    cat:"Tapping with 0.2",
-    correct:"With 0.3 seconds or more a player may control and shoot; with 0.2 or 0.1 only a direct tap is valid.",
-    alts:[
-      "With 0.2 seconds a player may catch and shoot.",
-      "With 0.1 seconds a player may dribble and shoot.",
-      "With 0.3 seconds or more only a lob is allowed."
-    ],
-    stems:[
-      "Choose the correct sentence about end-of-period timing:",
-      "According to the rules, what is legal at 0.2–0.1?",
-      "Pick the official statement regarding 0.3 versus 0.2:"
-    ]
-  },
-  {
-    cat:"Forfeit",
-    correct:"A game is lost by forfeit if a team has fewer than 3 players ready to play at the scheduled time.",
-    alts:[
-      "A game is lost by forfeit if a team trails by 10.",
-      "A game is lost by forfeit if a team commits 10 fouls.",
-      "A game is lost by forfeit if a team uses all time-outs."
-    ],
-    stems:[
-      "Select the correct sentence about losing by forfeit:",
-      "According to the rules, when is a forfeit declared?",
-      "Pick the official statement that defines a forfeit:"
-    ]
-  },
-  {
-    cat:"Default",
-    correct:"A game is lost by default if a team cannot continue or leaves the court and the opponents may keep the score or win by forfeit; the defaulting team’s score is set to 0.",
-    alts:[
-      "A game is lost by default when both teams tie at 20–20.",
-      "A game is lost by default if a player fouls out.",
-      "A game is lost by default when the shot clock breaks."
-    ],
-    stems:[
-      "Choose the correct sentence about losing by default:",
-      "According to the rules, what does ‘lost by default’ mean?",
-      "Pick the official definition of a default:"
-    ]
-  },
-  {
-    cat:"Goaltending",
-    correct:"Defensive goaltending on a try from behind the arc awards 2 points.",
-    alts:[
-      "Defensive goaltending on a 2-point try awards 1 point.",
-      "Defensive goaltending results in a jump ball.",
-      "Defensive goaltending cancels the shot and resets to 12 seconds."
-    ],
-    stems:[
-      "Select the correct sentence about defensive goaltending:",
-      "According to the rules, what happens on goaltending a shot from behind the arc?",
-      "Pick the official statement about goaltending awards:"
-    ]
-  },
-  {
-    cat:"Interference",
-    correct:"Interference includes touching the basket while the ball is in contact with the ring or within the basket after a shot.",
-    alts:[
-      "Interference applies only to dunks.",
-      "Interference is called only when the backboard is slapped.",
-      "Interference does not include touching the basket."
-    ],
-    stems:[
-      "Choose the correct sentence about basket interference:",
-      "According to the rules, which action constitutes interference?",
-      "Pick the official statement that defines interference:"
-    ]
-  },
-  {
-    cat:"Shot-clock after stoppage",
-    correct:"If a fight or similar incident stops play while a team had control, the shot clock is not reset upon resumption.",
-    alts:[
-      "If play is stopped for a fight, the shot clock resets to 12.",
-      "If play is stopped for a fight, the shot clock resets to 14.",
-      "If play is stopped for a fight, the shot clock resets only if the coach requests."
-    ],
-    stems:[
-      "Select the correct sentence about the shot clock after a fight stoppage:",
-      "According to the rules, does the shot clock reset after an interruption while a team had control?",
-      "Pick the official statement about resuming after a fight:"
-    ]
-  },
-  {
-    cat:"Check-ball spacing",
-    correct:"During a check-ball the opponents should be about 1 metre apart.",
-    alts:[
-      "During a check-ball the opponents must be 2 metres apart.",
-      "During a check-ball the opponents should be shoulder to shoulder.",
-      "During a check-ball the referee stands between the opponents."
-    ],
-    stems:[
-      "Choose the correct sentence about spacing at a check-ball:",
-      "According to the rules, what distance should separate the opponents at a check-ball?",
-      "Pick the official guideline for check-ball spacing:"
-    ]
-  },
-  {
-    cat:"Referee starts check-ball",
-    correct:"The referee administers the first check-ball to start the game and the check-ball to start overtime.",
-    alts:[
-      "Players start the first check-ball without the referee.",
-      "The table starts overtime with a horn and no check-ball.",
-      "The coach administers the first check-ball."
-    ],
-    stems:[
-      "Select the correct sentence about who starts the check-ball:",
-      "According to the rules, who administers the first check-ball?",
-      "Pick the official statement about beginning regulation and overtime:"
-    ]
-  }
+  {cat:"Playing time",
+   correct:"The game shall consist of a single period of 10 minutes.",
+   alts:["The game shall consist of two periods of 8 minutes.","The game shall consist of four periods of 10 minutes.","The game shall consist of a single period of 12 minutes."],
+   stems:["Select the official statement about playing time:","Which sentence matches the regulation playing time?","According to the rules, how is playing time defined?"]},
+  {cat:"Winning the game",
+   correct:"The first team to score 21 points wins the game if this occurs before the end of regular playing time.",
+   alts:["The first team to score 20 points wins regardless of game time.","Teams must win by two points in regulation.","A team must reach 22 points to end the game early."],
+   stems:["Choose the correct early-ending condition:","Which sentence states when the game ends before time expires?","According to the rules, when can a team win before 10:00?"]},
+  {cat:"Shot clock",
+   correct:"The shot clock shall be 12 seconds.",
+   alts:["The shot clock shall be 14 seconds.","The shot clock shall be 24 seconds.","The shot clock shall be 10 seconds."],
+   stems:["Select the official shot-clock duration:","Which sentence states the correct shot-clock value?","According to the rules, what is the shot clock?"]},
+  {cat:"Scoring",
+   correct:"A field goal from inside the arc is worth 1 point.",
+   alts:["A field goal from inside the arc is worth 2 points.","A field goal from inside the arc is worth 3 points.","A field goal from inside the arc is worth 1 or 2 points depending on contact."],
+   stems:["Pick the correct statement about scoring inside the arc:","According to the rules, what is the value of a made basket inside the arc?","Which sentence about inside-arc scoring is correct?"]},
+  {cat:"Scoring",
+   correct:"A field goal from behind the arc is worth 2 points.",
+   alts:["A field goal from behind the arc is worth 1 point.","A field goal from behind the arc is worth 3 points.","A field goal from behind the arc is worth 2 points only in overtime."],
+   stems:["Choose the correct sentence about behind-the-arc scoring:","According to the rules, what is the value of a basket from behind the arc?","Select the official statement for long-range field goals:"]},
+  {cat:"Free throw",
+   correct:"Each successful free throw is worth 1 point.",
+   alts:["Each successful free throw is worth 2 points.","Each successful free throw is worth 1 or 2 points depending on the foul.","Each successful free throw has no point value in 3x3."],
+   stems:["Pick the correct statement about free throws:","According to the rules, how many points is a free throw worth?","Select the official sentence about free throw scoring:"]},
+  {cat:"Team composition",
+   correct:"A team is composed of 4 players: 3 on the court and 1 substitute.",
+   alts:["A team is composed of 5 players: 3 on the court and 2 substitutes.","A team is composed of 3 players without substitutes.","A team is composed of 4 players: 2 on the court and 2 substitutes."],
+   stems:["Choose the official statement about team composition:","Which sentence correctly describes the number of players in a team?","According to the rules, how many players are on a team?"]},
+  {cat:"Check-ball",
+   correct:"The check-ball shall be administered at the top of the arc.",
+   alts:["The check-ball shall be administered on the sideline.","The check-ball shall be administered at midcourt.","The check-ball shall be administered on the endline corner."],
+   stems:["Select the correct sentence about where the check-ball is administered:","According to the rules, the check-ball location is:","Pick the official statement about check-ball position:"]},
+  {cat:"Check-ball",
+   correct:"The defensive player hands the ball to the offensive player to start the check-ball.",
+   alts:["The offensive player hands the ball to the defensive player to start the check-ball.","The referee always bounces the ball to start the check-ball.","The table official hands the ball to the offensive player to start the check-ball."],
+   stems:["Choose the correct sentence about how a check-ball starts:","Which statement describes the proper check-ball exchange?","According to the rules, who hands the ball at the check-ball?"]},
+  {cat:"Clearance",
+   correct:"After a defensive rebound or steal, the ball must be cleared behind the arc.",
+   alts:["After a defensive rebound or steal, play continues without clearing.","After a defensive rebound or steal, the ball must be dribbled to midcourt.","After a defensive rebound or steal, the ball must be passed to the referee."],
+   stems:["Pick the correct sentence about clearing after a rebound or steal:","According to the rules, what must happen after a change of possession?","Choose the official requirement after a defensive rebound:"]},
+  {cat:"After a made basket",
+   correct:"After a made basket, play restarts without a check-ball as the non-scoring team takes the ball directly under the basket and clears behind the arc.",
+   alts:["After a made basket, play restarts with a check-ball at the top.","After a made basket, the scoring team throws in from the endline.","After a made basket, the referee must hand the ball to the new offense."],
+   stems:["Select the correct restart procedure after a made basket:","Which sentence matches the rule for play after a made basket?","According to the rules, what happens immediately after a successful goal?"]},
+  {cat:"Held ball",
+   correct:"A held-ball situation results in possession for the defensive team.",
+   alts:["A held-ball situation results in a jump ball.","A held-ball situation uses the alternating-possession arrow.","A held-ball situation goes to the offensive team."],
+   stems:["Choose the correct sentence about held-ball situations:","According to the rules, who receives the ball on a held-ball?","Pick the official statement for held-ball outcomes:"]},
+  {cat:"Not cleared",
+   correct:"If the ball is not cleared behind the arc after a change of possession, any made basket is cancelled and the ball is awarded to the defense.",
+   alts:["If the ball is not cleared, a technical foul is automatic.","If the ball is not cleared, play continues and the basket counts.","If the ball is not cleared, the penalty is a jump ball."],
+   stems:["Select the correct sentence about the ‘ball not cleared’ violation:","Which statement describes the penalty for failing to clear the ball?","According to the rules, what happens if a team scores without clearing?"]},
+  {cat:"Penalty fouls",
+   correct:"Team fouls 7, 8 and 9 are penalized with two free throws.",
+   alts:["Team fouls 7, 8 and 9 are penalized with one free throw.","Team fouls 7, 8 and 9 are penalized with two free throws and possession.","Team fouls 7, 8 and 9 are penalized with a single technical foul."],
+   stems:["Choose the correct sentence about team-foul penalties (7–9):","According to the rules, what is the penalty for the 7th–9th team fouls?","Pick the official sanction for team fouls seven to nine:"]},
+  {cat:"Penalty fouls",
+   correct:"Team fouls 10 and more are penalized with two free throws and possession.",
+   alts:["Team fouls 10 and more are penalized with two free throws only.","Team fouls 10 and more are penalized with one free throw and possession.","Team fouls 10 and more are penalized with a jump ball."],
+   stems:["Select the correct sentence about penalties for team fouls 10+:","According to the rules, what is the sanction after the 10th team foul?","Choose the official statement for excessive team fouls (10+):"]},
+  {cat:"Team-control foul",
+   correct:"A foul by the team in control of the ball results in a check-ball for the defensive team.",
+   alts:["A foul by the team in control results in two free throws.","A foul by the team in control results in one free throw.","A foul by the team in control results in an alternating-possession throw-in."],
+   stems:["Pick the correct sentence about a team-control foul:","According to the rules, what happens after an offensive foul?","Choose the official outcome for a foul by the team in control:"]},
+  {cat:"Coin toss",
+   correct:"A coin toss determines which team has the initial possession.",
+   alts:["The home team automatically has initial possession.","Initial possession is decided by a jump ball.","Initial possession is chosen by the referee."],
+   stems:["Select the correct sentence about initial possession:","According to the rules, how is the first possession decided?","Pick the official procedure to start the game:"]},
+  {cat:"Overtime",
+   correct:"In overtime, the first team to score 2 points wins.",
+   alts:["In overtime, teams play two minutes with no target score.","In overtime, the first team to score 3 points wins.","In overtime, the first team to lead by two points wins."],
+   stems:["Choose the correct sentence about the overtime win condition:","According to the rules, what ends the overtime?","Pick the official statement about overtime scoring:"]},
+  {cat:"Time-out",
+   correct:"Each team is granted 1 time-out of 30 seconds.",
+   alts:["Each team is granted 2 time-outs of 60 seconds each.","Each team is granted 1 time-out of 60 seconds.","Each team is granted unlimited 30-second time-outs."],
+   stems:["Select the correct sentence about team time-outs:","According to the rules, how many time-outs and how long?","Pick the official statement regarding time-outs:"]},
+  {cat:"TV time-out",
+   correct:"TV time-outs are taken at the first dead ball after 6:59 and 3:59.",
+   alts:["TV time-outs are taken exactly at 7:00 and 4:00.","TV time-outs are taken only once at 5:00.","There are no TV time-outs in 3x3."],
+   stems:["Choose the correct sentence about TV time-outs:","According to the rules, when are TV time-outs taken?","Pick the official statement on TV time-out timing:"]},
+  {cat:"Substitution",
+   correct:"Substitutions may occur on any dead ball before a check-ball or a free throw, and substitutes enter from behind the endline without referee action.",
+   alts:["Substitutions may occur at any time while the ball is live.","Substitutions require the referee to beckon players from the table.","Substitutions are allowed only between periods."],
+   stems:["Select the correct sentence about substitutions:","Which statement describes when and how substitutes may enter?","According to the rules, what are the conditions for substitutions?"]},
+  {cat:"0.2 / 0.3 rule",
+   correct:"With 0.3 seconds or more a player may control and shoot; with 0.2 or 0.1 only a direct tap is valid.",
+   alts:["With 0.2 seconds a player may catch and shoot.","With 0.1 seconds a player may dribble and shoot.","With 0.3 seconds or more only a lob is allowed."],
+   stems:["Choose the correct sentence about end-of-period timing:","According to the rules, what is legal at 0.2–0.1?","Pick the official statement regarding 0.3 versus 0.2:"]},
+  {cat:"Forfeit",
+   correct:"A game is lost by forfeit if a team has fewer than 3 players ready to play at the scheduled time.",
+   alts:["A game is lost by forfeit if a team trails by 10.","A game is lost by forfeit if a team commits 10 fouls.","A game is lost by forfeit if a team uses all time-outs."],
+   stems:["Select the correct sentence about losing by forfeit:","According to the rules, when is a forfeit declared?","Pick the official statement that defines a forfeit:"]},
+  {cat:"Default",
+   correct:"A game is lost by default if a team cannot continue or leaves the court and the opponents may keep the score or win by forfeit; the defaulting team’s score is set to 0.",
+   alts:["A game is lost by default when both teams tie at 20–20.","A game is lost by default if a player fouls out.","A game is lost by default when the shot clock breaks."],
+   stems:["Choose the correct sentence about losing by default:","According to the rules, what does ‘lost by default’ mean?","Pick the official definition of a default:"]},
+  {cat:"Goaltending",
+   correct:"Defensive goaltending on a try from behind the arc awards 2 points.",
+   alts:["Defensive goaltending on a 2-point try awards 1 point.","Defensive goaltending results in a jump ball.","Defensive goaltending cancels the shot and resets to 12 seconds."],
+   stems:["Select the correct sentence about defensive goaltending:","According to the rules, what happens on goaltending a shot from behind the arc?","Pick the official statement about goaltending awards:"]},
+  {cat:"Interference",
+   correct:"Interference includes touching the basket while the ball is in contact with the ring or within the basket after a shot.",
+   alts:["Interference applies only to dunks.","Interference is called only when the backboard is slapped.","Interference does not include touching the basket."],
+   stems:["Choose the correct sentence about basket interference:","According to the rules, which action constitutes interference?","Pick the official statement that defines interference:"]},
+  {cat:"Shot-clock after stoppage",
+   correct:"If a fight or similar incident stops play while a team had control, the shot clock is not reset upon resumption.",
+   alts:["If play is stopped for a fight, the shot clock resets to 12.","If play is stopped for a fight, the shot clock resets to 14.","If play is stopped for a fight, the shot clock resets only if the coach requests."],
+   stems:["Select the correct sentence about the shot clock after a fight stoppage:","According to the rules, does the shot clock reset after an interruption while a team had control?","Pick the official statement about resuming after a fight:"]},
+  {cat:"Check-ball spacing",
+   correct:"During a check-ball the opponents should be about 1 metre apart.",
+   alts:["During a check-ball the opponents must be 2 metres apart.","During a check-ball the opponents should be shoulder to shoulder.","During a check-ball the referee stands between the opponents."],
+   stems:["Choose the correct sentence about spacing at a check-ball:","According to the rules, what distance should separate the opponents at a check-ball?","Pick the official guideline for check-ball spacing:"]},
+  {cat:"Who starts the check-ball",
+   correct:"The referee administers the first check-ball to start the game and the check-ball to start overtime.",
+   alts:["Players start the first check-ball without the referee.","The table starts overtime with a horn and no check-ball.","The coach administers the first check-ball."],
+   stems:["Select the correct sentence about who starts the check-ball:","According to the rules, who administers the first check-ball?","Pick the official statement about beginning regulation and overtime:"]}
 ];
 
-/* Expand base facts into multiple MCQs (no repeats) */
+/* Expand base facts into multiple MCQs (no trick wording; no duplicate stems) */
 function buildTextQuestions(){
   const out = [];
   baseFacts.forEach(f=>{
@@ -586,48 +266,14 @@ function buildTextQuestions(){
       });
     });
   });
-  // if we need additional items to reach 200, re-use stems in a controlled, non-duplicated way
-  // by creating simple direct-question variants for each fact (still unique wording).
-  baseFacts.forEach(f=>{
-    const variants = [
-      f.correct.replace(/\.$/,''),
-      f.correct // keep period
-    ].map(s => ({
-      type:"text",
-      cat:f.cat,
-      q: "Which sentence is stated in the rules?",
-      options: shuffle([f.correct, ...f.alts.slice(0,3)]),
-      answer: 0 // index corrected below after shuffle
-    }));
-    variants.forEach(v=>{
-      v.answer = v.options.indexOf(f.correct);
-      out.push(v);
-    });
-  });
-  return uniq(out);
+  // Deduplicate by identical question text (to avoid any repeats)
+  return uniqByKey(out, x => x.q);
 }
 
-/* Build the full pool and then cap at 200 unique items */
-const TEXT_QS   = buildTextQuestions();       // many unique stems
-const SIGNAL_QS = buildSignalQuestions();     // 46 image items with CORRECT answers
-let POOL = uniq([...TEXT_QS, ...SIGNAL_QS]);
-
-// If more than 200, trim deterministically but randomly by shuffle then slice:
-if (POOL.length > 200) POOL = shuffle(POOL).slice(0,200);
-// If fewer than 200 (unlikely), fill by cloning harmlessly rephrased items without duplicates.
-while (POOL.length < 200) {
-  // duplicate-safe filler: turn a text item into an image-style prompt with the same answers
-  const t = TEXT_QS[Math.floor(Math.random()*TEXT_QS.length)];
-  const filler = {
-    type:"text",
-    cat:t.cat,
-    q: t.q + " (choose the correct sentence)",
-    options: t.options.slice(),
-    answer: t.options.indexOf( baseFacts.find(b=>b.cat===t.cat && b.alts.concat([b.correct]).includes(t.options[t.answer]))?.correct ?? t.options[t.answer] )
-  };
-  const key = JSON.stringify([filler.q,filler.options]);
-  if (!POOL.some(x=>JSON.stringify([x.q,x.options])===key)) POOL.push(filler);
-}
+/* Build the full pool */
+const TEXT_QS   = buildTextQuestions();       // text-only items
+const SIGNAL_QS = buildSignalQuestions();     // image items (signals only)
+let POOL = [...TEXT_QS, ...SIGNAL_QS];
 
 /* ============================================================
    Runtime: choose 50 UNIQUE questions each run (no repeats)
@@ -655,9 +301,10 @@ function render(i){
   $qtext.textContent = q.q;
 
   if(q.type==="image"){
-    $qimg.src = q.img;            // image file path as provided
+    // IMAGES ARE USED ONLY FOR REFEREE SIGNALS
+    $qimg.src = q.img;
     $qimg.classList.remove("hidden");
-    $qimg.alt = "Referee signal image";
+    $qimg.alt = "Referee signal";
   } else {
     $qimg.classList.add("hidden");
   }
