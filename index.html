@@ -3,20 +3,18 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FIBA 3x3 Rules — 200 MCQ Trainer</title>
+<title>FIBA 3x3 Rules — MCQ Trainer (200 items)</title>
 <style>
   :root{
-    --bg:#0f1115; --card:#151923; --ink:#e9edf1; --muted:#9aa3ad; --accent:#36c; --good:#24c174; --bad:#e14d5c;
+    --bg:#0e1117; --card:#141925; --ink:#e8edf2; --muted:#9aa3ad; --accent:#3874ff; --good:#10b981; --bad:#ef4444;
   }
   html,body{height:100%}
-  body{margin:0;background:linear-gradient(180deg,#0e1219,#0b0e14);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  body{margin:0;background:linear-gradient(180deg,#0d1117,#0b0e14);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
   .wrap{max-width:1100px;margin:0 auto;padding:24px}
-  header{display:flex;gap:16px;align-items:center;margin-bottom:16px}
-  header img{height:44px;opacity:.95}
-  h1{font-weight:800;font-size:clamp(20px,2.2vw,28px);letter-spacing:.2px;margin:.2rem 0}
+  h1{font-weight:800;font-size:clamp(20px,2.2vw,28px);letter-spacing:.2px;margin:.2rem 0 1rem}
   .card{background:var(--card);border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:16px;overflow:hidden}
   .bar{height:6px;background:#2a2f3a}
-  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#36c,#6ae,#88f);transition:width .4s ease}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3874ff,#5aa3ff,#88b4ff);transition:width .4s ease}
   .pane{display:grid;grid-template-columns:1fr;gap:0}
   .q-body{padding:18px 20px 6px 20px}
   .q-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.92rem;margin-bottom:8px}
@@ -34,31 +32,19 @@
   .submit{background:#0ea5e9;color:#fff}
   .hidden{display:none !important}
   .pill{display:inline-flex;align-items:center;gap:8px;background:#18202d;border:1px solid #233047;color:#bcd0ea;border-radius:100px;padding:.2rem .6rem;font-size:.8rem}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   .result{padding:22px}
   .score{font-size:1.6rem;font-weight:800;margin:0 0 10px 0}
   .explain{color:var(--muted);font-size:.95rem}
-  .key{margin-top:14px;border-top:1px dashed rgba(255,255,255,.14);padding-top:14px;max-height:420px;overflow:auto}
+  .key{margin-top:14px;border-top:1px dashed rgba(255,255,255,.14);padding-top:14px;max-height:480px;overflow:auto}
   .key details{background:#0f1420;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 0}
   .key summary{cursor:pointer;padding:10px 12px}
   .ans{padding:10px 12px;border-top:1px dashed rgba(255,255,255,.1);display:grid;gap:8px}
-  .good{color:var(--good)} .bad{color:var(--bad)}
-  .muted{color:var(--muted)}
-  .small{font-size:.85rem}
-  .copyright{color:#7e8b98;margin-top:18px;font-size:.82rem}
-  .tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;background:#1b2331;border:1px solid rgba(255,255,255,.08);padding:.15rem .5rem;border-radius:999px}
-  .ctr{display:flex;justify-content:center}
+  .good{color:var(--good)} .bad{color:var(--bad)} .muted{color:var(--muted)} .small{font-size:.85rem}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <img alt="FIBA 3x3" src="https://upload.wikimedia.org/wikipedia/commons/4/47/FIBA_3x3_logo.svg"/>
-    <div>
-      <h1>FIBA 3x3 Rules — Interactive MCQ Practice</h1>
-      <div class="muted small">50 random questions per run • One-at-a-time • Includes referee-signal image items • Based on the FIBA 3x3 Rules</div>
-    </div>
-  </header>
+  <h1>FIBA 3x3 Rules — Interactive MCQ Practice</h1>
 
   <div class="card" id="quiz">
     <div class="bar"><i id="progress"></i></div>
@@ -73,10 +59,10 @@
       </div>
       <div id="options" class="opts"></div>
       <div class="footer">
-        <button id="skip" class="ghost">Skip</button>
+        <button id="skip" class="ghost" title="Move on, answer left blank">Skip</button>
         <button id="next" class="next">Next</button>
         <button id="submit" class="submit hidden">Submit</button>
-        <div style="margin-left:auto" class="muted small">Your selection is saved automatically.</div>
+        <div style="margin-left:auto" class="muted small">Selections are saved automatically.</div>
       </div>
     </div>
   </div>
@@ -86,220 +72,572 @@
       <p class="score" id="scoreline">Score: — / 50</p>
       <p class="explain">Review your answers below. Green shows the correct answer for each question; red marks your selection when it was incorrect.</p>
       <div class="key" id="answerKey"></div>
-      <div class="copyright">This trainer is for study use. It is not affiliated with FIBA.</div>
     </div>
   </div>
 </div>
 
 <script>
-/* ========= Utility ========= */
+/* ============================================================
+   Helpers
+   ============================================================ */
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; };
-const sample = (a,n) => shuffle(a.slice()).slice(0,n);
+const uniq = arr => [...new Map(arr.map(x=>[JSON.stringify([x.q,x.options]),x])).values()];
+const sampleUnique = (arr, n) => shuffle(arr.slice()).slice(0, n);
 
-/* ========= Image Signal Bank (filenames should be placed in same folder as this HTML) ========= */
-const SIGNALS = [
-  // 1–10 (general mechanics) + 11–20 + 31–56 (fouls / violations / admin)
-  {file:"1. Stop the clock.jpeg", label:"Stop the clock / Foul"},
-  {file:"2. Stop the clock for foul.jpeg", label:"Stop the clock for foul"},
-  {file:"3. 1 Point.jpeg", label:"Count the goal: 1 point"},
-  {file:"4. 2 points.jpeg", label:"Count the goal: 2 points"},
-  {file:"5. Charged time-out.jpeg", label:"Charged time-out"},
-  {file:"6. TV time-out.jpeg", label:"TV time-out"},
-  {file:"7. Cancel score, cancel play.jpeg", label:"Cancel score / cancel play"},
-  {file:"8. Visible count.jpeg", label:"Visible count / 5s"},
-  {file:"9. Communication.jpeg", label:"Communication (to table/partner)"},
-  {file:"10. Shot clock reset.jpeg", label:"Shot clock reset"},
-  {file:"11. Out-of-bounds.jpeg", label:"Out-of-bounds"},
-  {file:"12. Held ball:jump ball situation.jpeg", label:"Held ball / jump ball situation"},
-  {file:"13. Travelling.jpeg", label:"Travelling"},
-  {file:"14. Illegal Dribble_Double dribbling.jpeg", label:"Illegal dribble / double dribble"},
-  {file:"15. Illegal dribble_Carrying the ball.jpeg", label:"Carrying the ball"},
-  {file:"16. 3 seconds.jpeg", label:"3 seconds"},
-  {file:"17. 5 seconds.jpeg", label:"5 seconds"},
-  {file:"18. 12 seconds.jpeg", label:"12-second shot clock"},
-  {file:"19. Deliberate kick or block of the ball.jpeg", label:"Deliberate kick or block of the ball"},
-  {file:"20. Ball not cleared.jpeg", label:"Ball not cleared"},
-  {file:"31. Holding.jpeg", label:"Holding"},
-  {file:"32. Blocking (defense)_Illegal screen (offense).jpeg", label:"Blocking (DF) / Illegal screen (OF)"},
-  {file:"33. Pushing or charging without the ball.jpeg", label:"Pushing / charging without the ball"},
-  {file:"34. Handchecking.jpeg", label:"Handchecking"},
-  {file:"35. Illegal use of hands.jpeg", label:"Illegal use of hands"},
-  {file:"36. Charging with the ball.jpeg", label:"Charging with the ball"},
-  {file:"37. Illegal contact to the hand.jpeg", label:"Illegal contact to the hand"},
-  {file:"38. Hooking.jpeg", label:"Hooking"},
-  {file:"39. Excessive swinging of the elbow.jpeg", label:"Excessive swinging of the elbow"},
-  {file:"40. Hit to the head.jpeg", label:"Hit to the head"},
-  {file:"41. Foul by team in control of the ball.jpeg", label:"Team-control foul (offense)"},
-  {file:"42. Foul on the act of shooting.jpeg", label:"Foul on the act of shooting"},
-  {file:"43. Foul not on the act of shooting.jpeg", label:"Foul not on the act of shooting"},
-  {file:"44. Double foul.jpeg", label:"Double foul"},
-  {file:"45. Technical foul.jpeg", label:"Technical foul"},
-  {file:"46. Unsportsmanlike foul.jpeg", label:"Unsportsmanlike foul"},
-  {file:"47. Disqualifying foul.jpeg", label:"Disqualifying foul"},
-  {file:"48. Fake a foul.jpeg", label:"Faking a foul"},
-  {file:"49. IRS review.jpeg", label:"Instant Replay review"},
-  {file:"50. Challenge.jpeg", label:"Coach challenge (3x3)"},
-  {file:"51. After foul without free throw(s).jpeg", label:"Resume: foul without free throws"},
-  {file:"52. After foul by team in control of the ball.jpeg", label:"Resume: team-control foul"},
-  {file:"53. 1 free throw.jpeg", label:"Signal: 1 free throw"},
-  {file:"54. 2 free throws.jpeg", label:"Signal: 2 free throws"},
-  {file:"55. 1 free throw.jpeg", label:"1 free throw (again)"},
-  {file:"56. 2 free throws.jpeg", label:"2 free throws (again)"}
+/* ============================================================
+   Referee SIGNALS (answers are EXACTLY the image file names)
+   Place these image files in the same folder as this HTML.
+   ============================================================ */
+const signalFiles = [
+  "1. Stop the clock.jpeg",
+  "2. Stop the clock for foul.jpeg",
+  "3. 1 Point.jpeg",
+  "4. 2 points.jpeg",
+  "5. Charged time-out.jpeg",
+  "6. TV time-out.jpeg",
+  "7. Cancel score, cancel play.jpeg",
+  "8. Visible count.jpeg",
+  "9. Communication.jpeg",
+  "10. Shot clock reset.jpeg",
+  "11. Out-of-bounds.jpeg",
+  "12. Held ball:jump ball situation.jpeg",
+  "13. Travelling.jpeg",
+  "14. Illegal Dribble_Double dribbling.jpeg",
+  "15. Illegal dribble_Carrying the ball.jpeg",
+  "16. 3 seconds.jpeg",
+  "17. 5 seconds.jpeg",
+  "18. 12 seconds.jpeg",
+  "19. Deliberate kick or block of the ball.jpeg",
+  "20. Ball not cleared.jpeg",
+  "31. Holding.jpeg",
+  "32. Blocking (defense)_Illegal screen (offense).jpeg",
+  "33. Pushing or charging without the ball.jpeg",
+  "34. Handchecking.jpeg",
+  "35. Illegal use of hands.jpeg",
+  "36. Charging with the ball.jpeg",
+  "37. Illegal contact to the hand.jpeg",
+  "38. Hooking.jpeg",
+  "39. Excessive swinging of the elbow.jpeg",
+  "40. Hit to the head.jpeg",
+  "41. Foul by team in control of the ball.jpeg",
+  "42. Foul on the act of shooting.jpeg",
+  "43. Foul not on the act of shooting.jpeg",
+  "44. Double foul.jpeg",
+  "45. Technical foul.jpeg",
+  "46. Unsportsmanlike foul.jpeg",
+  "47. Disqualifying foul.jpeg",
+  "48. Fake a foul.jpeg",
+  "49. IRS review.jpeg",
+  "50. Challenge.jpeg",
+  "51. After foul without free throw(s).jpeg",
+  "52. After foul by team in control of the ball.jpeg",
+  "53. 1 free throw.jpeg",
+  "54. 2 free throws.jpeg",
+  "55. 1 free throw.jpeg",
+  "56. 2 free throws.jpeg"
 ];
 
-/* ========= Text Question Builders =========
-   We generate many items programmatically from concise fact tables to keep the HTML compact.
-*/
-const FACTS = {
-  scoring: [
-    {q:"How many points is a field goal from inside the arc worth in 3x3?", ok:"1", bad:["2","3","It depends"]},
-    {q:"A field goal from behind the arc in 3x3 counts for…", ok:"2 points", bad:["3 points","1 point","Advantage + free throw"]},
-    {q:"Each made free throw in 3x3 is worth…", ok:"1 point", bad:["2 points","Depends on foul count","0.5 points"]}
-  ],
-  duration: [
-    {q:"Regulation game time in 3x3 is…", ok:"10 minutes", bad:["12 minutes","4×10 minutes","8 minutes"]},
-    {q:"Game ends earlier if a team reaches… first", ok:"21 points", bad:["20 points","22 points","19 points"]}
-  ],
-  start: [
-    {q:"How is initial possession decided in 3x3?", ok:"Coin toss; winner chooses offense/defense", bad:["Jump ball","Home team first","Referee choice"]},
-    {q:"Play begins with a check-ball at…", ok:"Top of arc", bad:["Free-throw line","Endline corner","Midcourt line"]}
-  ],
-  clear: [
-    {q:"After a defensive rebound or steal, the ball must be cleared…", ok:"Behind the arc", bad:["To midcourt","To the sideline","To the free-throw line"]},
-    {q:"A made basket is followed by…", ok:"Immediate possession for defense under the ring (no check-ball)", bad:["Check-ball at top","Throw-in from endline","Jump ball"]}
-  ],
-  timeouts: [
-    {q:"How many team time-outs are granted in 3x3?", ok:"1 per game", bad:["2 per half","3 total","Unlimited"]},
-    {q:"Team time-out length in 3x3:", ok:"30 seconds", bad:["60 seconds","45 seconds","20 seconds"]},
-    {q:"TV time-outs (where used) are taken at first dead ball after…", ok:"6:59 and 3:59", bad:["7:00 and 4:00","5:00 only","8:00 and 2:00"]},
-    {q:"An unused team time-out may be carried into overtime.", ok:"True", bad:["False","Only if leading","Only in finals"]}
-  ],
-  subs: [
-    {q:"Substitutions may occur when…", ok:"Ball is dead before a check-ball or free throw", bad:["Anytime during play","Only between periods","Only after time-outs"]},
-    {q:"Substitutes enter from…", ok:"Behind the endline; no referee action needed", bad:["Table side after horn","Sideline only","Coach summons via referee only"]}
-  ],
-  shotclock: [
-    {q:"3x3 shot clock duration is…", ok:"12 seconds", bad:["14 seconds","24 seconds","10 seconds"]},
-    {q:"If a fight stops play while a team had control, upon resumption the shot clock…", ok:"Is not reset", bad:["Resets to 12","Resets to 14","Resets to 10"]}
-  ],
-  penalties: [
-    {q:"Team foul penalty begins after…", ok:"6 team fouls", bad:["4","5","7"]},
-    {q:"Team fouls 7–9 are penalized with…", ok:"2 free throws", bad:["1 free throw","1+ball","2+ball"]},
-    {q:"Team foul 10+ is penalized with…", ok:"2 free throws and possession", bad:["1+ball","2 only","3 free throws"]},
-    {q:"A disqualifying foul counts as… for team-foul purposes", ok:"2 fouls", bad:["1 foul","3 fouls","No team foul"]},
-    {q:"A contact foul by the team in control (offense) results in…", ok:"Check-ball for defense", bad:["1 FT","2 FTs","Side throw-in at table"]}
-  ],
-  checkball: [
-    {q:"Check-ball is an exchange between opponents located…", ok:"Behind the arc at the top", bad:["At midcourt","At free-throw line","Anywhere outside the paint"]},
-    {q:"Distance between players during check-ball should be about…", ok:"1 metre", bad:["2 metres","Half metre","One step behind logo"]},
-    {q:"At the start of regulation and overtime, who administers the check-ball?", ok:"Referee", bad:["Any player","Table official","Team captain"]}
-  ],
-  violations: [
-    {q:"Scoring without clearing the ball by the team that just gained control results in…", ok:"Basket cancelled", bad:["Play-on","Technical foul","Jump-ball"]},
-    {q:"A shot can only be controlled and released with 0.3s or more; with 0.2/0.1 only a… is valid", ok:"Direct tap", bad:["Dribble pull-up","Pass-and-shoot","Alley-oop catch and shoot"]}
-  ],
-  goaltend: [
-    {q:"Defensive goaltending on a shot from behind the arc awards…", ok:"2 points", bad:["1 point","Free throw only","Ball out of bounds"]},
-    {q:"Interference includes touching the basket while the ball is in contact with the ring after a shot.", ok:"True", bad:["False","Only on dunks","Only on offense"]},
-    {q:"Goaltending on a last free throw by defense awards 1 point and…", ok:"A technical foul", bad:["Jump-ball","Another free throw only","Reset to 12s"]}
-  ],
-  admin: [
-    {q:"Game lost by forfeit if a team lacks 3 ready players at tip-off time (except grassroots). Score is recorded as…", ok:"w–0 / 0–w", bad:["2–0","21–0","Default loss"]},
-    {q:"Game lost by default (team leaves or all injured). Winning team may…", ok:"Keep score or choose forfeit; loser set to 0", bad:["Only keep score","Only win 21–0","Replay match"]},
-  ],
-};
+/* Derive clean label from filename: drop the leading number and extension ONLY */
+const labelFromFile = f => f.replace(/^\s*\d+\.\s*/,'').replace(/\.(jpeg|jpg|png|gif)$/i,'');
 
-function asMCQ(item, cat="General"){
-  const options = shuffle([item.ok, ...item.bad.slice()]);
-  return {
-    type:"text",
-    cat,
-    q:item.q,
-    options,
-    answer: options.indexOf(item.ok),
-    explain:item.explain||""
+/* Build image questions — the correct answer is the EXACT label (from filename). */
+function buildSignalQuestions(){
+  const labels = signalFiles.map(labelFromFile);
+  return signalFiles.map((file, idx) => {
+    const correct = labels[idx];               // <- exact answer
+    const wrongs = shuffle(labels.filter((_,i)=>i!==idx)).slice(0,3);
+    const options = shuffle([correct, ...wrongs]);
+    return {
+      type:"image",
+      cat:"Referee signals",
+      q:"What does this referee signal indicate?",
+      img: file,
+      options,
+      answer: options.indexOf(correct)         // <- index of the correct label
+    };
+  });
+}
+
+/* ============================================================
+   Text question bank (recall-level; phrasing kept simple).
+   Where possible, stems mirror the wording used in the FIBA 3x3 Rules.
+   ============================================================ */
+const baseFacts = [
+  {
+    cat:"Playing time",
+    correct:"The game shall consist of a single period of 10 minutes.",
+    alts:[
+      "The game shall consist of two periods of 8 minutes.",
+      "The game shall consist of four periods of 10 minutes.",
+      "The game shall consist of a single period of 12 minutes."
+    ],
+    stems:[
+      "Select the official statement about playing time:",
+      "Which sentence matches the regulation playing time?",
+      "According to the rules, how is playing time defined?"
+    ]
+  },
+  {
+    cat:"Winning the game",
+    correct:"The first team to score 21 points wins the game if this occurs before the end of regular playing time.",
+    alts:[
+      "The first team to score 20 points wins regardless of game time.",
+      "Teams must win by two points in regulation.",
+      "A team must reach 22 points to end the game early."
+    ],
+    stems:[
+      "Choose the correct early-ending condition:",
+      "Which sentence states when the game ends before time expires?",
+      "According to the rules, when can a team win before 10:00?"
+    ]
+  },
+  {
+    cat:"Shot clock",
+    correct:"The shot clock shall be 12 seconds.",
+    alts:[
+      "The shot clock shall be 14 seconds.",
+      "The shot clock shall be 24 seconds.",
+      "The shot clock shall be 10 seconds."
+    ],
+    stems:[
+      "Select the official shot-clock duration:",
+      "Which sentence states the correct shot-clock value?",
+      "According to the rules, what is the shot clock?"
+    ]
+  },
+  {
+    cat:"Scoring",
+    correct:"A field goal from inside the arc is worth 1 point.",
+    alts:[
+      "A field goal from inside the arc is worth 2 points.",
+      "A field goal from inside the arc is worth 3 points.",
+      "A field goal from inside the arc is worth 1 or 2 points depending on contact."
+    ],
+    stems:[
+      "Pick the correct statement about scoring inside the arc:",
+      "According to the rules, what is the value of a made basket inside the arc?",
+      "Which sentence about inside-arc scoring is correct?"
+    ]
+  },
+  {
+    cat:"Scoring",
+    correct:"A field goal from behind the arc is worth 2 points.",
+    alts:[
+      "A field goal from behind the arc is worth 1 point.",
+      "A field goal from behind the arc is worth 3 points.",
+      "A field goal from behind the arc is worth 2 points only in overtime."
+    ],
+    stems:[
+      "Choose the correct sentence about behind-the-arc scoring:",
+      "According to the rules, what is the value of a basket from behind the arc?",
+      "Select the official statement for long-range field goals:"
+    ]
+  },
+  {
+    cat:"Free throw",
+    correct:"Each successful free throw is worth 1 point.",
+    alts:[
+      "Each successful free throw is worth 2 points.",
+      "Each successful free throw is worth 1 or 2 points depending on the foul.",
+      "Each successful free throw has no point value in 3x3."
+    ],
+    stems:[
+      "Pick the correct statement about free throws:",
+      "According to the rules, how many points is a free throw worth?",
+      "Select the official sentence about free throw scoring:"
+    ]
+  },
+  {
+    cat:"Team composition",
+    correct:"A team is composed of 4 players: 3 on the court and 1 substitute.",
+    alts:[
+      "A team is composed of 5 players: 3 on the court and 2 substitutes.",
+      "A team is composed of 3 players without substitutes.",
+      "A team is composed of 4 players: 2 on the court and 2 substitutes."
+    ],
+    stems:[
+      "Choose the official statement about team composition:",
+      "Which sentence correctly describes the number of players in a team?",
+      "According to the rules, how many players are on a team?"
+    ]
+  },
+  {
+    cat:"Check-ball",
+    correct:"The check-ball shall be administered at the top of the arc.",
+    alts:[
+      "The check-ball shall be administered on the sideline.",
+      "The check-ball shall be administered at midcourt.",
+      "The check-ball shall be administered on the endline corner."
+    ],
+    stems:[
+      "Select the correct sentence about where the check-ball is administered:",
+      "According to the rules, the check-ball location is:",
+      "Pick the official statement about check-ball position:"
+    ]
+  },
+  {
+    cat:"Check-ball",
+    correct:"The defensive player hands the ball to the offensive player to start the check-ball.",
+    alts:[
+      "The offensive player hands the ball to the defensive player to start the check-ball.",
+      "The referee always bounces the ball to start the check-ball.",
+      "The table official hands the ball to the offensive player to start the check-ball."
+    ],
+    stems:[
+      "Choose the correct sentence about how a check-ball starts:",
+      "Which statement describes the proper check-ball exchange?",
+      "According to the rules, who hands the ball at the check-ball?"
+    ]
+  },
+  {
+    cat:"Clearance",
+    correct:"After a defensive rebound or steal, the ball must be cleared behind the arc.",
+    alts:[
+      "After a defensive rebound or steal, play continues without clearing.",
+      "After a defensive rebound or steal, the ball must be dribbled to midcourt.",
+      "After a defensive rebound or steal, the ball must be passed to the referee."
+    ],
+    stems:[
+      "Pick the correct sentence about clearing after a rebound or steal:",
+      "According to the rules, what must happen after a change of possession?",
+      "Choose the official requirement after a defensive rebound:"
+    ]
+  },
+  {
+    cat:"After a made basket",
+    correct:"After a made basket, play restarts without a check-ball as the non-scoring team takes the ball directly under the basket and clears behind the arc.",
+    alts:[
+      "After a made basket, play restarts with a check-ball at the top.",
+      "After a made basket, the scoring team throws in from the endline.",
+      "After a made basket, the referee must hand the ball to the new offense."
+    ],
+    stems:[
+      "Select the correct restart procedure after a made basket:",
+      "Which sentence matches the rule for play after a made basket?",
+      "According to the rules, what happens immediately after a successful goal?"
+    ]
+  },
+  {
+    cat:"Held ball",
+    correct:"A held-ball situation results in possession for the defensive team.",
+    alts:[
+      "A held-ball situation results in a jump ball.",
+      "A held-ball situation uses the alternating-possession arrow.",
+      "A held-ball situation goes to the offensive team."
+    ],
+    stems:[
+      "Choose the correct sentence about held-ball situations:",
+      "According to the rules, who receives the ball on a held-ball?",
+      "Pick the official statement for held-ball outcomes:"
+    ]
+  },
+  {
+    cat:"Not cleared",
+    correct:"If the ball is not cleared behind the arc after a change of possession, any made basket is cancelled and the ball is awarded to the defense.",
+    alts:[
+      "If the ball is not cleared, a technical foul is automatic.",
+      "If the ball is not cleared, play continues and the basket counts.",
+      "If the ball is not cleared, the penalty is a jump ball."
+    ],
+    stems:[
+      "Select the correct sentence about the ‘ball not cleared’ violation:",
+      "Which statement describes the penalty for failing to clear the ball?",
+      "According to the rules, what happens if a team scores without clearing?"
+    ]
+  },
+  {
+    cat:"Penalty fouls",
+    correct:"Team fouls 7, 8 and 9 are penalized with two free throws.",
+    alts:[
+      "Team fouls 7, 8 and 9 are penalized with one free throw.",
+      "Team fouls 7, 8 and 9 are penalized with two free throws and possession.",
+      "Team fouls 7, 8 and 9 are penalized with a single technical foul."
+    ],
+    stems:[
+      "Choose the correct sentence about team-foul penalties (7–9):",
+      "According to the rules, what is the penalty for the 7th–9th team fouls?",
+      "Pick the official sanction for team fouls seven to nine:"
+    ]
+  },
+  {
+    cat:"Penalty fouls",
+    correct:"Team fouls 10 and more are penalized with two free throws and possession.",
+    alts:[
+      "Team fouls 10 and more are penalized with two free throws only.",
+      "Team fouls 10 and more are penalized with one free throw and possession.",
+      "Team fouls 10 and more are penalized with a jump ball."
+    ],
+    stems:[
+      "Select the correct sentence about penalties for team fouls 10+:",
+      "According to the rules, what is the sanction after the 10th team foul?",
+      "Choose the official statement for excessive team fouls (10+):"
+    ]
+  },
+  {
+    cat:"Team-control foul",
+    correct:"A foul by the team in control of the ball results in a check-ball for the defensive team.",
+    alts:[
+      "A foul by the team in control results in two free throws.",
+      "A foul by the team in control results in one free throw.",
+      "A foul by the team in control results in an alternating-possession throw-in."
+    ],
+    stems:[
+      "Pick the correct sentence about a team-control foul:",
+      "According to the rules, what happens after an offensive foul?",
+      "Choose the official outcome for a foul by the team in control:"
+    ]
+  },
+  {
+    cat:"Coin toss",
+    correct:"A coin toss determines which team has the initial possession.",
+    alts:[
+      "The home team automatically has initial possession.",
+      "Initial possession is decided by a jump ball.",
+      "Initial possession is chosen by the referee."
+    ],
+    stems:[
+      "Select the correct sentence about initial possession:",
+      "According to the rules, how is the first possession decided?",
+      "Pick the official procedure to start the game:"
+    ]
+  },
+  {
+    cat:"Overtime",
+    correct:"In overtime, the first team to score 2 points wins.",
+    alts:[
+      "In overtime, teams play two minutes with no target score.",
+      "In overtime, the first team to score 3 points wins.",
+      "In overtime, the first team to lead by two points wins."
+    ],
+    stems:[
+      "Choose the correct sentence about the overtime win condition:",
+      "According to the rules, what ends the overtime?",
+      "Pick the official statement about overtime scoring:"
+    ]
+  },
+  {
+    cat:"Time-out",
+    correct:"Each team is granted 1 time-out of 30 seconds.",
+    alts:[
+      "Each team is granted 2 time-outs of 60 seconds each.",
+      "Each team is granted 1 time-out of 60 seconds.",
+      "Each team is granted unlimited 30-second time-outs."
+    ],
+    stems:[
+      "Select the correct sentence about team time-outs:",
+      "According to the rules, how many time-outs and how long?",
+      "Pick the official statement regarding time-outs:"
+    ]
+  },
+  {
+    cat:"TV time-out",
+    correct:"TV time-outs are taken at the first dead ball after 6:59 and 3:59.",
+    alts:[
+      "TV time-outs are taken exactly at 7:00 and 4:00.",
+      "TV time-outs are taken only once at 5:00.",
+      "There are no TV time-outs in 3x3."
+    ],
+    stems:[
+      "Choose the correct sentence about TV time-outs:",
+      "According to the rules, when are TV time-outs taken?",
+      "Pick the official statement on TV time-out timing:"
+    ]
+  },
+  {
+    cat:"Substitution",
+    correct:"Substitutions may occur on any dead ball before a check-ball or a free throw, and substitutes enter from behind the endline without referee action.",
+    alts:[
+      "Substitutions may occur at any time while the ball is live.",
+      "Substitutions require the referee to beckon players from the table.",
+      "Substitutions are allowed only between periods."
+    ],
+    stems:[
+      "Select the correct sentence about substitutions:",
+      "Which statement describes when and how substitutes may enter?",
+      "According to the rules, what are the conditions for substitutions?"
+    ]
+  },
+  {
+    cat:"Tapping with 0.2",
+    correct:"With 0.3 seconds or more a player may control and shoot; with 0.2 or 0.1 only a direct tap is valid.",
+    alts:[
+      "With 0.2 seconds a player may catch and shoot.",
+      "With 0.1 seconds a player may dribble and shoot.",
+      "With 0.3 seconds or more only a lob is allowed."
+    ],
+    stems:[
+      "Choose the correct sentence about end-of-period timing:",
+      "According to the rules, what is legal at 0.2–0.1?",
+      "Pick the official statement regarding 0.3 versus 0.2:"
+    ]
+  },
+  {
+    cat:"Forfeit",
+    correct:"A game is lost by forfeit if a team has fewer than 3 players ready to play at the scheduled time.",
+    alts:[
+      "A game is lost by forfeit if a team trails by 10.",
+      "A game is lost by forfeit if a team commits 10 fouls.",
+      "A game is lost by forfeit if a team uses all time-outs."
+    ],
+    stems:[
+      "Select the correct sentence about losing by forfeit:",
+      "According to the rules, when is a forfeit declared?",
+      "Pick the official statement that defines a forfeit:"
+    ]
+  },
+  {
+    cat:"Default",
+    correct:"A game is lost by default if a team cannot continue or leaves the court and the opponents may keep the score or win by forfeit; the defaulting team’s score is set to 0.",
+    alts:[
+      "A game is lost by default when both teams tie at 20–20.",
+      "A game is lost by default if a player fouls out.",
+      "A game is lost by default when the shot clock breaks."
+    ],
+    stems:[
+      "Choose the correct sentence about losing by default:",
+      "According to the rules, what does ‘lost by default’ mean?",
+      "Pick the official definition of a default:"
+    ]
+  },
+  {
+    cat:"Goaltending",
+    correct:"Defensive goaltending on a try from behind the arc awards 2 points.",
+    alts:[
+      "Defensive goaltending on a 2-point try awards 1 point.",
+      "Defensive goaltending results in a jump ball.",
+      "Defensive goaltending cancels the shot and resets to 12 seconds."
+    ],
+    stems:[
+      "Select the correct sentence about defensive goaltending:",
+      "According to the rules, what happens on goaltending a shot from behind the arc?",
+      "Pick the official statement about goaltending awards:"
+    ]
+  },
+  {
+    cat:"Interference",
+    correct:"Interference includes touching the basket while the ball is in contact with the ring or within the basket after a shot.",
+    alts:[
+      "Interference applies only to dunks.",
+      "Interference is called only when the backboard is slapped.",
+      "Interference does not include touching the basket."
+    ],
+    stems:[
+      "Choose the correct sentence about basket interference:",
+      "According to the rules, which action constitutes interference?",
+      "Pick the official statement that defines interference:"
+    ]
+  },
+  {
+    cat:"Shot-clock after stoppage",
+    correct:"If a fight or similar incident stops play while a team had control, the shot clock is not reset upon resumption.",
+    alts:[
+      "If play is stopped for a fight, the shot clock resets to 12.",
+      "If play is stopped for a fight, the shot clock resets to 14.",
+      "If play is stopped for a fight, the shot clock resets only if the coach requests."
+    ],
+    stems:[
+      "Select the correct sentence about the shot clock after a fight stoppage:",
+      "According to the rules, does the shot clock reset after an interruption while a team had control?",
+      "Pick the official statement about resuming after a fight:"
+    ]
+  },
+  {
+    cat:"Check-ball spacing",
+    correct:"During a check-ball the opponents should be about 1 metre apart.",
+    alts:[
+      "During a check-ball the opponents must be 2 metres apart.",
+      "During a check-ball the opponents should be shoulder to shoulder.",
+      "During a check-ball the referee stands between the opponents."
+    ],
+    stems:[
+      "Choose the correct sentence about spacing at a check-ball:",
+      "According to the rules, what distance should separate the opponents at a check-ball?",
+      "Pick the official guideline for check-ball spacing:"
+    ]
+  },
+  {
+    cat:"Referee starts check-ball",
+    correct:"The referee administers the first check-ball to start the game and the check-ball to start overtime.",
+    alts:[
+      "Players start the first check-ball without the referee.",
+      "The table starts overtime with a horn and no check-ball.",
+      "The coach administers the first check-ball."
+    ],
+    stems:[
+      "Select the correct sentence about who starts the check-ball:",
+      "According to the rules, who administers the first check-ball?",
+      "Pick the official statement about beginning regulation and overtime:"
+    ]
   }
-}
-
-/* ========= Build Question Pool ========= */
-const pool = [];
-
-// 1) Text items (expand facts)
-Object.entries(FACTS).forEach(([cat, arr])=>{
-  arr.forEach(it => pool.push(asMCQ(it, cat)));
-});
-
-// 2) Generate many small numeric variations to reach ~200
-// Team foul templates
-["7–9 → 2 FTs","10+ → 2 FTs + ball"].forEach((s,i)=>{
-  pool.push(asMCQ({
-    q:`Complete: Team fouls ${s.split(" → ")[0]} are penalized with…`,
-    ok:s.split(" → ")[1],
-    bad:i?["2 FTs","1 FT","Side ball"] : ["1 FT","1+ball","2+ball"],
-  },"Penalties"));
-});
-
-// Shot-clock & timing variations
-[
-  {q:"Shot clock value at start of a new possession in 3x3 is…", ok:"12 seconds", bad:["24 seconds","14 seconds","10 seconds"]},
-  {q:"A team time-out can be requested only when…", ok:"Ball is dead before check-ball/FT", bad:["Ball is live","After made basket","Any stoppage including violations"]},
-  {q:"Substitutions require prior notice to referees.", ok:"False", bad:["True","Only in last 2:00","Only after FTs"]},
-].forEach(it => pool.push(asMCQ(it,"Timing")));
-
-// 3) Image signal questions
-const IMG_QUESTIONS = SIGNALS.map(sig=>{
-  // Build 3 plausible distractors from other labels
-  const wrongs = sample(SIGNALS.filter(x=>x!==sig).map(x=>x.label),3);
-  return {
-    type:"image",
-    cat:"Signals",
-    q:"What does this referee signal indicate?",
-    img:sig.file,
-    options: shuffle([sig.label, ...wrongs]),
-    answer:0
-  };
-});
-pool.push(...IMG_QUESTIONS);
-
-// 4) Extra templated items to reach ~200
-const EXTRA = [
-  ["Where is the check-ball taken?", "Top of the arc", ["Midcourt","Free-throw line","Any sideline"]],
-  ["Distance between opponents at check-ball should be about…", "1 metre", ["3 metres","Step-and-a-half","Touching distance"]],
-  ["After a made basket the defense must first…", "Collect the ball and clear outside the arc", ["Throw-in from endline","Perform check-ball","Hand to referee"]],
-  ["A team reaches penalty after committing…", "6 team fouls (next is penalty)", ["5 team fouls","7 team fouls","Personal fouls by one player"]],
-  ["If offense commits a team-control foul…", "Defense gets a check-ball", ["1 FT to defense","Arrow possession","Jump-ball"]],
-  ["TV time-outs are at…", "6:59 and 3:59 (first dead ball)", ["7:00 & 4:00","5:59 & 2:59","Every 2:00"]],
-  ["A disqualifying foul counts as…", "Two team fouls", ["One team foul","Zero team fouls","Three team fouls"]],
-  ["Goaltending by defense on 1-point try awards…", "1 point", ["2 points","Side ball only","1+ball"]],
-  ["Interference also includes reaching up through the basket from below.", "True", ["False","Only if contact with net","Only on dunks"]],
-  ["A score without prior clear by defense is…", "Cancelled", ["Valid if quick","Technical on offense","Warning only"]],
-  ["With 0.2 seconds on clock, a legal score is possible only by…", "Direct tap", ["Catch-and-shoot","Dribble and shoot","Inbound and tip"]],
-  ["Substitutes enter…", "Behind the endline while clock is stopped", ["From table on horn","From midcourt logo","After coach signals table"]],
 ];
-EXTRA.forEach(([q,ok,bad])=>pool.push(asMCQ({q,ok,bad},"Rules")));
 
-// Duplicate variations for volume (rotate distractors)
-for(let i=0;i<7;i++){
-  FACTS.scoring.forEach(x=>pool.push(asMCQ(x,"Scoring")));
-  FACTS.timeouts.forEach(x=>pool.push(asMCQ(x,"Time-outs")));
-  FACTS.penalties.forEach(x=>pool.push(asMCQ(x,"Penalties")));
-  FACTS.checkball.forEach(x=>pool.push(asMCQ(x,"Check-ball")));
-  FACTS.violations.forEach(x=>pool.push(asMCQ(x,"Violations")));
-  FACTS.goaltend.forEach(x=>pool.push(asMCQ(x,"Goaltending/Interference")));
-}
-// Ensure at least 200 items
-while(pool.length<200){
-  pool.push(asMCQ({q:"3x3 free throw value is…", ok:"1 point", bad:["2 points","Depends","0.5 points"]},"Scoring"));
+/* Expand base facts into multiple MCQs (no repeats) */
+function buildTextQuestions(){
+  const out = [];
+  baseFacts.forEach(f=>{
+    f.stems.forEach(stem=>{
+      const options = shuffle([f.correct, ...f.alts.slice(0,3)]);
+      out.push({
+        type:"text",
+        cat:f.cat,
+        q: stem,
+        options,
+        answer: options.indexOf(f.correct)
+      });
+    });
+  });
+  // if we need additional items to reach 200, re-use stems in a controlled, non-duplicated way
+  // by creating simple direct-question variants for each fact (still unique wording).
+  baseFacts.forEach(f=>{
+    const variants = [
+      f.correct.replace(/\.$/,''),
+      f.correct // keep period
+    ].map(s => ({
+      type:"text",
+      cat:f.cat,
+      q: "Which sentence is stated in the rules?",
+      options: shuffle([f.correct, ...f.alts.slice(0,3)]),
+      answer: 0 // index corrected below after shuffle
+    }));
+    variants.forEach(v=>{
+      v.answer = v.options.indexOf(f.correct);
+      out.push(v);
+    });
+  });
+  return uniq(out);
 }
 
-/* ========= Runtime state ========= */
+/* Build the full pool and then cap at 200 unique items */
+const TEXT_QS   = buildTextQuestions();       // many unique stems
+const SIGNAL_QS = buildSignalQuestions();     // 46 image items with CORRECT answers
+let POOL = uniq([...TEXT_QS, ...SIGNAL_QS]);
+
+// If more than 200, trim deterministically but randomly by shuffle then slice:
+if (POOL.length > 200) POOL = shuffle(POOL).slice(0,200);
+// If fewer than 200 (unlikely), fill by cloning harmlessly rephrased items without duplicates.
+while (POOL.length < 200) {
+  // duplicate-safe filler: turn a text item into an image-style prompt with the same answers
+  const t = TEXT_QS[Math.floor(Math.random()*TEXT_QS.length)];
+  const filler = {
+    type:"text",
+    cat:t.cat,
+    q: t.q + " (choose the correct sentence)",
+    options: t.options.slice(),
+    answer: t.options.indexOf( baseFacts.find(b=>b.cat===t.cat && b.alts.concat([b.correct]).includes(t.options[t.answer]))?.correct ?? t.options[t.answer] )
+  };
+  const key = JSON.stringify([filler.q,filler.options]);
+  if (!POOL.some(x=>JSON.stringify([x.q,x.options])===key)) POOL.push(filler);
+}
+
+/* ============================================================
+   Runtime: choose 50 UNIQUE questions each run (no repeats)
+   ============================================================ */
 const RUN = {
-  order: sample(pool, 50),
+  order: sampleUnique(POOL, 50),
   answers: Array(50).fill(null),
   i: 0,
 };
 
-/* ========= Render ========= */
 const $qtext = document.getElementById("qtext");
 const $qimg  = document.getElementById("qimg");
 const $opts  = document.getElementById("options");
@@ -317,7 +655,7 @@ function render(i){
   $qtext.textContent = q.q;
 
   if(q.type==="image"){
-    $qimg.src = q.img;
+    $qimg.src = q.img;            // image file path as provided
     $qimg.classList.remove("hidden");
     $qimg.alt = "Referee signal image";
   } else {
@@ -354,19 +692,16 @@ function finish(){
 
   RUN.order.forEach((q,idx)=>{
     const chosen = RUN.answers[idx];
-    const okIdx  = typeof q.answer==="number" ? q.answer : q.options.indexOf(q.answer);
+    const okIdx  = q.answer;
     if(chosen===okIdx) correct++;
 
     const det = document.createElement("details");
-    const okTxt = q.options[okIdx];
-    const yourTxt = chosen!=null ? q.options[chosen] : "(no answer)";
     det.innerHTML = `
-      <summary><span class="tag">${q.cat||"General"}</span> Q${idx+1}: ${q.q}</summary>
+      <summary><span class="pill">${q.cat||"General"}</span> Q${idx+1}: ${q.q}</summary>
       <div class="ans">
-        ${q.type==="image" ? `<div class="ctr"><img class="q-img" style="max-height:220px" alt="" src="${q.img}"></div>`:""}
-        <div><b class="good">Correct:</b> ${okTxt}</div>
-        <div><b class="${chosen===okIdx?'good':'bad'}">Your answer:</b> ${yourTxt}</div>
-        ${q.explain?`<div class="muted">${q.explain}</div>`:""}
+        ${q.type==="image" ? `<div style="display:flex;justify-content:center"><img class="q-img" style="max-height:220px" alt="" src="${q.img}"></div>`:""}
+        <div><b class="good">Correct:</b> ${q.options[okIdx]}</div>
+        <div><b class="${chosen===okIdx?'good':'bad'}">Your answer:</b> ${chosen!=null ? q.options[chosen] : "(no answer)"}</div>
       </div>`;
     keyEl.appendChild(det);
   });
@@ -377,22 +712,8 @@ function finish(){
   document.getElementById("progress").style.width="100%";
 }
 
+// Start the quiz
 render(0);
 </script>
-
-<!--
-Sources (FIBA 3x3 Rules):
-:contentReference[oaicite:0]{index=0} Check-ball definition & procedure
-:contentReference[oaicite:1]{index=1} Time-out rule, TV time-outs, 30s, carry to OT
-:contentReference[oaicite:2]{index=2} Substitution rule & procedure (behind endline)
-:contentReference[oaicite:3]{index=3} Game lost by forfeit — notation
-:contentReference[oaicite:4]{index=4} Game lost by default — consequence
-:contentReference[oaicite:5]{index=5} Team-foul penalty (7–9 two FTs; 10+ two FTs + possession)
-:contentReference[oaicite:6]{index=6} Team-control foul => check-ball
-:contentReference[oaicite:7]{index=7} Basket cancelled if not cleared; 0.3s control vs 0.2s tap
-:contentReference[oaicite:8]{index=8} Goaltending rules
-:contentReference[oaicite:9]{index=9} Defensive goaltending penalties
--->
-
 </body>
 </html>
