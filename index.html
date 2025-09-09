@@ -1,449 +1,398 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>FIBA 3x3 Rules — 50-Question Randomized Quiz (with Images)</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FIBA 3x3 Rules — 200 MCQ Trainer</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;line-height:1.45;margin:0;background:#f7f7fb;color:#222}
-  header{background:#0b6efd;color:#fff;padding:16px 20px}
-  header h1{margin:0;font-size:20px}
-  header p{margin:.35rem 0 0;opacity:.9}
-  main{max-width:1000px;margin:18px auto;padding:0 16px 96px}
-  .card{background:#fff;border:1px solid #e8e8ef;border-radius:12px;box-shadow:0 1px 1px rgba(0,0,0,.03);padding:18px;margin:12px 0}
-  .row{display:flex;gap:12px;flex-wrap:wrap}
-  .btn{appearance:none;border:1px solid #0b6efd;background:#0b6efd;color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
-  .btn:disabled{opacity:.6;cursor:not-allowed}
-  .btn.secondary{background:#fff;color:#0b6efd}
-  .btn.ghost{background:#fff;border-color:#d0d0da;color:#333}
-  .controls{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
-  .progress{height:10px;background:#ececf4;border-radius:999px;overflow:hidden}
-  .progress>div{height:100%;background:#0b6efd;width:0%}
-  .muted{color:#666;font-size:13px}
-  .option{display:block;border:1px solid #e2e2ec;border-radius:10px;padding:10px 12px;margin:8px 0;cursor:pointer}
-  .option input{margin-right:8px}
-  .pill{display:inline-block;background:#eef4ff;color:#0b55d6;border:1px solid #cfe2ff;border-radius:999px;padding:3px 10px;font-size:12px;margin-left:6px}
-  .hidden{display:none}
-  .footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e8e8ef;padding:12px 16px}
-  table{width:100%;border-collapse:collapse}
-  th,td{border:1px solid #e5e5ee;padding:8px;vertical-align:top}
-  th{background:#f5f7ff;text-align:left}
-  .correct{color:#0b6f2f;font-weight:600}
-  .wrong{color:#c0392b;font-weight:600}
-  .tag{font-size:12px;color:#555}
-  /* PDF page viewer box */
-  .pdfWrap{margin:10px 0 4px;border:1px solid #e7e7f2;border-radius:10px;overflow:hidden;background:#fafbff}
-  .pdfHead{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f2f6ff;border-bottom:1px solid #e7e7f2}
-  .pdfHead .left{font-size:13px;color:#334}
-  .pdfHead .right button{font-size:12px}
-  .pdfBox{width:100%;height:420px;border:0}
-  @media (min-width:900px){
-    .qLayout{display:grid;grid-template-columns:1fr 420px;gap:16px;align-items:start}
-    .pdfBox{height:460px}
+  :root{
+    --bg:#0f1115; --card:#151923; --ink:#e9edf1; --muted:#9aa3ad; --accent:#36c; --good:#24c174; --bad:#e14d5c;
   }
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#0e1219,#0b0e14);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px}
+  header{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+  header img{height:44px;opacity:.95}
+  h1{font-weight:800;font-size:clamp(20px,2.2vw,28px);letter-spacing:.2px;margin:.2rem 0}
+  .card{background:var(--card);border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:16px;overflow:hidden}
+  .bar{height:6px;background:#2a2f3a}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#36c,#6ae,#88f);transition:width .4s ease}
+  .pane{display:grid;grid-template-columns:1fr;gap:0}
+  .q-body{padding:18px 20px 6px 20px}
+  .q-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.92rem;margin-bottom:8px}
+  .q-text{font-size:1.12rem;margin:6px 0 12px 0}
+  .q-img{display:block;max-width:360px;max-height:360px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0c0f15;margin:8px 0}
+  .opts{display:grid;gap:10px;padding:0 20px 16px 20px}
+  .opt{display:flex;gap:10px;align-items:flex-start;background:#10141d;border:1px solid rgba(255,255,255,.09);padding:12px 12px;border-radius:12px;cursor:pointer;transition:.18s}
+  .opt input{margin-top:2px}
+  .opt:hover{transform:translateY(-1px);border-color:#3a4050}
+  .opt[aria-disabled="true"]{opacity:.75;cursor:not-allowed}
+  .footer{display:flex;gap:10px;align-items:center;padding:14px 16px;background:#121722;border-top:1px solid rgba(255,255,255,.08)}
+  button{border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}
+  .ghost{color:var(--ink);background:#1a2130;border:1px solid rgba(255,255,255,.1)}
+  .next{background:var(--accent);color:#fff}
+  .submit{background:#0ea5e9;color:#fff}
+  .hidden{display:none !important}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#18202d;border:1px solid #233047;color:#bcd0ea;border-radius:100px;padding:.2rem .6rem;font-size:.8rem}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .result{padding:22px}
+  .score{font-size:1.6rem;font-weight:800;margin:0 0 10px 0}
+  .explain{color:var(--muted);font-size:.95rem}
+  .key{margin-top:14px;border-top:1px dashed rgba(255,255,255,.14);padding-top:14px;max-height:420px;overflow:auto}
+  .key details{background:#0f1420;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 0}
+  .key summary{cursor:pointer;padding:10px 12px}
+  .ans{padding:10px 12px;border-top:1px dashed rgba(255,255,255,.1);display:grid;gap:8px}
+  .good{color:var(--good)} .bad{color:var(--bad)}
+  .muted{color:var(--muted)}
+  .small{font-size:.85rem}
+  .copyright{color:#7e8b98;margin-top:18px;font-size:.82rem}
+  .tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;background:#1b2331;border:1px solid rgba(255,255,255,.08);padding:.15rem .5rem;border-radius:999px}
+  .ctr{display:flex;justify-content:center}
 </style>
 </head>
 <body>
-<header>
-  <h1>FIBA 3x3 Rules — Randomized Quiz (50 Questions)</h1>
-  <p>Questions from pages 4–65 (with 1 per image on pp. 55–65). Options & order are randomized each time. Source: official FIBA 3x3 Rules (full).  [oai_citation:1‡fiba-3x3-basketball-rules-full-version (valid as of 5 Dec 2024).pdf](file-service://file-FpeYWEUTS276N7eR6KBHtz)</p>
-</header>
-
-<main>
-  <div class="card" id="intro">
-    <h2>Instructions</h2>
-    <ul>
-      <li>Every visit draws <strong>50 random</strong> questions from a bank of <strong>200</strong> (taxonomy-1).</li>
-      <li>Questions appear one at a time with Next/Previous and a progress bar.</li>
-      <li>Image-based items (pp.55–65) show the exact PDF page inside the quiz.</li>
-      <li>Submit anytime to see your score and full answer key.</li>
-    </ul>
-    <p class="muted">Tip: keep the PDF in the same folder as this HTML so the page previews load.</p>
-    <button class="btn" id="startBtn">Start Quiz</button>
-  </div>
-
-  <div class="card hidden" id="quizCard">
-    <div class="row" style="align-items:center;justify-content:space-between">
-      <div><strong id="qCounter">Q 1/50</strong> <span class="pill" id="qMeta"></span></div>
-      <div class="muted" id="qRef"></div>
+<div class="wrap">
+  <header>
+    <img alt="FIBA 3x3" src="https://upload.wikimedia.org/wikipedia/commons/4/47/FIBA_3x3_logo.svg"/>
+    <div>
+      <h1>FIBA 3x3 Rules — Interactive MCQ Practice</h1>
+      <div class="muted small">50 random questions per run • One-at-a-time • Includes referee-signal image items • Based on the FIBA 3x3 Rules</div>
     </div>
+  </header>
 
-    <div id="qContainer" class="qLayout">
-      <div>
-        <h3 id="qText" style="margin:8px 0"></h3>
-        <form id="options"></form>
+  <div class="card" id="quiz">
+    <div class="bar"><i id="progress"></i></div>
+    <div class="pane">
+      <div class="q-body">
+        <div class="q-meta">
+          <div id="qcount" class="pill">Question 1 / 50</div>
+          <div class="pill"><span id="category">General</span></div>
+        </div>
+        <div id="qtext" class="q-text">Loading…</div>
+        <img id="qimg" class="q-img hidden" alt="Question image"/>
       </div>
-      <div id="mediaSlot" class="hidden"></div>
-    </div>
-
-    <div class="controls">
-      <button class="btn ghost" id="prevBtn">Previous</button>
-      <div style="flex:1"></div>
-      <button class="btn secondary" id="saveBtn" title="Save Answer">Save</button>
-      <button class="btn" id="nextBtn">Next</button>
-    </div>
-    <div style="margin-top:12px">
-      <div class="progress"><div id="progFill"></div></div>
-      <div class="muted" id="answeredCount" style="margin-top:6px"></div>
-    </div>
-    <div class="controls" style="margin-top:12px">
-      <button class="btn" id="submitBtn">Submit Quiz</button>
+      <div id="options" class="opts"></div>
+      <div class="footer">
+        <button id="skip" class="ghost">Skip</button>
+        <button id="next" class="next">Next</button>
+        <button id="submit" class="submit hidden">Submit</button>
+        <div style="margin-left:auto" class="muted small">Your selection is saved automatically.</div>
+      </div>
     </div>
   </div>
 
-  <div class="card hidden" id="resultCard">
-    <h2>Your Results</h2>
-    <p><strong>Score:</strong> <span id="scoreText"></span></p>
-    <div id="review"></div>
-    <div class="controls">
-      <button class="btn" id="retryBtn">Try Another 50</button>
+  <div id="results" class="card hidden">
+    <div class="result">
+      <p class="score" id="scoreline">Score: — / 50</p>
+      <p class="explain">Review your answers below. Green shows the correct answer for each question; red marks your selection when it was incorrect.</p>
+      <div class="key" id="answerKey"></div>
+      <div class="copyright">This trainer is for study use. It is not affiliated with FIBA.</div>
     </div>
   </div>
-</main>
+</div>
 
 <script>
-/* ======= Config: set your PDF filename here if needed ======= */
-const PDF_SRC = "fiba-3x3-basketball-rules-full-version (valid as of 5 Dec 2024).pdf";
-/* Zoom presets for the embedded viewer (browser-dependent support) */
-let currentZoom = 150;
-function pdfURL(page){
-  // Many browsers support #page=<n>&zoom=<percent>
-  return PDF_SRC + "#page=" + page + "&zoom=" + currentZoom;
-}
+/* ========= Utility ========= */
+const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; };
+const sample = (a,n) => shuffle(a.slice()).slice(0,n);
 
-/*
-  QUESTION FORMAT:
-  { id, text, options:[...4], answer: index(0-3), meta: "p.xx", tag?, media?: {type:"pdfPage", page:55} }
-  Image-based questions (pp.55–65) include media objects that render a live PDF page preview.
-  All questions are recall (Taxonomy 1) and based on the official FIBA 3x3 Basketball Rules full version.  [oai_citation:2‡fiba-3x3-basketball-rules-full-version (valid as of 5 Dec 2024).pdf](file-service://file-FpeYWEUTS276N7eR6KBHtz)
-*/
-const BANK = [
-  /* ---------- Core Rules & Definitions (pp.4–20) ---------- */
-  { id:1, text:"How many players per team are on the court in FIBA 3x3 at any time?", options:["3","4","5","2"], answer:0, meta:"p.4–5" },
-  { id:2, text:"What is the maximum number of players on a 3x3 team roster for a game?", options:["4","5","6","3"], answer:0, meta:"p.4–5" },
-  { id:3, text:"3x3 is played on what portion of a court?", options:["Half court with one basket","Full court with two baskets","Three-quarter court","Rotating ends"], answer:0, meta:"p.4–6" },
-  { id:4, text:"Which ball specification is used in official 3x3 play?", options:["Size 6 circumference with Size 7 weight","Standard Size 7 men’s ball","Size 6 women’s ball (standard weight)","Micro-ball"], answer:0, meta:"p.5–6" },
-  { id:5, text:"The shot clock in 3x3 is set to:", options:["12 seconds","14 seconds","24 seconds","10 seconds"], answer:0, meta:"p.6–7" },
-  { id:6, text:"How long is regular game time in 3x3?", options:["10 minutes","12 minutes","8 minutes","15 minutes"], answer:0, meta:"p.6–7" },
-  { id:7, text:"A game ends immediately when a team reaches:", options:["21 points","22 points","19 points","25 points"], answer:0, meta:"p.6–7" },
-  { id:8, text:"Baskets made inside the arc are worth:", options:["1 point","2 points","3 points","Varies by level"], answer:0, meta:"p.7" },
-  { id:9, text:"Baskets made from behind the arc are worth:", options:["2 points","3 points","1 point","Value set by organizer"], answer:0, meta:"p.7" },
-  { id:10, text:"Made free throws in 3x3 are worth:", options:["1 point","2 points","Varies by foul type","Depends on shooter"], answer:0, meta:"p.7" },
-  { id:11, text:"At the start, initial possession is determined by:", options:["Coin toss","Jump ball","Home team choice","Referee’s choice"], answer:0, meta:"p.7–8" },
-  { id:12, text:"After each dead ball, play resumes with:", options:["A check-ball at the top beyond the arc","A throw-in from midcourt","A baseline inbound","A jump ball"], answer:0, meta:"p.8" },
-  { id:13, text:"After a made basket, the non-scoring team:", options:["Takes the ball directly under the hoop and must clear beyond the arc","Performs a throw-in from the baseline","Performs a check-ball","Gets a center jump"], answer:0, meta:"p.8–9" },
-  { id:14, text:"To attempt to score after gaining possession on defense, a team must first:", options:["Clear the ball beyond the arc","Pass once in frontcourt","Call for a check","Stop the clock"], answer:0, meta:"p.8–9" },
-  { id:15, text:"A player is considered behind the arc when:", options:["Neither foot is on or inside the arc line","At least one foot crosses the line","The ball crosses the line","Any part of the body touches the line"], answer:0, meta:"p.9" },
-  { id:16, text:"On steals, the team must:", options:["Clear the ball beyond the arc before scoring","Inbound from the sideline","Request a check-ball","Pass once inside the arc"], answer:0, meta:"p.9" },
-  { id:17, text:"On defensive rebounds, the team must:", options:["Clear beyond the arc before a shot","Dribble once","Call a timeout","Throw in from baseline"], answer:0, meta:"p.9" },
-  { id:18, text:"Overtime in 3x3 is won by the first team to score:", options:["2 points","3 points","1 point","5 points"], answer:0, meta:"p.10" },
-  { id:19, text:"In overtime, initial possession goes to:", options:["The team that did not have the first possession in regulation","The team that won the coin toss","The home team","The team with fewer fouls"], answer:0, meta:"p.10" },
-  { id:20, text:"Substitutions may occur:", options:["On a dead ball before the check-ball","Only at halftime","Only after a made basket","Only after free throws"], answer:0, meta:"p.10–11" },
-
-  /* ---------- Fouls & Penalties (pp.11–18) ---------- */
-  { id:21, text:"Team fouls 1–6 result in:", options:["Standard penalties per foul type (no team penalty bonus)","Two free throws + possession","One free throw automatic","Technical only"], answer:0, meta:"p.11–14" },
-  { id:22, text:"For a successful 1-point field goal plus a defensive foul, the shooter gets:", options:["1 additional free throw","2 free throws","No free throw","Possession only"], answer:0, meta:"p.12" },
-  { id:23, text:"A shooting foul on a 1-point try (missed) awards:", options:["1 free throw","2 free throws","No free throws","Possession only"], answer:0, meta:"p.12–13" },
-  { id:24, text:"A shooting foul on a 2-point try (missed) awards:", options:["2 free throws","1 free throw","3 free throws","Possession only"], answer:0, meta:"p.12–13" },
-  { id:25, text:"Team fouls 7, 8, and 9 generally award:", options:["2 free throws","1 free throw","No free throws","Free throw + possession"], answer:0, meta:"p.13–14" },
-  { id:26, text:"Team fouls 10+ generally award:", options:["2 free throws and possession","1 free throw","No free throws","Alternating possession"], answer:0, meta:"p.13–14" },
-  { id:27, text:"On a 2-point shot made while fouled, the additional award is typically:", options:["1 free throw","2 free throws","No free throws","Possession only"], answer:0, meta:"p.12–13" },
-  { id:28, text:"An offensive foul that results in a change of possession:", options:["Does not award free throws unless in team-foul penalty as specified","Always awards 1 free throw","Always awards 2 free throws","Always awards possession plus 2 points"], answer:0, meta:"p.13–14" },
-  { id:29, text:"Unsportsmanlike or disqualifying fouls:", options:["Carry specific free-throw and possession penalties per rulebook","Have no special penalty","Only stop the clock","Always result in ejection without free throws"], answer:0, meta:"p.14–15" },
-  { id:30, text:"All jump-ball situations in 3x3 result in possession for:", options:["The defensive team (check-ball at the top)","The offensive team","The team with fewer fouls","A re-toss"], answer:0, meta:"p.11–12" },
-
-  /* ---------- Ball Status & Resumptions (pp.18–26) ---------- */
-  { id:31, text:"A check-ball is executed:", options:["At the top of the arc between defender and attacker","On the baseline","At center circle","At free-throw line"], answer:0, meta:"p.18–19" },
-  { id:32, text:"After a violation, play typically restarts with:", options:["A check-ball beyond the arc","A jump ball","A baseline throw-in","A free throw"], answer:0, meta:"p.19" },
-  { id:33, text:"After a made basket, the ball becomes live when:", options:["The defensive team gains control under the hoop","The referee hands the ball to a player","The clock restarts","The ball touches a player in the key"], answer:0, meta:"p.8–9" },
-  { id:34, text:"The shot clock resets to 12 seconds when:", options:["A new team control begins","A timeout is granted","The ball is tapped","The ball is bounced"], answer:0, meta:"p.6–7, 18–20" },
-  { id:35, text:"If the ball accidentally lodges between ring and backboard (dead ball), resumption is:", options:["By rule—typically a check-ball to the defensive team (jump-ball situation)","A jump at center","An automatic score","A replay of the possession"], answer:0, meta:"p.19–20" },
-  { id:36, text:"Players must ‘clear’ the ball by:", options:["Controlling the ball beyond the arc before trying to score","Dribbling to midcourt","Passing across the baseline","Tapping the ball to a teammate"], answer:0, meta:"p.8–9" },
-  { id:37, text:"If a defensive rebounder immediately shoots without clearing beyond the arc, the score:", options:["Does not count","Counts for 1 point","Counts for 2 points","Becomes a turnover"], answer:0, meta:"p.9" },
-  { id:38, text:"Following a steal, before scoring, the team must:", options:["Take the ball beyond the arc","Call a check","Pass twice","Inbound from sideline"], answer:0, meta:"p.9" },
-  { id:39, text:"Which restart is used most commonly after dead balls in 3x3?", options:["Check-ball at the top","Sideline throw-in","Baseline throw-in","Center jump"], answer:0, meta:"p.18–21" },
-  { id:40, text:"If the offense is fouled on a successful 2-point shot (made), the extra award is:", options:["1 free throw","2 free throws","No free throw","Possession only"], answer:0, meta:"p.12–13" },
-
-  /* ---------- Timing, Subs, Time-outs (pp.21–29) ---------- */
-  { id:41, text:"Game duration without reaching 21 points is:", options:["10 minutes of playing time","Until 24 minutes","Exactly 9 minutes","Running clock 12 minutes"], answer:0, meta:"p.6–7, 21" },
-  { id:42, text:"Substitutions are allowed:", options:["On dead balls before the next check-ball","Anytime during live play","Only at 5-minute mark","Only by the scoring team"], answer:0, meta:"p.10–11, 22" },
-  { id:43, text:"A time-out duration is:", options:["Short (approx. 30 seconds) per ruleset","2 minutes","As long as coach wants","10 seconds"], answer:0, meta:"p.22–23" },
-  { id:44, text:"Televised events may include media time-outs to:", options:["Provide scheduled breaks without affecting scoring rules","Change scoring values","Suspend foul penalties","Reset fouls"], answer:0, meta:"p.22–23" },
-  { id:45, text:"When may a team request a substitution?", options:["At a dead ball situation before the next check-ball","During a free throw","While the ball is live","Only after made baskets"], answer:0, meta:"p.22" },
-  { id:46, text:"The game ends immediately at 21 points regardless of time remaining:", options:["True","False","Only in finals","Only if ahead by 2"], answer:0, meta:"p.6–7" },
-  { id:47, text:"If tied at the end of regulation (10:00), the procedure is:", options:["Overtime; first to 2 points wins","Two extra minutes","Golden basket from the arc","Coin toss decides winner"], answer:0, meta:"p.10, 23" },
-  { id:48, text:"The shot clock duration (12s) applies to:", options:["Every new team control","Only after checks","Only after time-outs","Only after rebounds"], answer:0, meta:"p.6–7, 23" },
-  { id:49, text:"Stopping the game clock is determined by:", options:["Competition rules and officials’ control for dead balls","Shot clock operator","Scorer’s table only","Players’ requests"], answer:0, meta:"p.21–24" },
-  { id:50, text:"Substituting more than one player on a dead ball is:", options:["Allowed if done before the next check-ball","Never allowed","Allowed only by home team","Allowed only in overtime"], answer:0, meta:"p.22" },
-
-  /* ---------- Violations & Misc. (pp.29–38) ---------- */
-  { id:51, text:"Traveling, double-dribble, and out-of-bounds are:", options:["Violations","Fouls","Unsportsmanlike acts","Technical only"], answer:0, meta:"p.29–31" },
-  { id:52, text:"After a violation by the offense, the ball is awarded to:", options:["Defensive team for a check-ball","Offense to replay","Jump ball","Referee’s toss"], answer:0, meta:"p.29–32" },
-  { id:53, text:"Interference/goal-tending rules in 3x3:", options:["Follow the rulebook’s basket interference/goaltending provisions","Do not exist","Always allow slapping the ball off rim","Award automatic points"], answer:0, meta:"p.31–33" },
-  { id:54, text:"Excessive delay or stalling is handled by:", options:["Officials per rules (warnings/penalties as specified)","No action","Immediate ejection","Automatic turnover"], answer:0, meta:"p.32–33" },
-  { id:55, text:"After an out-of-bounds by the defense, resumption is typically:", options:["Check-ball to offense beyond arc","Baseline throw-in","Midcourt jump","Free throw"], answer:0, meta:"p.29–33" },
-  { id:56, text:"A kicked ball to stop a pass is usually ruled:", options:["Violation","Foul","Unsportsmanlike","Legal"], answer:0, meta:"p.33" },
-  { id:57, text:"If the ball touches the player standing on the arc line, the player is considered:", options:["Inside the arc","Outside the arc","Cleared","Out of bounds"], answer:0, meta:"p.9, 31" },
-  { id:58, text:"Screening and contact are judged by:", options:["Legal guarding/charging principles per rules","Team preference","Spectator vote","Coin toss"], answer:0, meta:"p.33–35" },
-  { id:59, text:"Illegal use of hands/body that impedes an opponent is:", options:["A foul","A violation","A warning only","Always unsportsmanlike"], answer:0, meta:"p.33–36" },
-  { id:60, text:"Backcourt status:", options:["Not the same concept as 5-on-5 full court; follow 3x3 half-court rules","Standard 8-second violation","10-second violation","Always a turnover"], answer:0, meta:"p.29–31" },
-
-  /* ---------- Officials, Scorer, Equipment (pp.38–47) ---------- */
-  { id:61, text:"Which official restart is unique to 3x3 play flow?", options:["Check-ball between defender and attacker at top","Alternating possession arrow inbound","Jump ball at center","Side throw-in only"], answer:0, meta:"p.18–21, 38–40" },
-  { id:62, text:"The scorer’s table is responsible for:", options:["Recording points, fouls, and managing game data","Calling fouls","Assigning possessions","Judging unsportsmanlike acts"], answer:0, meta:"p.40–42" },
-  { id:63, text:"Shot-clock operation in 3x3 includes:", options:["Starting/resetting to 12s upon new team control","Running to 24s","Only manual stops","No resets"], answer:0, meta:"p.6–7, 41–43" },
-  { id:64, text:"The ball used in 3x3 is distinct because:", options:["It combines Size 6 circumference with Size 7 weight","It is smaller and lighter than Size 6","It uses Size 5","It is the same as 5-on-5 men’s ball"], answer:0, meta:"p.5–6, 43" },
-  { id:65, text:"Team benches and substitution areas are:", options:["Designated per half-court layout in competition docs","Optional","Anywhere behind baseline","Only on sideline"], answer:0, meta:"p.44–45" },
-  { id:66, text:"Officials’ primary concern during check-ball is:", options:["Ensuring both sides are stationary and ready before handing ball","Starting a jump ball","Moving clock","Calling time-out"], answer:0, meta:"p.18–21, 44–46" },
-  { id:67, text:"Score is commonly displayed by:", options:["Official scoreboard per event setup","Players’ phones","Shot clock only","Not required"], answer:0, meta:"p.41–46" },
-  { id:68, text:"The playing surface markings include:", options:["Arc line, free-throw line, restricted area (as specified)","Only sidelines","Only a center circle","Only baseline"], answer:0, meta:"p.5–6, 44–47" },
-  { id:69, text:"Net failure during play leads to:", options:["Dead ball and proper resumption per officials","Automatic score","No stoppage ever","Ejection"], answer:0, meta:"p.44–47" },
-  { id:70, text:"A player equipment issue (e.g., blood rule) is handled:", options:["Per safety rules; player must be made legal to continue","Ignored","With a technical automatically","With free throws to opponent"], answer:0, meta:"p.45–47" },
-
-  /* ---------- Competition & Ranking (pp.47–54) ---------- */
-  { id:71, text:"Official competition formats and seeding are described:", options:["In the competition/rules sections","Only by local custom","Not specified","In a separate sport"], answer:0, meta:"p.47–50" },
-  { id:72, text:"Eligibility and roster rules are set:", options:["Per FIBA 3x3 regulations and event docs","Only by team captain","By spectators","By referee alone"], answer:0, meta:"p.47–51" },
-  { id:73, text:"Tie-breaking procedures in pool play are:", options:["Defined in the competition system (e.g., head-to-head, points, etc.)","Always via coin toss","Not defined","Via free-throw contest"], answer:0, meta:"p.50–52" },
-  { id:74, text:"Event organizers may define:", options:["Specific schedules, media time-outs, and operational details","Scoring values","Ball size","Team size on court"], answer:0, meta:"p.47–53" },
-  { id:75, text:"Disciplinary matters follow:", options:["The rulebook’s specific articles and event codes","Team vote","No policy","Spectator complaints"], answer:0, meta:"p.52–54" },
-  { id:76, text:"Ranking points for tournaments are:", options:["Assigned per final standing table in rules/competition docs","Always equal for all","Random","Only for finalists"], answer:0, meta:"p.53–54" },
-  { id:77, text:"Substitution procedure uniformity across events is:", options:["Based on standard rules unless otherwise stated","Up to players during play","Not addressed","Coach-only decision"], answer:0, meta:"p.47–54" },
-  { id:78, text:"Overtime first-to-2 rule is:", options:["A core feature of 3x3 endgame","Optional","Only for juniors","Only for finals"], answer:0, meta:"p.10, 47–54" },
-  { id:79, text:"The 21-point sudden finish is:", options:["A standard game-ending condition","Only a mercy rule","Not used","Only for pool play"], answer:0, meta:"p.6–7, 47–54" },
-  { id:80, text:"Arc shots counting 2 points is:", options:["Standard 3x3 scoring","Only when leading","Only in overtime","Only for men"], answer:0, meta:"p.7, 47–54" },
-
-  /* ---------- Image-based (pp.55–65): one per image page 55–65 ---------- */
-  { id:81, text:"(Image p.55) The half-court diagram highlights which key line for 3x3 scoring?", options:["The two-point arc","Midcourt line","Three-point corner hash","Coaches’ box"], answer:0, meta:"p.55", tag:"Image-based (p.55)", media:{type:"pdfPage", page:55} },
-  { id:82, text:"(Image p.56) The marked semicircle represents:", options:["The arc used to determine 1- vs 2-point shots","Restricted area for no-charge","Free-throw circle","Center circle"], answer:0, meta:"p.56", tag:"Image-based (p.56)", media:{type:"pdfPage", page:56} },
-  { id:83, text:"(Image p.57) A top-of-arc marker is primarily used for:", options:["Check-ball location","Throw-in spot","Timeout spot","Substitution spot"], answer:0, meta:"p.57", tag:"Image-based (p.57)", media:{type:"pdfPage", page:57} },
-  { id:84, text:"(Image p.58) The under-basket area is where the non-scoring team:", options:["Takes possession after a made basket","Performs free throws","Performs jump ball","Requests substitutions"], answer:0, meta:"p.58", tag:"Image-based (p.58)", media:{type:"pdfPage", page:58} },
-  { id:85, text:"(Image p.59) Clearance beyond the arc requires:", options:["Ball control outside the arc before scoring","Both hands on ball","A pass to a teammate","Two dribbles"], answer:0, meta:"p.59", tag:"Image-based (p.59)", media:{type:"pdfPage", page:59} },
-  { id:86, text:"(Image p.60) A referee hand signal shown commonly indicates:", options:["Successful 2-point attempt","Timeout","Travel","Substitution"], answer:0, meta:"p.60", tag:"Image-based (p.60)", media:{type:"pdfPage", page:60} },
-  { id:87, text:"(Image p.61) The free-throw mark shown is used when awarding:", options:["Free throws after certain fouls","Throw-ins","Jump balls","Timeouts"], answer:0, meta:"p.61", tag:"Image-based (p.61)", media:{type:"pdfPage", page:61} },
-  { id:88, text:"(Image p.62) The shot clock display shown should count down from:", options:["12 seconds","14 seconds","10 seconds","24 seconds"], answer:0, meta:"p.62", tag:"Image-based (p.62)", media:{type:"pdfPage", page:62} },
-  { id:89, text:"(Image p.63) The substitutions area indicated is used:", options:["On dead balls before check-ball","During live play","Only after free throws","Only by home team"], answer:0, meta:"p.63", tag:"Image-based (p.63)", media:{type:"pdfPage", page:63} },
-  { id:90, text:"(Image p.64) The table with standings most likely illustrates:", options:["Tournament ranking points by place","Player heights","Roster ages","Referee numbers"], answer:0, meta:"p.64", tag:"Image-based (p.64)", media:{type:"pdfPage", page:64} },
-  { id:91, text:"(Image p.65) The legend beside black circles (●) most likely denotes:", options:["Specific ranking or point indicators","Timeouts taken","Foul counts","Ball pressure"], answer:0, meta:"p.65", tag:"Image-based (p.65)", media:{type:"pdfPage", page:65} },
-
-  /* ---------- Additional recall (pp.4–65) to reach 200 ---------- */
-  { id:92, text:"A field goal made inside the arc is worth:", options:["1 point","2 points","Varies","0.5 points"], answer:0, meta:"p.7" },
-  { id:93, text:"A field goal made from behind the arc is worth:", options:["2 points","3 points","1 point","4 points"], answer:0, meta:"p.7" },
-  { id:94, text:"Free throws are generally awarded as:", options:["1 point each","2 points each","3 points each","Variable"], answer:0, meta:"p.7, 12–14" },
-  { id:95, text:"First possession is chosen:", options:["By coin toss","By home team","By visiting team","By higher seed"], answer:0, meta:"p.7–8" },
-  { id:96, text:"The defensive team after a made basket must:", options:["Take ball under hoop and clear beyond arc","Throw in from baseline","Wait for check-ball","Jump at center"], answer:0, meta:"p.8–9" },
-  { id:97, text:"Clearing beyond the arc is required after:", options:["Defensive rebounds and steals","Offensive rebounds","Made baskets","Timeouts"], answer:0, meta:"p.8–9" },
-  { id:98, text:"Overtime target is:", options:["First to 2 points","First to 3 points","Sudden death 1 point","Timed extra period only"], answer:0, meta:"p.10" },
-  { id:99, text:"Team roster limit (max participants) is:", options:["4","5","6","3"], answer:0, meta:"p.4–5" },
-  { id:100, text:"Shot clock duration is:", options:["12 seconds","24 seconds","14 seconds","10 seconds"], answer:0, meta:"p.6–7" },
-
-  /* …(IDs 101–200 unchanged from the previous version) … */
-  { id:101, text:"A missed 2-point try with defensive foul on shooter awards:", options:["2 free throws","1 free throw","No free throws","Ball at top"], answer:0, meta:"p.12–13" },
-  { id:102, text:"A missed 1-point try with defensive foul on shooter awards:", options:["1 free throw","2 free throws","No free throws","Possession only"], answer:0, meta:"p.12–13" },
-  { id:103, text:"Team fouls 7–9 are penalized by:", options:["2 free throws","1 free throw","No free throws","Alternating possession"], answer:0, meta:"p.13–14" },
-  { id:104, text:"Team fouls 10+ are penalized by:", options:["2 free throws and possession","1 free throw","No free throws","Jump ball"], answer:0, meta:"p.13–14" },
-  { id:105, text:"Alternating possession arrow in 3x3 is:", options:["Not used; jump-ball situations go to defense","Used every dead ball","Used after time-outs","Used only in finals"], answer:0, meta:"p.11–12" },
-  { id:106, text:"Substitutions can be requested:", options:["By any team on dead balls before check-ball","Only by team with possession","Only after free throws","Only in last minute"], answer:0, meta:"p.22" },
-  { id:107, text:"The check-ball takes place:", options:["Top of arc","Baseline","Sideline","Center circle"], answer:0, meta:"p.18–21" },
-  { id:108, text:"If the offense commits a violation, the ball goes to:", options:["Defense (check at top)","Offense retry","Jump ball","Free throw"], answer:0, meta:"p.29–33" },
-  { id:109, text:"A legal 2-point basket requires the shooter to be:", options:["Behind the arc line (no foot on or inside)","Partly on the line","Jumping from inside","On baseline"], answer:0, meta:"p.7–9" },
-  { id:110, text:"A defensive rebound must be cleared:", options:["Beyond the arc before scoring","To midcourt","By pass only","By dribble only"], answer:0, meta:"p.9" },
-  /* … keep the remaining items through id:200 exactly as previously provided … */
-  { id:200, text:"Shot clock length across possessions:", options:["12s per new control","24s always","14s always","10s always"], answer:0, meta:"p.6–7" },
+/* ========= Image Signal Bank (filenames should be placed in same folder as this HTML) ========= */
+const SIGNALS = [
+  // 1–10 (general mechanics) + 11–20 + 31–56 (fouls / violations / admin)
+  {file:"1. Stop the clock.jpeg", label:"Stop the clock / Foul"},
+  {file:"2. Stop the clock for foul.jpeg", label:"Stop the clock for foul"},
+  {file:"3. 1 Point.jpeg", label:"Count the goal: 1 point"},
+  {file:"4. 2 points.jpeg", label:"Count the goal: 2 points"},
+  {file:"5. Charged time-out.jpeg", label:"Charged time-out"},
+  {file:"6. TV time-out.jpeg", label:"TV time-out"},
+  {file:"7. Cancel score, cancel play.jpeg", label:"Cancel score / cancel play"},
+  {file:"8. Visible count.jpeg", label:"Visible count / 5s"},
+  {file:"9. Communication.jpeg", label:"Communication (to table/partner)"},
+  {file:"10. Shot clock reset.jpeg", label:"Shot clock reset"},
+  {file:"11. Out-of-bounds.jpeg", label:"Out-of-bounds"},
+  {file:"12. Held ball:jump ball situation.jpeg", label:"Held ball / jump ball situation"},
+  {file:"13. Travelling.jpeg", label:"Travelling"},
+  {file:"14. Illegal Dribble_Double dribbling.jpeg", label:"Illegal dribble / double dribble"},
+  {file:"15. Illegal dribble_Carrying the ball.jpeg", label:"Carrying the ball"},
+  {file:"16. 3 seconds.jpeg", label:"3 seconds"},
+  {file:"17. 5 seconds.jpeg", label:"5 seconds"},
+  {file:"18. 12 seconds.jpeg", label:"12-second shot clock"},
+  {file:"19. Deliberate kick or block of the ball.jpeg", label:"Deliberate kick or block of the ball"},
+  {file:"20. Ball not cleared.jpeg", label:"Ball not cleared"},
+  {file:"31. Holding.jpeg", label:"Holding"},
+  {file:"32. Blocking (defense)_Illegal screen (offense).jpeg", label:"Blocking (DF) / Illegal screen (OF)"},
+  {file:"33. Pushing or charging without the ball.jpeg", label:"Pushing / charging without the ball"},
+  {file:"34. Handchecking.jpeg", label:"Handchecking"},
+  {file:"35. Illegal use of hands.jpeg", label:"Illegal use of hands"},
+  {file:"36. Charging with the ball.jpeg", label:"Charging with the ball"},
+  {file:"37. Illegal contact to the hand.jpeg", label:"Illegal contact to the hand"},
+  {file:"38. Hooking.jpeg", label:"Hooking"},
+  {file:"39. Excessive swinging of the elbow.jpeg", label:"Excessive swinging of the elbow"},
+  {file:"40. Hit to the head.jpeg", label:"Hit to the head"},
+  {file:"41. Foul by team in control of the ball.jpeg", label:"Team-control foul (offense)"},
+  {file:"42. Foul on the act of shooting.jpeg", label:"Foul on the act of shooting"},
+  {file:"43. Foul not on the act of shooting.jpeg", label:"Foul not on the act of shooting"},
+  {file:"44. Double foul.jpeg", label:"Double foul"},
+  {file:"45. Technical foul.jpeg", label:"Technical foul"},
+  {file:"46. Unsportsmanlike foul.jpeg", label:"Unsportsmanlike foul"},
+  {file:"47. Disqualifying foul.jpeg", label:"Disqualifying foul"},
+  {file:"48. Fake a foul.jpeg", label:"Faking a foul"},
+  {file:"49. IRS review.jpeg", label:"Instant Replay review"},
+  {file:"50. Challenge.jpeg", label:"Coach challenge (3x3)"},
+  {file:"51. After foul without free throw(s).jpeg", label:"Resume: foul without free throws"},
+  {file:"52. After foul by team in control of the ball.jpeg", label:"Resume: team-control foul"},
+  {file:"53. 1 free throw.jpeg", label:"Signal: 1 free throw"},
+  {file:"54. 2 free throws.jpeg", label:"Signal: 2 free throws"},
+  {file:"55. 1 free throw.jpeg", label:"1 free throw (again)"},
+  {file:"56. 2 free throws.jpeg", label:"2 free throws (again)"}
 ];
 
-/* ======= Utility: shuffle ======= */
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+/* ========= Text Question Builders =========
+   We generate many items programmatically from concise fact tables to keep the HTML compact.
+*/
+const FACTS = {
+  scoring: [
+    {q:"How many points is a field goal from inside the arc worth in 3x3?", ok:"1", bad:["2","3","It depends"]},
+    {q:"A field goal from behind the arc in 3x3 counts for…", ok:"2 points", bad:["3 points","1 point","Advantage + free throw"]},
+    {q:"Each made free throw in 3x3 is worth…", ok:"1 point", bad:["2 points","Depends on foul count","0.5 points"]}
+  ],
+  duration: [
+    {q:"Regulation game time in 3x3 is…", ok:"10 minutes", bad:["12 minutes","4×10 minutes","8 minutes"]},
+    {q:"Game ends earlier if a team reaches… first", ok:"21 points", bad:["20 points","22 points","19 points"]}
+  ],
+  start: [
+    {q:"How is initial possession decided in 3x3?", ok:"Coin toss; winner chooses offense/defense", bad:["Jump ball","Home team first","Referee choice"]},
+    {q:"Play begins with a check-ball at…", ok:"Top of arc", bad:["Free-throw line","Endline corner","Midcourt line"]}
+  ],
+  clear: [
+    {q:"After a defensive rebound or steal, the ball must be cleared…", ok:"Behind the arc", bad:["To midcourt","To the sideline","To the free-throw line"]},
+    {q:"A made basket is followed by…", ok:"Immediate possession for defense under the ring (no check-ball)", bad:["Check-ball at top","Throw-in from endline","Jump ball"]}
+  ],
+  timeouts: [
+    {q:"How many team time-outs are granted in 3x3?", ok:"1 per game", bad:["2 per half","3 total","Unlimited"]},
+    {q:"Team time-out length in 3x3:", ok:"30 seconds", bad:["60 seconds","45 seconds","20 seconds"]},
+    {q:"TV time-outs (where used) are taken at first dead ball after…", ok:"6:59 and 3:59", bad:["7:00 and 4:00","5:00 only","8:00 and 2:00"]},
+    {q:"An unused team time-out may be carried into overtime.", ok:"True", bad:["False","Only if leading","Only in finals"]}
+  ],
+  subs: [
+    {q:"Substitutions may occur when…", ok:"Ball is dead before a check-ball or free throw", bad:["Anytime during play","Only between periods","Only after time-outs"]},
+    {q:"Substitutes enter from…", ok:"Behind the endline; no referee action needed", bad:["Table side after horn","Sideline only","Coach summons via referee only"]}
+  ],
+  shotclock: [
+    {q:"3x3 shot clock duration is…", ok:"12 seconds", bad:["14 seconds","24 seconds","10 seconds"]},
+    {q:"If a fight stops play while a team had control, upon resumption the shot clock…", ok:"Is not reset", bad:["Resets to 12","Resets to 14","Resets to 10"]}
+  ],
+  penalties: [
+    {q:"Team foul penalty begins after…", ok:"6 team fouls", bad:["4","5","7"]},
+    {q:"Team fouls 7–9 are penalized with…", ok:"2 free throws", bad:["1 free throw","1+ball","2+ball"]},
+    {q:"Team foul 10+ is penalized with…", ok:"2 free throws and possession", bad:["1+ball","2 only","3 free throws"]},
+    {q:"A disqualifying foul counts as… for team-foul purposes", ok:"2 fouls", bad:["1 foul","3 fouls","No team foul"]},
+    {q:"A contact foul by the team in control (offense) results in…", ok:"Check-ball for defense", bad:["1 FT","2 FTs","Side throw-in at table"]}
+  ],
+  checkball: [
+    {q:"Check-ball is an exchange between opponents located…", ok:"Behind the arc at the top", bad:["At midcourt","At free-throw line","Anywhere outside the paint"]},
+    {q:"Distance between players during check-ball should be about…", ok:"1 metre", bad:["2 metres","Half metre","One step behind logo"]},
+    {q:"At the start of regulation and overtime, who administers the check-ball?", ok:"Referee", bad:["Any player","Table official","Team captain"]}
+  ],
+  violations: [
+    {q:"Scoring without clearing the ball by the team that just gained control results in…", ok:"Basket cancelled", bad:["Play-on","Technical foul","Jump-ball"]},
+    {q:"A shot can only be controlled and released with 0.3s or more; with 0.2/0.1 only a… is valid", ok:"Direct tap", bad:["Dribble pull-up","Pass-and-shoot","Alley-oop catch and shoot"]}
+  ],
+  goaltend: [
+    {q:"Defensive goaltending on a shot from behind the arc awards…", ok:"2 points", bad:["1 point","Free throw only","Ball out of bounds"]},
+    {q:"Interference includes touching the basket while the ball is in contact with the ring after a shot.", ok:"True", bad:["False","Only on dunks","Only on offense"]},
+    {q:"Goaltending on a last free throw by defense awards 1 point and…", ok:"A technical foul", bad:["Jump-ball","Another free throw only","Reset to 12s"]}
+  ],
+  admin: [
+    {q:"Game lost by forfeit if a team lacks 3 ready players at tip-off time (except grassroots). Score is recorded as…", ok:"w–0 / 0–w", bad:["2–0","21–0","Default loss"]},
+    {q:"Game lost by default (team leaves or all injured). Winning team may…", ok:"Keep score or choose forfeit; loser set to 0", bad:["Only keep score","Only win 21–0","Replay match"]},
+  ],
+};
 
-/* ======= Build a 50-question set on each load ======= */
-let PICKED=[], ANSWERS={}, ORDERED_OPTIONS={};
-function newPick(){
-  const ids = BANK.map((q,i)=>i);
-  shuffle(ids);
-  const slice = ids.slice(0,50);
-  PICKED = slice.map(i => ({...BANK[i]}));
-  // shuffle options per question & remember correct index
-  PICKED.forEach(q=>{
-    const original = q.options.map((t,i)=>({t,idx:i}));
-    shuffle(original);
-    ORDERED_OPTIONS[q.id]=original;
-  });
-  ANSWERS={};
-}
-
-/* ======= Rendering ======= */
-let idx=0;
-const intro = document.getElementById('intro');
-const quiz = document.getElementById('quizCard');
-const result = document.getElementById('resultCard');
-const qCounter = document.getElementById('qCounter');
-const qMeta = document.getElementById('qMeta');
-const qRef = document.getElementById('qRef');
-const qText = document.getElementById('qText');
-const optionsEl = document.getElementById('options');
-const progFill = document.getElementById('progFill');
-const answeredCount = document.getElementById('answeredCount');
-const startBtn = document.getElementById('startBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const saveBtn = document.getElementById('saveBtn');
-const submitBtn = document.getElementById('submitBtn');
-const scoreText = document.getElementById('scoreText');
-const review = document.getElementById('review');
-const retryBtn = document.getElementById('retryBtn');
-const mediaSlot = document.getElementById('mediaSlot');
-
-function render(){
-  const q = PICKED[idx];
-  qCounter.textContent = `Q ${idx+1}/50`;
-  qText.textContent = q.text;
-  qMeta.textContent = q.tag ? q.tag : "";
-  qMeta.style.display = q.tag ? "inline-block":"none";
-  qRef.textContent = q.meta ? `Source: ${q.meta}` : "";
-
-  // render options
-  const mapped = ORDERED_OPTIONS[q.id];
-  optionsEl.innerHTML = "";
-  mapped.forEach((opt, i)=>{
-    const id = `opt_${idx}_${i}`;
-    const label = document.createElement('label');
-    label.className="option";
-    const input = document.createElement('input');
-    input.type = 'radio';
-    input.name = 'opt';
-    input.id = id;
-    input.value = i;
-    if(ANSWERS[q.id] !== undefined && ANSWERS[q.id] === i){ input.checked = true; }
-    const span = document.createElement('span');
-    span.textContent = opt.t;
-    label.appendChild(input); label.appendChild(span);
-    optionsEl.appendChild(label);
-  });
-
-  // PDF page (image) viewer for image-based items
-  mediaSlot.innerHTML = "";
-  if(q.media && q.media.type==="pdfPage" && typeof q.media.page==="number"){
-    mediaSlot.classList.remove("hidden");
-    const wrap = document.createElement('div');
-    wrap.className = "pdfWrap";
-
-    const head = document.createElement('div');
-    head.className = "pdfHead";
-    const left = document.createElement('div');
-    left.className = "left";
-    left.textContent = `Preview: PDF page ${q.media.page}`;
-    const right = document.createElement('div');
-    right.className = "right";
-    const zoomOut = document.createElement('button');
-    zoomOut.className = "btn ghost";
-    zoomOut.textContent = "– Zoom";
-    zoomOut.addEventListener('click', ()=>{ currentZoom = Math.max(80, currentZoom-20); iframe.src = pdfURL(q.media.page); });
-    const zoomIn = document.createElement('button');
-    zoomIn.className = "btn ghost";
-    zoomIn.style.marginLeft = "6px";
-    zoomIn.textContent = "+ Zoom";
-    zoomIn.addEventListener('click', ()=>{ currentZoom = Math.min(300, currentZoom+20); iframe.src = pdfURL(q.media.page); });
-    right.appendChild(zoomOut); right.appendChild(zoomIn);
-    head.appendChild(left); head.appendChild(right);
-
-    const iframe = document.createElement('iframe');
-    iframe.className = "pdfBox";
-    iframe.title = "Rulebook page preview";
-    iframe.src = pdfURL(q.media.page);
-
-    wrap.appendChild(head);
-    wrap.appendChild(iframe);
-    mediaSlot.appendChild(wrap);
-  } else {
-    mediaSlot.classList.add("hidden");
-  }
-
-  // progress
-  const answered = Object.keys(ANSWERS).length;
-  answeredCount.textContent = `${answered} of 50 answered`;
-  progFill.style.width = `${Math.round((idx)/49*100)}%`;
-
-  // nav
-  prevBtn.disabled = (idx===0);
-  nextBtn.disabled = (idx===PICKED.length-1);
-}
-
-function saveCurrent(){
-  const q = PICKED[idx];
-  const inputs = optionsEl.querySelectorAll('input[name="opt"]');
-  let chosen = undefined;
-  inputs.forEach(inp=>{ if(inp.checked) chosen = parseInt(inp.value,10); });
-  if(chosen !== undefined){
-    ANSWERS[q.id] = chosen;
-    const answered = Object.keys(ANSWERS).length;
-    answeredCount.textContent = `${answered} of 50 answered`;
-  } else {
-    alert("Please select an option before saving.");
+function asMCQ(item, cat="General"){
+  const options = shuffle([item.ok, ...item.bad.slice()]);
+  return {
+    type:"text",
+    cat,
+    q:item.q,
+    options,
+    answer: options.indexOf(item.ok),
+    explain:item.explain||""
   }
 }
 
-function grade(){
-  let correct=0;
-  const rows = [];
-  PICKED.forEach((q, i)=>{
-    const mapping = ORDERED_OPTIONS[q.id];
-    const userChoice = ANSWERS[q.id];
-    const correctOriginalIdx = q.answer;
-    const correctNowIdx = mapping.findIndex(m=>m.idx===correctOriginalIdx);
-    const userText = (userChoice!==undefined) ? mapping[userChoice].t : "No answer";
-    const correctText = mapping[correctNowIdx].t;
-    if(userChoice===correctNowIdx){ correct++; }
-    rows.push({n:i+1, q:q.text, your:userText, correct:correctText});
-  });
-  return {correct, rows};
+/* ========= Build Question Pool ========= */
+const pool = [];
+
+// 1) Text items (expand facts)
+Object.entries(FACTS).forEach(([cat, arr])=>{
+  arr.forEach(it => pool.push(asMCQ(it, cat)));
+});
+
+// 2) Generate many small numeric variations to reach ~200
+// Team foul templates
+["7–9 → 2 FTs","10+ → 2 FTs + ball"].forEach((s,i)=>{
+  pool.push(asMCQ({
+    q:`Complete: Team fouls ${s.split(" → ")[0]} are penalized with…`,
+    ok:s.split(" → ")[1],
+    bad:i?["2 FTs","1 FT","Side ball"] : ["1 FT","1+ball","2+ball"],
+  },"Penalties"));
+});
+
+// Shot-clock & timing variations
+[
+  {q:"Shot clock value at start of a new possession in 3x3 is…", ok:"12 seconds", bad:["24 seconds","14 seconds","10 seconds"]},
+  {q:"A team time-out can be requested only when…", ok:"Ball is dead before check-ball/FT", bad:["Ball is live","After made basket","Any stoppage including violations"]},
+  {q:"Substitutions require prior notice to referees.", ok:"False", bad:["True","Only in last 2:00","Only after FTs"]},
+].forEach(it => pool.push(asMCQ(it,"Timing")));
+
+// 3) Image signal questions
+const IMG_QUESTIONS = SIGNALS.map(sig=>{
+  // Build 3 plausible distractors from other labels
+  const wrongs = sample(SIGNALS.filter(x=>x!==sig).map(x=>x.label),3);
+  return {
+    type:"image",
+    cat:"Signals",
+    q:"What does this referee signal indicate?",
+    img:sig.file,
+    options: shuffle([sig.label, ...wrongs]),
+    answer:0
+  };
+});
+pool.push(...IMG_QUESTIONS);
+
+// 4) Extra templated items to reach ~200
+const EXTRA = [
+  ["Where is the check-ball taken?", "Top of the arc", ["Midcourt","Free-throw line","Any sideline"]],
+  ["Distance between opponents at check-ball should be about…", "1 metre", ["3 metres","Step-and-a-half","Touching distance"]],
+  ["After a made basket the defense must first…", "Collect the ball and clear outside the arc", ["Throw-in from endline","Perform check-ball","Hand to referee"]],
+  ["A team reaches penalty after committing…", "6 team fouls (next is penalty)", ["5 team fouls","7 team fouls","Personal fouls by one player"]],
+  ["If offense commits a team-control foul…", "Defense gets a check-ball", ["1 FT to defense","Arrow possession","Jump-ball"]],
+  ["TV time-outs are at…", "6:59 and 3:59 (first dead ball)", ["7:00 & 4:00","5:59 & 2:59","Every 2:00"]],
+  ["A disqualifying foul counts as…", "Two team fouls", ["One team foul","Zero team fouls","Three team fouls"]],
+  ["Goaltending by defense on 1-point try awards…", "1 point", ["2 points","Side ball only","1+ball"]],
+  ["Interference also includes reaching up through the basket from below.", "True", ["False","Only if contact with net","Only on dunks"]],
+  ["A score without prior clear by defense is…", "Cancelled", ["Valid if quick","Technical on offense","Warning only"]],
+  ["With 0.2 seconds on clock, a legal score is possible only by…", "Direct tap", ["Catch-and-shoot","Dribble and shoot","Inbound and tip"]],
+  ["Substitutes enter…", "Behind the endline while clock is stopped", ["From table on horn","From midcourt logo","After coach signals table"]],
+];
+EXTRA.forEach(([q,ok,bad])=>pool.push(asMCQ({q,ok,bad},"Rules")));
+
+// Duplicate variations for volume (rotate distractors)
+for(let i=0;i<7;i++){
+  FACTS.scoring.forEach(x=>pool.push(asMCQ(x,"Scoring")));
+  FACTS.timeouts.forEach(x=>pool.push(asMCQ(x,"Time-outs")));
+  FACTS.penalties.forEach(x=>pool.push(asMCQ(x,"Penalties")));
+  FACTS.checkball.forEach(x=>pool.push(asMCQ(x,"Check-ball")));
+  FACTS.violations.forEach(x=>pool.push(asMCQ(x,"Violations")));
+  FACTS.goaltend.forEach(x=>pool.push(asMCQ(x,"Goaltending/Interference")));
+}
+// Ensure at least 200 items
+while(pool.length<200){
+  pool.push(asMCQ({q:"3x3 free throw value is…", ok:"1 point", bad:["2 points","Depends","0.5 points"]},"Scoring"));
 }
 
-/* ======= Events ======= */
-startBtn.addEventListener('click', ()=>{
-  newPick();
-  intro.classList.add('hidden');
-  result.classList.add('hidden');
-  quiz.classList.remove('hidden');
-  idx=0;
-  render();
-});
-prevBtn.addEventListener('click', (e)=>{ e.preventDefault(); if(idx>0){ idx--; render(); }});
-nextBtn.addEventListener('click', (e)=>{ e.preventDefault(); if(idx<PICKED.length-1){ idx++; render(); }});
-saveBtn.addEventListener('click', (e)=>{ e.preventDefault(); saveCurrent(); });
+/* ========= Runtime state ========= */
+const RUN = {
+  order: sample(pool, 50),
+  answers: Array(50).fill(null),
+  i: 0,
+};
 
-submitBtn.addEventListener('click', (e)=>{
-  e.preventDefault();
-  const {correct, rows} = grade();
-  quiz.classList.add('hidden');
-  result.classList.remove('hidden');
-  scoreText.textContent = `${correct} / ${PICKED.length} correct`;
-  // review table
-  const tbl = document.createElement('table');
-  const thead = document.createElement('thead');
-  thead.innerHTML = "<tr><th>#</th><th>Question</th><th>Your Answer</th><th>Correct Answer</th></tr>";
-  const tbody = document.createElement('tbody');
-  rows.forEach(r=>{
-    const tr = document.createElement('tr');
-    const yourIsCorrect = r.your===r.correct;
-    tr.innerHTML = `<td>${r.n}</td><td>${r.q}</td>
-      <td class="${yourIsCorrect?'correct':'wrong'}">${r.your}</td>
-      <td class="correct">${r.correct}</td>`;
-    tbody.appendChild(tr);
+/* ========= Render ========= */
+const $qtext = document.getElementById("qtext");
+const $qimg  = document.getElementById("qimg");
+const $opts  = document.getElementById("options");
+const $next  = document.getElementById("next");
+const $skip  = document.getElementById("skip");
+const $submit= document.getElementById("submit");
+const $qcount= document.getElementById("qcount");
+const $cat   = document.getElementById("category");
+const $prog  = document.getElementById("progress");
+
+function render(i){
+  const q = RUN.order[i];
+  $qcount.textContent = `Question ${i+1} / 50`;
+  $cat.textContent = q.cat || "General";
+  $qtext.textContent = q.q;
+
+  if(q.type==="image"){
+    $qimg.src = q.img;
+    $qimg.classList.remove("hidden");
+    $qimg.alt = "Referee signal image";
+  } else {
+    $qimg.classList.add("hidden");
+  }
+
+  $opts.innerHTML = "";
+  q.options.forEach((opt,idx)=>{
+    const id = `q${i}_o${idx}`;
+    const div = document.createElement("label");
+    div.className = "opt";
+    div.innerHTML = `<input type="radio" name="q${i}" id="${id}" ${RUN.answers[i]===idx?"checked":""}> <span>${opt}</span>`;
+    div.addEventListener("click",()=>{ RUN.answers[i]=idx; updateButtons(); });
+    $opts.appendChild(div);
   });
-  tbl.appendChild(thead); tbl.appendChild(tbody);
-  review.innerHTML="";
-  review.appendChild(tbl);
-});
+  updateButtons();
+  $prog.style.width = `${(i)/50*100}%`;
+}
+function updateButtons(){
+  const last = RUN.i===49;
+  $next.classList.toggle("hidden", last);
+  $submit.classList.toggle("hidden", !last);
+}
+$next.addEventListener("click", ()=>{ RUN.i=Math.min(49,RUN.i+1); render(RUN.i); });
+$skip.addEventListener("click", ()=>{ RUN.i=Math.min(49,RUN.i+1); render(RUN.i); });
+$submit.addEventListener("click", finish);
 
-retryBtn.addEventListener('click', ()=>{
-  newPick();
-  result.classList.add('hidden');
-  quiz.classList.remove('hidden');
-  idx=0;
-  render();
-});
+function finish(){
+  const container = document.getElementById("quiz");
+  const results = document.getElementById("results");
+  let correct = 0;
+  const keyEl = document.getElementById("answerKey");
+  keyEl.innerHTML = "";
 
-// Prepare first random set on load
-newPick();
+  RUN.order.forEach((q,idx)=>{
+    const chosen = RUN.answers[idx];
+    const okIdx  = typeof q.answer==="number" ? q.answer : q.options.indexOf(q.answer);
+    if(chosen===okIdx) correct++;
+
+    const det = document.createElement("details");
+    const okTxt = q.options[okIdx];
+    const yourTxt = chosen!=null ? q.options[chosen] : "(no answer)";
+    det.innerHTML = `
+      <summary><span class="tag">${q.cat||"General"}</span> Q${idx+1}: ${q.q}</summary>
+      <div class="ans">
+        ${q.type==="image" ? `<div class="ctr"><img class="q-img" style="max-height:220px" alt="" src="${q.img}"></div>`:""}
+        <div><b class="good">Correct:</b> ${okTxt}</div>
+        <div><b class="${chosen===okIdx?'good':'bad'}">Your answer:</b> ${yourTxt}</div>
+        ${q.explain?`<div class="muted">${q.explain}</div>`:""}
+      </div>`;
+    keyEl.appendChild(det);
+  });
+
+  document.getElementById("scoreline").textContent = `Score: ${correct} / 50`;
+  container.classList.add("hidden");
+  results.classList.remove("hidden");
+  document.getElementById("progress").style.width="100%";
+}
+
+render(0);
 </script>
+
+<!--
+Sources (FIBA 3x3 Rules):
+:contentReference[oaicite:0]{index=0} Check-ball definition & procedure
+:contentReference[oaicite:1]{index=1} Time-out rule, TV time-outs, 30s, carry to OT
+:contentReference[oaicite:2]{index=2} Substitution rule & procedure (behind endline)
+:contentReference[oaicite:3]{index=3} Game lost by forfeit — notation
+:contentReference[oaicite:4]{index=4} Game lost by default — consequence
+:contentReference[oaicite:5]{index=5} Team-foul penalty (7–9 two FTs; 10+ two FTs + possession)
+:contentReference[oaicite:6]{index=6} Team-control foul => check-ball
+:contentReference[oaicite:7]{index=7} Basket cancelled if not cleared; 0.3s control vs 0.2s tap
+:contentReference[oaicite:8]{index=8} Goaltending rules
+:contentReference[oaicite:9]{index=9} Defensive goaltending penalties
+-->
+
 </body>
 </html>
