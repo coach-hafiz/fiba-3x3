@@ -35,10 +35,9 @@
   .result{padding:22px}
   .score{font-size:1.6rem;font-weight:800;margin:0 0 10px 0}
   .explain{color:var(--muted);font-size:.95rem}
-  .key{margin-top:14px;border-top:1px dashed rgba(255,255,255,.14);padding-top:14px;max-height:480px;overflow:auto}
-  .key details{background:#0f1420;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 0}
-  .key summary{cursor:pointer;padding:10px 12px}
-  .ans{padding:10px 12px;border-top:1px dashed rgba(255,255,255,.1);display:grid;gap:8px}
+  .answersheet{padding:10px 14px 24px}
+  .answer-row{display:grid;grid-template-columns:48px 1fr;gap:12px;background:#0f1420;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:10px 0;padding:12px}
+  .answer-row img{max-height:140px;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
   .good{color:var(--good)} .bad{color:var(--bad)} .muted{color:var(--muted)} .small{font-size:.85rem}
 </style>
 </head>
@@ -51,7 +50,7 @@
     <div class="pane">
       <div class="q-body">
         <div class="q-meta">
-          <div id="qcount" class="pill">Question 1 / 50</div>
+          <div id="qcount" class="pill">Question 1</div>
           <div class="pill"><span id="category">General</span></div>
         </div>
         <div id="qtext" class="q-text">Loading…</div>
@@ -59,6 +58,7 @@
       </div>
       <div id="options" class="opts"></div>
       <div class="footer">
+        <button id="back" class="ghost" title="Go to previous question">Back</button>
         <button id="skip" class="ghost" title="Move on, answer left blank">Skip</button>
         <button id="next" class="next">Next</button>
         <button id="submit" class="submit hidden">Submit</button>
@@ -69,9 +69,9 @@
 
   <div id="results" class="card hidden">
     <div class="result">
-      <p class="score" id="scoreline">Score: — / 50</p>
-      <p class="explain">Review your answers below. Green shows the correct answer for each question; red marks your selection when it was incorrect.</p>
-      <div class="key" id="answerKey"></div>
+      <p class="score" id="scoreline">Score: —</p>
+      <p class="explain">All correct answers are shown below. Your choice is marked; incorrect choices are shown in red.</p>
+      <div class="answersheet" id="answerKey"></div>
     </div>
   </div>
 </div>
@@ -81,10 +81,17 @@
    Helpers
    ============================================================ */
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; };
-const uniqByKey = (arr, keyFn) => {
-  const m = new Map(); arr.forEach(x=>{const k=keyFn(x); if(!m.has(k)) m.set(k,x)}); return [...m.values()];
+const sampleUniqueBy = (arr, n, keyFn) => {
+  const src = shuffle(arr.slice());
+  const seen = new Set();
+  const out = [];
+  for (const x of src){
+    const k = keyFn(x);
+    if (!seen.has(k)) { seen.add(k); out.push(x); }
+    if (out.length===n) break;
+  }
+  return out;
 };
-const sampleUnique = (arr, n) => shuffle(arr.slice()).slice(0, n);
 
 /* ============================================================
    Referee SIGNALS (answers are EXACTLY the image file names)
@@ -107,10 +114,11 @@ const signalFiles = [
   "53. 1 free throw.jpeg","54. 2 free throws.jpeg","55. 1 free throw.jpeg","56. 2 free throws.jpeg"
 ];
 
-/* Clean label from filename: remove the leading number and extension ONLY */
-const labelFromFile = f => f.replace(/^\s*\d+\.\s*/,'').replace(/\.(jpeg|jpg|png|gif)$/i,'');
+const wordsOnly = s => s; // keep wording exactly (no SI symbols or decimals).
 
-/* Build image questions — the correct answer is the EXACT label (from filename). */
+const labelFromFile = f => wordsOnly(f.replace(/^\s*\d+\.\s*/,'').replace(/\.(jpeg|jpg|png|gif)$/i,''));
+
+/* Build image questions — unique by image file. */
 function buildSignalQuestions(){
   const labels = signalFiles.map(labelFromFile);
   return signalFiles.map((file, idx) => {
@@ -118,176 +126,260 @@ function buildSignalQuestions(){
     const wrongs = shuffle(labels.filter((_,i)=>i!==idx)).slice(0,3);
     const options = shuffle([correct, ...wrongs]);
     return {
-      type:"image",
-      cat:"Referee signals",
+      id:`SIG::${file}`, type:"image", cat:"Referee signals",
       q:"What does this referee signal indicate?",
-      img: file,
-      options,
+      img: file, options,
       answer: options.indexOf(correct)
     };
   });
 }
 
 /* ============================================================
-   Text question bank (recall-level). Questions use clear,
-   document-consistent wording; no trickery; no images here.
+   Text question bank (recall-level). Wording is clean, literal.
+   (We expanded variety; each fact yields multiple stems.)
    ============================================================ */
 const baseFacts = [
   {cat:"Playing time",
    correct:"The game shall consist of a single period of 10 minutes.",
    alts:["The game shall consist of two periods of 8 minutes.","The game shall consist of four periods of 10 minutes.","The game shall consist of a single period of 12 minutes."],
-   stems:["Select the official statement about playing time:","Which sentence matches the regulation playing time?","According to the rules, how is playing time defined?"]},
+   stems:["Select the official statement about playing time:",
+          "Which sentence matches the regulation playing time?",
+          "According to the rules, how is playing time defined?"]},
+
   {cat:"Winning the game",
    correct:"The first team to score 21 points wins the game if this occurs before the end of regular playing time.",
-   alts:["The first team to score 20 points wins regardless of game time.","Teams must win by two points in regulation.","A team must reach 22 points to end the game early."],
-   stems:["Choose the correct early-ending condition:","Which sentence states when the game ends before time expires?","According to the rules, when can a team win before 10:00?"]},
+   alts:["The first team to score 20 points wins regardless of game time.",
+         "Teams must win by two points in regulation.",
+         "A team must reach 22 points to end the game early."],
+   stems:["Choose the correct early-ending condition:",
+          "Which sentence states when the game ends before time expires?",
+          "According to the rules, when can a team win before 10 minutes?"]},
+
   {cat:"Shot clock",
    correct:"The shot clock shall be 12 seconds.",
    alts:["The shot clock shall be 14 seconds.","The shot clock shall be 24 seconds.","The shot clock shall be 10 seconds."],
-   stems:["Select the official shot-clock duration:","Which sentence states the correct shot-clock value?","According to the rules, what is the shot clock?"]},
+   stems:["Select the official shot-clock duration:",
+          "Which sentence states the correct shot-clock value?",
+          "According to the rules, what is the shot clock?"]},
+
   {cat:"Scoring",
    correct:"A field goal from inside the arc is worth 1 point.",
    alts:["A field goal from inside the arc is worth 2 points.","A field goal from inside the arc is worth 3 points.","A field goal from inside the arc is worth 1 or 2 points depending on contact."],
-   stems:["Pick the correct statement about scoring inside the arc:","According to the rules, what is the value of a made basket inside the arc?","Which sentence about inside-arc scoring is correct?"]},
+   stems:["Pick the correct statement about scoring inside the arc:",
+          "According to the rules, what is the value of a made basket inside the arc?",
+          "Which sentence about inside-arc scoring is correct?"]},
+
   {cat:"Scoring",
    correct:"A field goal from behind the arc is worth 2 points.",
    alts:["A field goal from behind the arc is worth 1 point.","A field goal from behind the arc is worth 3 points.","A field goal from behind the arc is worth 2 points only in overtime."],
-   stems:["Choose the correct sentence about behind-the-arc scoring:","According to the rules, what is the value of a basket from behind the arc?","Select the official statement for long-range field goals:"]},
+   stems:["Choose the correct sentence about behind-the-arc scoring:",
+          "According to the rules, what is the value of a basket from behind the arc?",
+          "Select the official statement for long-range field goals:"]},
+
   {cat:"Free throw",
    correct:"Each successful free throw is worth 1 point.",
    alts:["Each successful free throw is worth 2 points.","Each successful free throw is worth 1 or 2 points depending on the foul.","Each successful free throw has no point value in 3x3."],
-   stems:["Pick the correct statement about free throws:","According to the rules, how many points is a free throw worth?","Select the official sentence about free throw scoring:"]},
+   stems:["Pick the correct statement about free throws:",
+          "According to the rules, how many points is a free throw worth?",
+          "Select the official sentence about free-throw scoring:"]},
+
   {cat:"Team composition",
    correct:"A team is composed of 4 players: 3 on the court and 1 substitute.",
    alts:["A team is composed of 5 players: 3 on the court and 2 substitutes.","A team is composed of 3 players without substitutes.","A team is composed of 4 players: 2 on the court and 2 substitutes."],
-   stems:["Choose the official statement about team composition:","Which sentence correctly describes the number of players in a team?","According to the rules, how many players are on a team?"]},
+   stems:["Choose the official statement about team composition:",
+          "Which sentence correctly describes the number of players in a team?",
+          "According to the rules, how many players are on a team?"]},
+
   {cat:"Check-ball",
    correct:"The check-ball shall be administered at the top of the arc.",
    alts:["The check-ball shall be administered on the sideline.","The check-ball shall be administered at midcourt.","The check-ball shall be administered on the endline corner."],
-   stems:["Select the correct sentence about where the check-ball is administered:","According to the rules, the check-ball location is:","Pick the official statement about check-ball position:"]},
+   stems:["Select the correct sentence about where the check-ball is administered:",
+          "According to the rules, the check-ball location is:",
+          "Pick the official statement about check-ball position:"]},
+
   {cat:"Check-ball",
    correct:"The defensive player hands the ball to the offensive player to start the check-ball.",
    alts:["The offensive player hands the ball to the defensive player to start the check-ball.","The referee always bounces the ball to start the check-ball.","The table official hands the ball to the offensive player to start the check-ball."],
-   stems:["Choose the correct sentence about how a check-ball starts:","Which statement describes the proper check-ball exchange?","According to the rules, who hands the ball at the check-ball?"]},
+   stems:["Choose the correct sentence about how a check-ball starts:",
+          "Which statement describes the proper check-ball exchange?",
+          "According to the rules, who hands the ball at the check-ball?"]},
+
   {cat:"Clearance",
    correct:"After a defensive rebound or steal, the ball must be cleared behind the arc.",
    alts:["After a defensive rebound or steal, play continues without clearing.","After a defensive rebound or steal, the ball must be dribbled to midcourt.","After a defensive rebound or steal, the ball must be passed to the referee."],
-   stems:["Pick the correct sentence about clearing after a rebound or steal:","According to the rules, what must happen after a change of possession?","Choose the official requirement after a defensive rebound:"]},
+   stems:["Pick the correct sentence about clearing after a rebound or steal:",
+          "According to the rules, what must happen after a change of possession?",
+          "Choose the official requirement after a defensive rebound:"]},
+
   {cat:"After a made basket",
    correct:"After a made basket, play restarts without a check-ball as the non-scoring team takes the ball directly under the basket and clears behind the arc.",
    alts:["After a made basket, play restarts with a check-ball at the top.","After a made basket, the scoring team throws in from the endline.","After a made basket, the referee must hand the ball to the new offense."],
-   stems:["Select the correct restart procedure after a made basket:","Which sentence matches the rule for play after a made basket?","According to the rules, what happens immediately after a successful goal?"]},
+   stems:["Select the correct restart procedure after a made basket:",
+          "Which sentence matches the rule for play after a made basket?",
+          "According to the rules, what happens immediately after a successful goal?"]},
+
   {cat:"Held ball",
    correct:"A held-ball situation results in possession for the defensive team.",
    alts:["A held-ball situation results in a jump ball.","A held-ball situation uses the alternating-possession arrow.","A held-ball situation goes to the offensive team."],
-   stems:["Choose the correct sentence about held-ball situations:","According to the rules, who receives the ball on a held-ball?","Pick the official statement for held-ball outcomes:"]},
-  {cat:"Not cleared",
+   stems:["Choose the correct sentence about held-ball situations:",
+          "According to the rules, who receives the ball on a held-ball?",
+          "Pick the official statement for held-ball outcomes:"]},
+
+  {cat:"Ball not cleared",
    correct:"If the ball is not cleared behind the arc after a change of possession, any made basket is cancelled and the ball is awarded to the defense.",
    alts:["If the ball is not cleared, a technical foul is automatic.","If the ball is not cleared, play continues and the basket counts.","If the ball is not cleared, the penalty is a jump ball."],
-   stems:["Select the correct sentence about the ‘ball not cleared’ violation:","Which statement describes the penalty for failing to clear the ball?","According to the rules, what happens if a team scores without clearing?"]},
-  {cat:"Penalty fouls",
-   correct:"Team fouls 7, 8 and 9 are penalized with two free throws.",
-   alts:["Team fouls 7, 8 and 9 are penalized with one free throw.","Team fouls 7, 8 and 9 are penalized with two free throws and possession.","Team fouls 7, 8 and 9 are penalized with a single technical foul."],
-   stems:["Choose the correct sentence about team-foul penalties (7–9):","According to the rules, what is the penalty for the 7th–9th team fouls?","Pick the official sanction for team fouls seven to nine:"]},
-  {cat:"Penalty fouls",
-   correct:"Team fouls 10 and more are penalized with two free throws and possession.",
-   alts:["Team fouls 10 and more are penalized with two free throws only.","Team fouls 10 and more are penalized with one free throw and possession.","Team fouls 10 and more are penalized with a jump ball."],
-   stems:["Select the correct sentence about penalties for team fouls 10+:","According to the rules, what is the sanction after the 10th team foul?","Choose the official statement for excessive team fouls (10+):"]},
+   stems:["Select the correct sentence about the ‘ball not cleared’ violation:",
+          "Which statement describes the penalty for failing to clear the ball?",
+          "According to the rules, what happens if a team scores without clearing?"]},
+
+  {cat:"Penalty fouls (seven to nine)",
+   correct:"Team fouls seven, eight and nine are penalized with two free throws.",
+   alts:["Team fouls seven, eight and nine are penalized with one free throw.","Team fouls seven, eight and nine are penalized with two free throws and possession.","Team fouls seven, eight and nine are penalized with a single technical foul."],
+   stems:["Choose the correct sentence about team-foul penalties (seven to nine):",
+          "According to the rules, what is the penalty for the seventh to ninth team fouls?",
+          "Pick the official sanction for team fouls seven to nine:"]},
+
+  {cat:"Penalty fouls (ten or more)",
+   correct:"Team fouls ten and more are penalized with two free throws and possession.",
+   alts:["Team fouls ten and more are penalized with two free throws only.","Team fouls ten and more are penalized with one free throw and possession.","Team fouls ten and more are penalized with a jump ball."],
+   stems:["Select the correct sentence about penalties for team fouls ten or more:",
+          "According to the rules, what is the sanction after the tenth team foul?",
+          "Choose the official statement for excessive team fouls (ten or more):"]},
+
   {cat:"Team-control foul",
    correct:"A foul by the team in control of the ball results in a check-ball for the defensive team.",
    alts:["A foul by the team in control results in two free throws.","A foul by the team in control results in one free throw.","A foul by the team in control results in an alternating-possession throw-in."],
-   stems:["Pick the correct sentence about a team-control foul:","According to the rules, what happens after an offensive foul?","Choose the official outcome for a foul by the team in control:"]},
+   stems:["Pick the correct sentence about a team-control foul:",
+          "According to the rules, what happens after an offensive foul?",
+          "Choose the official outcome for a foul by the team in control:"]},
+
   {cat:"Coin toss",
    correct:"A coin toss determines which team has the initial possession.",
    alts:["The home team automatically has initial possession.","Initial possession is decided by a jump ball.","Initial possession is chosen by the referee."],
-   stems:["Select the correct sentence about initial possession:","According to the rules, how is the first possession decided?","Pick the official procedure to start the game:"]},
+   stems:["Select the correct sentence about initial possession:",
+          "According to the rules, how is the first possession decided?",
+          "Pick the official procedure to start the game:"]},
+
   {cat:"Overtime",
    correct:"In overtime, the first team to score 2 points wins.",
    alts:["In overtime, teams play two minutes with no target score.","In overtime, the first team to score 3 points wins.","In overtime, the first team to lead by two points wins."],
-   stems:["Choose the correct sentence about the overtime win condition:","According to the rules, what ends the overtime?","Pick the official statement about overtime scoring:"]},
+   stems:["Choose the correct sentence about the overtime win condition:",
+          "According to the rules, what ends the overtime?",
+          "Pick the official statement about overtime scoring:"]},
+
   {cat:"Time-out",
    correct:"Each team is granted 1 time-out of 30 seconds.",
    alts:["Each team is granted 2 time-outs of 60 seconds each.","Each team is granted 1 time-out of 60 seconds.","Each team is granted unlimited 30-second time-outs."],
-   stems:["Select the correct sentence about team time-outs:","According to the rules, how many time-outs and how long?","Pick the official statement regarding time-outs:"]},
+   stems:["Select the correct sentence about team time-outs:",
+          "According to the rules, how many time-outs and how long?",
+          "Pick the official statement regarding time-outs:"]},
+
   {cat:"TV time-out",
-   correct:"TV time-outs are taken at the first dead ball after 6:59 and 3:59.",
-   alts:["TV time-outs are taken exactly at 7:00 and 4:00.","TV time-outs are taken only once at 5:00.","There are no TV time-outs in 3x3."],
-   stems:["Choose the correct sentence about TV time-outs:","According to the rules, when are TV time-outs taken?","Pick the official statement on TV time-out timing:"]},
+   correct:"TV time-outs are taken at the first dead ball after 6 minutes 59 seconds and 3 minutes 59 seconds.",
+   alts:["TV time-outs are taken exactly at 7 minutes and 4 minutes.",
+         "TV time-outs are taken only once at 5 minutes.",
+         "There are no TV time-outs in 3x3."],
+   stems:["Choose the correct sentence about TV time-outs:",
+          "According to the rules, when are TV time-outs taken?",
+          "Pick the official statement on TV time-out timing:"]},
+
   {cat:"Substitution",
    correct:"Substitutions may occur on any dead ball before a check-ball or a free throw, and substitutes enter from behind the endline without referee action.",
    alts:["Substitutions may occur at any time while the ball is live.","Substitutions require the referee to beckon players from the table.","Substitutions are allowed only between periods."],
-   stems:["Select the correct sentence about substitutions:","Which statement describes when and how substitutes may enter?","According to the rules, what are the conditions for substitutions?"]},
-  {cat:"0.2 / 0.3 rule",
-   correct:"With 0.3 seconds or more a player may control and shoot; with 0.2 or 0.1 only a direct tap is valid.",
+   stems:["Select the correct sentence about substitutions:",
+          "Which statement describes when and how substitutes may enter?",
+          "According to the rules, what are the conditions for substitutions?"]},
+
+  {cat:"End-of-period timing",
+   correct:"With 0.3 seconds or more a player may control the ball and shoot; with 0.2 seconds or 0.1 seconds only a direct tap is valid.",
    alts:["With 0.2 seconds a player may catch and shoot.","With 0.1 seconds a player may dribble and shoot.","With 0.3 seconds or more only a lob is allowed."],
-   stems:["Choose the correct sentence about end-of-period timing:","According to the rules, what is legal at 0.2–0.1?","Pick the official statement regarding 0.3 versus 0.2:"]},
+   stems:["Choose the correct sentence about end-of-period timing:",
+          "According to the rules, what is legal at 0.2 seconds or 0.1 seconds?",
+          "Pick the official statement regarding 0.3 seconds versus 0.2 seconds:"]},
+
   {cat:"Forfeit",
    correct:"A game is lost by forfeit if a team has fewer than 3 players ready to play at the scheduled time.",
-   alts:["A game is lost by forfeit if a team trails by 10.","A game is lost by forfeit if a team commits 10 fouls.","A game is lost by forfeit if a team uses all time-outs."],
-   stems:["Select the correct sentence about losing by forfeit:","According to the rules, when is a forfeit declared?","Pick the official statement that defines a forfeit:"]},
+   alts:["A game is lost by forfeit if a team trails by 10 points.","A game is lost by forfeit if a team commits 10 fouls.","A game is lost by forfeit if a team uses all time-outs."],
+   stems:["Select the correct sentence about losing by forfeit:",
+          "According to the rules, when is a forfeit declared?",
+          "Pick the official statement that defines a forfeit:"]},
+
   {cat:"Default",
    correct:"A game is lost by default if a team cannot continue or leaves the court and the opponents may keep the score or win by forfeit; the defaulting team’s score is set to 0.",
    alts:["A game is lost by default when both teams tie at 20–20.","A game is lost by default if a player fouls out.","A game is lost by default when the shot clock breaks."],
-   stems:["Choose the correct sentence about losing by default:","According to the rules, what does ‘lost by default’ mean?","Pick the official definition of a default:"]},
+   stems:["Choose the correct sentence about losing by default:",
+          "According to the rules, what does ‘lost by default’ mean?",
+          "Pick the official definition of a default:"]},
+
   {cat:"Goaltending",
    correct:"Defensive goaltending on a try from behind the arc awards 2 points.",
    alts:["Defensive goaltending on a 2-point try awards 1 point.","Defensive goaltending results in a jump ball.","Defensive goaltending cancels the shot and resets to 12 seconds."],
-   stems:["Select the correct sentence about defensive goaltending:","According to the rules, what happens on goaltending a shot from behind the arc?","Pick the official statement about goaltending awards:"]},
+   stems:["Select the correct sentence about defensive goaltending:",
+          "According to the rules, what happens on goaltending a shot from behind the arc?",
+          "Pick the official statement about goaltending awards:"]},
+
   {cat:"Interference",
    correct:"Interference includes touching the basket while the ball is in contact with the ring or within the basket after a shot.",
    alts:["Interference applies only to dunks.","Interference is called only when the backboard is slapped.","Interference does not include touching the basket."],
-   stems:["Choose the correct sentence about basket interference:","According to the rules, which action constitutes interference?","Pick the official statement that defines interference:"]},
+   stems:["Choose the correct sentence about basket interference:",
+          "According to the rules, which action constitutes interference?",
+          "Pick the official statement that defines interference:"]},
+
   {cat:"Shot-clock after stoppage",
    correct:"If a fight or similar incident stops play while a team had control, the shot clock is not reset upon resumption.",
-   alts:["If play is stopped for a fight, the shot clock resets to 12.","If play is stopped for a fight, the shot clock resets to 14.","If play is stopped for a fight, the shot clock resets only if the coach requests."],
-   stems:["Select the correct sentence about the shot clock after a fight stoppage:","According to the rules, does the shot clock reset after an interruption while a team had control?","Pick the official statement about resuming after a fight:"]},
+   alts:["If play is stopped for a fight, the shot clock resets to 12 seconds.","If play is stopped for a fight, the shot clock resets to 14 seconds.","If play is stopped for a fight, the shot clock resets only if the coach requests."],
+   stems:["Select the correct sentence about the shot clock after a fight stoppage:",
+          "According to the rules, does the shot clock reset after an interruption while a team had control?",
+          "Pick the official statement about resuming after a fight:"]},
+
   {cat:"Check-ball spacing",
    correct:"During a check-ball the opponents should be about 1 metre apart.",
    alts:["During a check-ball the opponents must be 2 metres apart.","During a check-ball the opponents should be shoulder to shoulder.","During a check-ball the referee stands between the opponents."],
-   stems:["Choose the correct sentence about spacing at a check-ball:","According to the rules, what distance should separate the opponents at a check-ball?","Pick the official guideline for check-ball spacing:"]},
-  {cat:"Who starts the check-ball",
+   stems:["Choose the correct sentence about spacing at a check-ball:",
+          "According to the rules, what distance should separate the opponents at a check-ball?",
+          "Pick the official guideline for check-ball spacing:"]},
+
+  {cat:"Who starts",
    correct:"The referee administers the first check-ball to start the game and the check-ball to start overtime.",
    alts:["Players start the first check-ball without the referee.","The table starts overtime with a horn and no check-ball.","The coach administers the first check-ball."],
-   stems:["Select the correct sentence about who starts the check-ball:","According to the rules, who administers the first check-ball?","Pick the official statement about beginning regulation and overtime:"]}
+   stems:["Select the correct sentence about who starts the check-ball:",
+          "According to the rules, who administers the first check-ball?",
+          "Pick the official statement about beginning regulation and overtime:"]}
 ];
 
-/* Expand base facts into multiple MCQs (no trick wording; no duplicate stems) */
+/* Expand base facts into MCQs; each item gets a unique id (no repeats even if options shuffle). */
 function buildTextQuestions(){
   const out = [];
-  baseFacts.forEach(f=>{
-    f.stems.forEach(stem=>{
+  baseFacts.forEach((f,fi)=>{
+    f.stems.forEach((stem,si)=>{
       const options = shuffle([f.correct, ...f.alts.slice(0,3)]);
       out.push({
-        type:"text",
-        cat:f.cat,
-        q: stem,
-        options,
+        id:`TXT::${fi}::${si}`, // unique identity by source sentence + stem index
+        type:"text", cat:f.cat, q: stem, options,
         answer: options.indexOf(f.correct)
       });
     });
   });
-  // Deduplicate by identical question text (to avoid any repeats)
-  return uniqByKey(out, x => x.q);
+  return out;
 }
 
-/* Build the full pool */
-const TEXT_QS   = buildTextQuestions();       // text-only items
-const SIGNAL_QS = buildSignalQuestions();     // image items (signals only)
+/* Build the full pool (signals only use images for questions). */
+const TEXT_QS   = buildTextQuestions();
+const SIGNAL_QS = buildSignalQuestions();
 let POOL = [...TEXT_QS, ...SIGNAL_QS];
 
 /* ============================================================
-   Runtime: choose 50 UNIQUE questions each run (no repeats)
+   Runtime: choose N UNIQUE questions each run (no repeats)
    ============================================================ */
-const RUN = {
-  order: sampleUnique(POOL, 50),
-  answers: Array(50).fill(null),
-  i: 0,
-};
+const TOTAL = Math.min(50, POOL.length);
+const ORDER = sampleUniqueBy(POOL, TOTAL, q => q.id); // dedupe by stable id
+const RUN = { order: ORDER, answers: Array(TOTAL).fill(null), i: 0 };
 
 const $qtext = document.getElementById("qtext");
 const $qimg  = document.getElementById("qimg");
 const $opts  = document.getElementById("options");
 const $next  = document.getElementById("next");
+const $back  = document.getElementById("back");
 const $skip  = document.getElementById("skip");
 const $submit= document.getElementById("submit");
 const $qcount= document.getElementById("qcount");
@@ -296,12 +388,11 @@ const $prog  = document.getElementById("progress");
 
 function render(i){
   const q = RUN.order[i];
-  $qcount.textContent = `Question ${i+1} / 50`;
+  $qcount.textContent = `Question ${i+1} / ${TOTAL}`;
   $cat.textContent = q.cat || "General";
   $qtext.textContent = q.q;
 
   if(q.type==="image"){
-    // IMAGES ARE USED ONLY FOR REFEREE SIGNALS
     $qimg.src = q.img;
     $qimg.classList.remove("hidden");
     $qimg.alt = "Referee signal";
@@ -319,15 +410,19 @@ function render(i){
     $opts.appendChild(div);
   });
   updateButtons();
-  $prog.style.width = `${(i)/50*100}%`;
+  $prog.style.width = `${(i)/TOTAL*100}%`;
 }
 function updateButtons(){
-  const last = RUN.i===49;
+  const first = RUN.i===0;
+  const last  = RUN.i===TOTAL-1;
+  $back.classList.toggle("hidden", first===true ? false : false); // always visible; disabled by attr instead
+  $back.disabled = first;
   $next.classList.toggle("hidden", last);
   $submit.classList.toggle("hidden", !last);
 }
-$next.addEventListener("click", ()=>{ RUN.i=Math.min(49,RUN.i+1); render(RUN.i); });
-$skip.addEventListener("click", ()=>{ RUN.i=Math.min(49,RUN.i+1); render(RUN.i); });
+$next.addEventListener("click", ()=>{ RUN.i=Math.min(TOTAL-1,RUN.i+1); render(RUN.i); });
+$back.addEventListener("click", ()=>{ RUN.i=Math.max(0,RUN.i-1); render(RUN.i); });
+$skip.addEventListener("click", ()=>{ RUN.i=Math.min(TOTAL-1,RUN.i+1); render(RUN.i); });
 $submit.addEventListener("click", finish);
 
 function finish(){
@@ -342,18 +437,27 @@ function finish(){
     const okIdx  = q.answer;
     if(chosen===okIdx) correct++;
 
-    const det = document.createElement("details");
-    det.innerHTML = `
-      <summary><span class="pill">${q.cat||"General"}</span> Q${idx+1}: ${q.q}</summary>
-      <div class="ans">
-        ${q.type==="image" ? `<div style="display:flex;justify-content:center"><img class="q-img" style="max-height:220px" alt="" src="${q.img}"></div>`:""}
-        <div><b class="good">Correct:</b> ${q.options[okIdx]}</div>
-        <div><b class="${chosen===okIdx?'good':'bad'}">Your answer:</b> ${chosen!=null ? q.options[chosen] : "(no answer)"}</div>
-      </div>`;
-    keyEl.appendChild(det);
+    const row = document.createElement("div");
+    row.className = "answer-row";
+    const left = document.createElement("div");
+    if(q.type==="image"){
+      const img = document.createElement("img");
+      img.src = q.img; img.alt="Referee signal";
+      left.appendChild(img);
+    }else{
+      left.innerHTML = `<div class="pill">${q.cat||"General"}</div>`;
+    }
+    const right = document.createElement("div");
+    right.innerHTML = `
+      <div><strong>Q${idx+1}.</strong> ${q.q}</div>
+      <div><span class="good"><b>Correct answer:</b></span> ${q.options[okIdx]}</div>
+      <div><span class="${chosen===okIdx?'good':'bad'}"><b>Your answer:</b></span> ${chosen!=null ? q.options[chosen] : "(no answer)"}</div>
+    `;
+    row.appendChild(left); row.appendChild(right);
+    keyEl.appendChild(row);
   });
 
-  document.getElementById("scoreline").textContent = `Score: ${correct} / 50`;
+  document.getElementById("scoreline").textContent = `Score: ${correct} / ${TOTAL}`;
   container.classList.add("hidden");
   results.classList.remove("hidden");
   document.getElementById("progress").style.width="100%";
