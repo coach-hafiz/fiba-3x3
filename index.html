@@ -135,7 +135,6 @@ function buildSignalQuestions(){
 
 /* ============================================================
    Text question bank (recall-level). Wording is clean, literal.
-   We auto-expand stems so the text-only pool totals ~200 items.
    ============================================================ */
 const baseFacts = [
   {cat:"Playing time",
@@ -346,51 +345,66 @@ const baseFacts = [
           "Pick the official statement about beginning regulation and overtime:"]}
 ];
 
-/* ---------- auto-expand stems so text-based items ~200 ---------- */
-const extraStemTemplates = [
-  "Identify the accurate wording of this rule:",
-  "Which is true according to the rules?",
-  "Choose the regulation sentence:",
-  "Which option correctly states the rule?",
-  "Select the rule that is written correctly:",
-  "What is the correct rule text?",
-  "Pick the statement that matches the rule:",
-  "Which description reflects the official rule?"
+/* Generic stem templates to expand variety without changing content */
+const genericStemTemplates = [
+  (cat)=>`Which sentence is correct about ${cat.toLowerCase()}?`,
+  (cat)=>`Identify the regulation that applies to ${cat.toLowerCase()}:`,
+  (cat)=>`Choose the accurate rule concerning ${cat.toLowerCase()}:`,
+  (cat)=>`According to the rules, what is true regarding ${cat.toLowerCase()}?`,
+  (cat)=>`Select the statement that matches the rule on ${cat.toLowerCase()}:`
 ];
 
-function buildTextQuestions(){
-  const out = [];
+/* Build an expanded text bank; then trim/sample so the TOTAL QUESTIONS = 200 (46 signals + 154 text). */
+function buildTextQuestions(targetCount){
+  const expanded = [];
   baseFacts.forEach((f,fi)=>{
-    const stems = [...f.stems];
-    // Add generic stems to expand bank size (no duplicate IDs).
-    extraStemTemplates.forEach(t => stems.push(t));
-    stems.forEach((stem,si)=>{
+    // original authored stems
+    f.stems.forEach((stem,si)=>{
       const options = shuffle([f.correct, ...f.alts.slice(0,3)]);
-      out.push({
-        id:`TXT::${fi}::${si}`, // unique identity by source sentence + stem index
-        type:"text", cat:f.cat, q: stem, options,
+      expanded.push({
+        id:`TXT::${fi}::A${si}`, type:"text", cat:f.cat, q: stem, options,
+        answer: options.indexOf(f.correct)
+      });
+    });
+    // add generic stems for variety
+    genericStemTemplates.forEach((tpl,gi)=>{
+      const stem = tpl(f.cat);
+      const options = shuffle([f.correct, ...f.alts.slice(0,3)]);
+      expanded.push({
+        id:`TXT::${fi}::G${gi}`, type:"text", cat:f.cat, q: stem, options,
         answer: options.indexOf(f.correct)
       });
     });
   });
-  return out;
+
+  // If we have more than needed, sample uniquely down to targetCount
+  if (expanded.length > targetCount){
+    return sampleUniqueBy(expanded, targetCount, q=>q.id);
+  }
+  return expanded;
 }
 
-/* Build the full pool (signals only use images for questions). */
-const TEXT_QS   = buildTextQuestions();   // ≈ 26 facts × (3+8) = 286 text items (cap later)
-const SIGNAL_QS = buildSignalQuestions(); // 46 image items
-
-// Limit text bank to 200 items (as requested)
-const TEXT_POOL = TEXT_QS.slice(0,200);
-let POOL = [...TEXT_POOL, ...SIGNAL_QS];
+/* ------- Build the full pools ------- */
+const SIGNAL_QS = buildSignalQuestions();              // 46 signal image items
+const TEXT_TARGET = 200 - SIGNAL_QS.length;            // make total bank = 200
+const TEXT_QS   = buildTextQuestions(TEXT_TARGET);     // 154 text items (sampled)
 
 /* ============================================================
-   Runtime: choose N UNIQUE questions each run (no repeats)
+   Runtime: assemble a 50-question quiz with HALF signals.
+   No repeats: unique IDs enforce it even when options shuffle.
    ============================================================ */
-const TOTAL = Math.min(50, POOL.length);
-const ORDER = sampleUniqueBy(POOL, TOTAL, q => q.id); // dedupe by stable id
+const QUIZ_SIZE = 50;
+const SIGNAL_DRAW = Math.min(25, SIGNAL_QS.length);
+const TEXT_DRAW   = Math.min(QUIZ_SIZE - SIGNAL_DRAW, TEXT_QS.length);
+
+const pickedSignals = sampleUniqueBy(SIGNAL_QS, SIGNAL_DRAW, q=>q.id);
+const pickedText    = sampleUniqueBy(TEXT_QS,   TEXT_DRAW,   q=>q.id);
+const ORDER = shuffle([...pickedSignals, ...pickedText]);
+
+const TOTAL = ORDER.length;
 const RUN = { order: ORDER, answers: Array(TOTAL).fill(null), i: 0 };
 
+/* ------- DOM bindings ------- */
 const $qtext = document.getElementById("qtext");
 const $qimg  = document.getElementById("qimg");
 const $opts  = document.getElementById("options");
@@ -402,6 +416,7 @@ const $qcount= document.getElementById("qcount");
 const $cat   = document.getElementById("category");
 const $prog  = document.getElementById("progress");
 
+/* ------- Rendering ------- */
 function render(i){
   const q = RUN.order[i];
   $qcount.textContent = `Question ${i+1} / ${TOTAL}`;
@@ -431,7 +446,7 @@ function render(i){
 function updateButtons(){
   const first = RUN.i===0;
   const last  = RUN.i===TOTAL-1;
-  $back.disabled = first; // always visible, disabled on first
+  $back.disabled = first;
   $next.classList.toggle("hidden", last);
   $submit.classList.toggle("hidden", !last);
 }
@@ -440,6 +455,7 @@ $back.addEventListener("click", ()=>{ RUN.i=Math.max(0,RUN.i-1); render(RUN.i); 
 $skip.addEventListener("click", ()=>{ RUN.i=Math.min(TOTAL-1,RUN.i+1); render(RUN.i); });
 $submit.addEventListener("click", finish);
 
+/* ------- Results ------- */
 function finish(){
   const container = document.getElementById("quiz");
   const results = document.getElementById("results");
