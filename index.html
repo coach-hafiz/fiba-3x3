@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>FIBA 3x3 Rules — Full Quiz (All Items, Instant Feedback)</title>
+<title>FIBA 3x3 Rules — MCQ Trainer (clean distractors, image signals only)</title>
 <style>
   :root{
     --bg:#0e1117; --card:#141925; --ink:#e8edf2; --muted:#9aa3ad; --accent:#3874ff; --good:#10b981; --bad:#ef4444;
@@ -68,7 +68,6 @@
   <div id="results" class="card hidden">
     <div class="result">
       <p class="score" id="scoreline">Score: —</p>
-      <p class="muted">Summary of all questions and correct answers:</p>
       <div class="answersheet" id="answerKey"></div>
     </div>
   </div>
@@ -79,11 +78,7 @@
    Helpers
    ============================================================ */
 const shuffle = a => { for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a; };
-const uniqBy = (arr, keyFn) => {
-  const out=[]; const seen=new Set();
-  for(const x of arr){ const k=keyFn(x); if(!seen.has(k)){seen.add(k); out.push(x);} }
-  return out;
-};
+const uniqBy = (arr, keyFn) => { const out=[], seen=new Set(); for(const x of arr){const k=keyFn(x); if(!seen.has(k)){seen.add(k); out.push(x);}} return out; };
 
 /* ============================================================
    Referee SIGNALS — image items (answers are exact file names)
@@ -110,253 +105,610 @@ function buildSignalQuestions(){
   return signalFiles.map((file, idx) => {
     const correct = labels[idx];
     const wrongs = shuffle(labels.filter((_,i)=>i!==idx)).slice(0,3);
-    const options = shuffle([correct, ...wrongs]);
+    const options = shuffle([correct, ...wrongs]); // always 4
     return {
       id:`SIG::${file}`, type:"image", cat:"Referee signals",
       q:"What does this referee signal indicate?",
-      img: file, options,
-      answer: options.indexOf(correct),
-      rationale: `Correct signal: “${correct}”.`
+      img:file, options, answer: options.indexOf(correct),
+      rationale:`Signal meaning: ${correct}.`
     };
   });
 }
 
 /* ============================================================
-   TEXT FACTS — exact sentences from your rules (verbatim)
-   NOTE: You can add more lines freely; each becomes an MCQ.
+   TEXT QUESTIONS (no diagram references; 4 options; clean distractors)
    ============================================================ */
-const FACT_SENTENCES = [
-  // PLAYING COURT & EQUIPMENT — Playing court & lines
-  "A regular 3x3 playing court shall have a flat, hard surface free from obstructions with dimensions of 15 m in width and 11 m in length measured from the inner edge of the boundary line.",
-  "The court shall have a regular basketball playing court sized zone, including a free throw line (5.80 m), a 2-point line (6.75 m) and a \"no-charge semi-circle\" area underneath the basket.",
-  "The playing area shall be marked in 3 colours: restricted area and 2-point area in one colour, the remaining playing area in another colour and the out-of-bound area in black.",
-  "The colours in Diagram 1 shall be mandatory for the following competitions: FIBA 3x3 World Cups, FIBA 3x3 Champions Cup, Olympic Games, FIBA 3x3 World Tour, FIBA 3x3 Zone Cups.",
-  "At grassroots level, 3x3 can be played anywhere; court markings shall be adapted to available space.",
-  "FIBA 3x3 Official Competitions must fully comply with the above specifications including backstop with the shot clock integrated in the backstop padding.",
-  "All lines shall be of the same colour and drawn in white or other contrasting colour, 5 cm in width and clearly visible.",
-  "The playing court shall be limited by the boundary line, consisting of the baseline, endline and the sidelines.",
-  "These lines are not part of the playing court.",
-  "There shall be an additional boundary area of 1 m at the endline, 1.5 m at the sidelines and 2 m at the baseline around the playing court.",
-  "The scorer's table and its chairs must be placed behind the endline on the left-hand side when facing the basket.",
-  "Exceptionally in Pro Circuit events the scorer's table may cut the corner at the endline.",
-  "To the side of the scorer's table there shall be 2 seats available for the substitutes.",
-  // Free-throw line & restricted area
-  "The free-throw line shall be drawn parallel to the baseline and endline.",
-  "Its furthest edge shall be 5.80 m from the inner edge of the baseline and shall be 3.60 m long.",
-  "Its mid-point shall lie on the imaginary line joining the mid-point of the endline and baseline.",
-  "The restricted area shall be the rectangular area limited by the baseline, the extended free-throw line and the lines 2.45 m from the mid-point of the baseline.",
-  "These lines, excluding the baseline, are part of the restricted area.",
-  "Free-throw rebound places shall be marked as in Diagram 2.",
-  // 2-point field goal area
-  "The teams' 2-point field goal area shall be the entire floor area of the playing court, except for the area inside the arc.",
-  "The arc has a radius of 6.75 m measured from the point on the floor beneath the exact centre of the basket to the outer edge of the arc.",
-  "The distance of that point on the floor from the inner edge of the mid-point of the baseline is 1.575 m.",
-  "The 2-point line is not part of the 2-point field goal area.",
-  // No-charge semi-circle
-  "The no-charge semi-circle has a radius of 1.25 m measured from the point on the floor beneath the exact centre of the basket to the inner edge of the semi-circle.",
-  "The two short parallel lines of the no-charge semi-circle are 0.375 m in length and end 1.20 m from the inner edge of the baseline.",
-  "The no-charge semi-circle line is part of the no-charge semi-circle area.",
-  // Equipment
-  "A backstop unit consists of backboard, basket comprising pressure release ring and net, and backboard support structure including padding.",
-  "A game clock, scoreboard and shot clock are required.",
-  "Two separate, distinctly different and loud signals are required, one for the shot clock operator and one for the scorer or timer.",
-  "Adequate lighting and a playing floor are required.",
-  // TEAMS — definition & rule
-  "A team member is eligible to play when he has been authorised to play according to the regulations of the organising body of the competition.",
-  "A team member is entitled to play when his name has been entered on the scoresheet before the beginning of the game and as long as he has not been disqualified.",
-  "During playing time a team member on the court is a player and a team member off the court is a substitute.",
-  "During an interval of play all team members entitled to play are considered as players.",
-  "Each team shall consist of no more than 4 team members entitled to play, 3 players on the court and 1 substitute.",
-  "Coaches on the playing court, on the seats for substitutes or remote coaching from outside the court are not allowed.",
-  "A substitute becomes a player after his teammate steps off the court.",
-  // Uniforms
-  "The uniform of all team members shall consist of shirts and shorts of the same dominant colour front and back and socks of the same dominant colour for all team members.",
-  "Each team member shall wear a shirt numbered on the front and back with plain numbers of a colour contrasting with the shirt.",
-  "Numbers on the back shall be at least 15 cm high and numbers on the front at least 5 cm high.",
-  "The numbers shall be at least 2 cm wide.",
-  "Teams may only use numbers 0 and 00 and from 1 to 99.",
-  "Players on the same team shall not wear the same number.",
-  "Any advertising or logo shall be at least 5 cm away from the numbers.",
-  "The first team named in the schedule shall wear light-coloured shirts and the second team shall wear dark-coloured shirts.",
-  // Other equipment (selected)
-  "All equipment used by players must be appropriate for the game and may not give an unfair advantage.",
-  "Players shall not wear equipment or objects that may cause injury to other players.",
-  "Hair accessories and jewellery are not permitted.",
-  "Arm and leg compression sleeves are permitted.",
-  "Headgear is permitted but shall not cover any part of the face and shall have no parts extruding from its surface.",
-  "All players on a team must have sleeves, headgear, wristbands, headbands and tapings of black colour except for national team competitions with uniform colour rules.",
-  // Players: injury (selected)
-  "If the ball is live when an injury occurs a referee shall not blow his whistle until the team in control has shot, lost control, withheld the ball or the ball has become dead unless necessary to protect a player.",
-  "If the injured player cannot continue to play immediately or receives treatment he must be substituted.",
-  "During the game any player who is bleeding or has an open wound must be substituted.",
-  // PLAYING REGULATIONS — time & overtime
-  "The regular playing time shall be 1 period of 10 minutes.",
-  "The game clock shall be stopped during dead ball situations and free throws.",
-  "There shall be an interval of play of 1 minute between the regular playing time and overtime.",
-  "If the score is tied at the end of regular playing time an overtime shall be played.",
-  "The first team to score 2 points in the overtime wins the game.",
-  // Beginning & end
-  "A coin flip shall determine which team gets the first possession.",
-  "The team that wins the coin flip can choose the first possession at the beginning of the game or at the beginning of a potential overtime.",
-  "The regular playing time begins when the ball is in the hands of the offensive player after the check-ball has been completed.",
-  "The regular playing time ends when the game clock signal sounds for the end of the regular playing time or a team reaches 21 or 22 points during regular playing time.",
-  // Status of the ball (selected)
-  "The ball can be either live or dead.",
-  "Following each successful field goal or last free throw the ball becomes live.",
-  "The ball becomes dead when a referee blows the whistle while the ball is live.",
-  "The ball does not become dead and the goal counts if the ball is in flight on a shot when the whistle or a clock signal sounds.",
-  // Location
-  "The location of a player is determined by where he is touching the floor.",
-  "While airborne a player retains the same status he had when he last touched the floor.",
-  // Jump ball situation
-  "A held ball occurs when opponents have one or both hands firmly on the ball so that neither can gain control without undue roughness.",
-  "A live ball lodging between the ring and the backboard creates a jump ball situation except between free throws or after the last free throw followed by a check-ball.",
-  "A jump ball situation shall be resumed with a check-ball for the last defensive team and the shot clock shall be reset to 12 seconds.",
-  // How the ball is played
-  "During the game the ball is played with the hand or hands only and may be passed, thrown, tapped, rolled or dribbled in any direction.",
-  "A player shall not run with the ball, deliberately kick or block it with any part of the leg or strike it with the fist.",
-  // Control of the ball
-  "Team control starts when a player of that team is in control of a live ball by holding or dribbling it or has a live ball at his disposal.",
-  "Team control ends when an opponent gains control, when the ball becomes dead or when the ball has left the player's hands on a shot or free throw.",
-  // Player in the act of shooting (selected)
-  "A shot for a goal is when the ball is held in a player's hands and then thrown into the air towards the basket.",
-  "The act of shooting starts when the player starts the continuous movement normally preceding the release of the ball.",
-  "The act of shooting ends when the ball has left the player's hands or in case of an airborne shooter when both feet have returned to the floor.",
-  // Goal: when made & value (selected)
-  "A goal is made when a live ball enters the basket from above and remains within or passes through the basket entirely.",
-  "A goal released from inside the arc counts 1 point.",
-  "A goal released from behind the arc counts 2 points.",
-  "If a defensive player accidentally scores a field goal the goal shall count and shall be assigned to the last offensive player in ball control.",
-  // Check-ball (selected)
-  "Possession of the ball after any dead ball shall start with a check-ball behind the arc at the top of the playing court.",
-  "The defensive player shall hand over or bounce the ball to the opponent to start the check-ball.",
-  "At the beginning of the regular playing time or overtime the check-ball shall be administered by the referee.",
-  // Time-out (selected)
-  "Each team shall be granted 1 time-out.",
-  "In FIBA 3x3 Official Competitions 2 TV time-outs are granted at the first dead ball after 6:59 and 3:59.",
-  "All time-outs shall last 30 seconds.",
-  // Substitution
-  "Both teams may request a substitution when the ball becomes dead prior to a check-ball or free throw.",
-  "Substitutions can only take place behind the endline and require no action from the referees or table officials.",
-  // Game lost by forfeit/default (selected)
-  "A team shall lose the game by forfeit if at the scheduled starting time the team is not present on the playing court with 3 players ready to play.",
-  "In case of forfeit the game score is marked with w-0 or 0-w.",
-  "A team shall lose a game by default if it leaves the court before the end of the game or all the players are injured and or disqualified.",
-  // Violations — definitions (selected)
-  "A violation is an infraction of the rules and the ball shall be awarded to the opponents for a check-ball.",
-  "A player is out-of-bounds when any part of his body is in contact with the floor or any object outside the boundary line.",
-  "A dribble is the movement of a live ball caused by a player who throws, taps, rolls or bounces the ball on the floor.",
-  "A player shall not dribble for a second time after his first dribble has ended unless the ball has been touched or control lost as defined.",
-  "Travelling is the illegal movement of one foot or both feet beyond the limits while holding a live ball on the playing court.",
-  "A player shall not remain in the restricted area for more than 3 consecutive seconds while his team is in control of a live ball and the game clock is running.",
-  "A closely guarded player must pass, shoot or dribble within 5 seconds.",
-  "An offensive player shall not dribble inside the arc with his back or side to the basket for more than 3 consecutive seconds.",
-  "A team must attempt a shot for a field goal within 12 seconds according to the shot clock rules.",
-  // Clearing the ball (selected)
-  "After a defensive rebound the ball must be returned behind the arc by passing or dribbling.",
-  "If the ball leaves the player's hands before it has been cleared the basket shall be cancelled and the ball awarded to the opponents.",
-  // Goaltending & Interference (selected)
-  "Goaltending occurs when a player touches the ball while it is completely above the level of the ring and on its downward flight or after it has touched the backboard.",
-  "Interference occurs when a player touches the basket or backboard while the ball is in contact with the ring.",
-  "If a defensive player commits goaltending the offensive team is awarded 1 point for a free throw, 1 point for a shot from inside the arc or 2 points for a shot from behind the arc.",
-  // FOULS — definitions and principles (selected)
-  "A foul is an infraction concerning illegal personal contact and or unsportsmanlike behaviour.",
-  "The cylinder principle is the space within an imaginary cylinder occupied by a player on the floor.",
-  "Each player has the right to a vertical position within his cylinder.",
-  "A defensive player has established an initial legal guarding position when he is facing his opponent with both feet on the floor.",
-  "When guarding the player with the ball the elements of time and distance do not apply.",
-  "Screening is an attempt to delay or prevent an opponent without the ball from reaching a desired position on the playing court.",
-  "Charging is illegal personal contact by pushing or moving into an opponent's torso.",
-  "Blocking is illegal personal contact which impedes the progress of an opponent with or without the ball.",
-  "On any penetration into the no-charge semi-circle, contact by an airborne offensive player with a defensive player inside the semi-circle shall not be called as an offensive foul.",
-  "Illegal guarding from the rear is personal contact from behind by a defensive player.",
-  "Holding is illegal personal contact that interferes with an opponent's freedom of movement.",
-  "Pushing is illegal personal contact where a player forcibly moves or attempts to move an opponent.",
-  "Fake being fouled is any action to simulate being fouled or to exaggerate contact to gain an advantage.",
-  // Contact foul & penalties (selected)
-  "A contact foul is a player's illegal contact with an opponent whether the ball is live or dead.",
-  "If a foul is committed on a player not in the act of shooting the game shall be resumed with a check-ball, or free throws as of the seventh team foul.",
-  "If the shot released from behind the arc is unsuccessful the fouled player is awarded 2 free throws.",
-  // Double foul, Technical, Unsportsmanlike, DQ (selected)
-  "A double foul is when two opponents commit contact fouls on each other at approximately the same time.",
-  "A technical foul is a non-contact foul of a behavioural nature including actions such as disrespectful communication or delaying the game.",
-  "A technical foul counts as a team foul and the opponents are awarded 1 free throw.",
-  "An unsportsmanlike foul is a contact foul with an excessive, hard or dangerous contact.",
-  "A player shall be disqualified when he is charged with 2 unsportsmanlike fouls.",
-  "A disqualifying foul is any flagrant unsportsmanlike action by players or substitutes.",
-  // Team fouls penalty (selected)
-  "A team is in the team foul penalty situation after it has committed 6 team fouls.",
-  "Team fouls 7, 8 and 9 are penalized with 2 free throws.",
-  "Team foul 10 and any subsequent team fouls are penalized with 2 free throws and ball possession.",
-  // Free throws (selected)
-  "A free throw is an opportunity to score 1 point uncontested from behind the free-throw line.",
-  "The free-throw shooter must release the ball within 5 seconds after it is placed at his disposal by the referee.",
-  "Players not in the free-throw rebound places shall remain behind the free-throw line extended and behind the arc until the free throw ends.",
-  // Correctable errors (selected)
-  "Referees may correct awarding of an unmerited free throw or failing to award a merited free throw if recognised before the ball becomes live following the first dead ball after the error.",
-  "An error in scorekeeping, time-keeping or shot clock operations may be corrected by the referees at any time before the scoresheet is signed.",
-  // OFFICIALS — duties (selected)
-  "There shall be 2 referees assisted by the table officials and by a sports supervisor if present.",
-  "The table officials shall be a scorer, a scoreboard operator and a shot clock operator.",
-  "The referees shall administer a coin flip before the beginning of the game.",
-  "The scoreboard operator shall measure playing time, time-outs and intervals of play.",
-  "The shot clock operator shall start or restart the shot clock when a team gains control of a live ball on the playing court."
+const TEXT_QS = [
+  // PLAYING COURT & LINES (no diagrams named)
+  {
+    q:"What are the official court dimensions for 3x3?",
+    cat:"Playing court",
+    options:[
+      "15 m wide and 11 m long measured from the inner edge of the boundary line",
+      "14 m wide and 12 m long measured from the outer edge of the boundary line",
+      "15 m wide and 15 m long measured from the centre line",
+      "11 m wide and 15 m long measured from the outer edge of the boundary line"
+    ], answer:0
+  },
+  {
+    q:"Which court features must exist in addition to normal lines on a 3x3 court?",
+    cat:"Playing court",
+    options:[
+      "A free-throw line (5.80 m), a 2-point line (6.75 m), and a no-charge semi-circle area",
+      "A 3-point line (7.25 m), restricted arc, and coach's box",
+      "A centre circle, jump-circle markers, and lane space markers",
+      "A midcourt throw-in spot, trapezoid lane, and hash marks"
+    ], answer:0
+  },
+  {
+    q:"What is true about the boundary lines in 3x3?",
+    cat:"Boundary",
+    options:[
+      "They limit the playing court but are not part of the playing court",
+      "They limit the playing court and are considered part of the playing area",
+      "Only sidelines are out-of-bounds; endlines are inbounds",
+      "Only the baseline is considered out-of-bounds"
+    ], answer:0
+  },
+  {
+    q:"What width and visibility are required for court lines?",
+    cat:"Lines",
+    options:[
+      "Same colour, 5 cm wide, clearly visible in white or other contrasting colour",
+      "Variable colour, 3 cm wide, lightly visible",
+      "Any colour, 10 cm wide, with reflective paint",
+      "Black only, 2.5 cm wide, matte finish"
+    ], answer:0
+  },
+  {
+    q:"How much additional boundary area must surround the court?",
+    cat:"Boundary area",
+    options:[
+      "1 m at endline, 1.5 m at sidelines (minimum 1 m if space limited), and 2 m at baseline",
+      "0.5 m at all sides",
+      "2 m at every side with no exceptions",
+      "1 m at sidelines only"
+    ], answer:0
+  },
+  {
+    q:"Where must the scorer's table be placed?",
+    cat:"Table location",
+    options:[
+      "Behind the endline on the left-hand side when facing the basket",
+      "Centred at midcourt opposite the basket",
+      "Behind the baseline on the right-hand side when facing the basket",
+      "On the sideline near the team benches"
+    ], answer:0
+  },
+  {
+    q:"How is the free-throw line positioned?",
+    cat:"Free-throw line",
+    options:[
+      "Parallel to the baseline with its far edge 5.80 m from the inner edge of the baseline and 3.60 m long",
+      "On the centre circle, 4.60 m from the baseline and 4.00 m long",
+      "At midcourt, 6.75 m from the baseline and 3.00 m long",
+      "Parallel to the sideline, 5.80 m from the sideline and 3.60 m long"
+    ], answer:0
+  },
+  {
+    q:"Which statement about the restricted area is correct?",
+    cat:"Restricted area",
+    options:[
+      "It is bounded by the baseline, extended free-throw line, and lines 2.45 m from the mid-point of the baseline; these lines (except the baseline) are part of the restricted area",
+      "It is a semicircle of radius 2.45 m and the baseline counts as part of it",
+      "It is any painted area where post play occurs and lines are not part of it",
+      "It is only the semi-circle under the basket with radius 1.25 m"
+    ], answer:0
+  },
+  {
+    q:"Which statement defines the 2-point field goal area?",
+    cat:"Scoring areas",
+    options:[
+      "All of the playing court except the area inside the arc",
+      "Only the arc and the area beyond the sideline",
+      "Only the area inside the arc",
+      "Only from the midcourt line to the arc"
+    ], answer:0
+  },
+  {
+    q:"What is the radius of the 2-point arc in 3x3?",
+    cat:"Scoring areas",
+    options:[
+      "6.75 m measured to the outer edge of the arc from a point below the basket centre",
+      "7.24 m measured to the inner edge of the arc from the backboard",
+      "6.25 m measured to the inner edge from the free-throw line",
+      "6.75 m measured from the sideline intersection"
+    ], answer:0
+  },
+  {
+    q:"Which is true about the 2-point line itself?",
+    cat:"Scoring areas",
+    options:[
+      "The 2-point line (arc) is not part of the 2-point field goal area",
+      "The 2-point line counts as part of the 2-point area",
+      "Shots with a foot on the arc are worth 2 points",
+      "The arc is part of the restricted area"
+    ], answer:0
+  },
+  {
+    q:"What best describes the no-charge semi-circle under the basket?",
+    cat:"No-charge semi-circle",
+    options:[
+      "Radius 1.25 m to the inner edge; the semi-circle line is part of the area",
+      "Radius 1.50 m to the outer edge; the line is not part of the area",
+      "Radius 1.00 m to the inner edge; the line is not part of the area",
+      "Radius 1.25 m to the outer edge; the line is not part of the area"
+    ], answer:0
+  },
+
+  // EQUIPMENT / TEAMS
+  {
+    q:"Which items are required to conduct a 3x3 game?",
+    cat:"Equipment",
+    options:[
+      "Backstop unit, game clock, scoreboard, shot clock, separate signals for scorer/timer and shot-clock operator",
+      "Two backboards, bench horns, centre-jump beacon, rotating shot lights",
+      "Backstop unit and game clock only",
+      "Only a ball and a hoop"
+    ], answer:0
+  },
+  {
+    q:"How many players make up a 3x3 team?",
+    cat:"Teams",
+    options:[
+      "Four: 3 on the court and 1 substitute",
+      "Five: 3 on the court and 2 substitutes",
+      "Three: no substitutes allowed",
+      "Six: rolling substitutions"
+    ], answer:0
+  },
+  {
+    q:"Which coaching restriction applies in 3x3?",
+    cat:"Teams",
+    options:[
+      "Coaches on the court, on the substitute seats, or coaching remotely from outside the court are not allowed",
+      "Only head coaches may stand on the court during live play",
+      "Assistant coaches may coach from the endline only",
+      "Remote coaching by headset is allowed"
+    ], answer:0
+  },
+  {
+    q:"Which statement about team uniforms is correct?",
+    cat:"Uniforms",
+    options:[
+      "Shirts and shorts must share the same dominant colour front and back; socks must be the same dominant colour for all team members",
+      "Shirts may be any colour if shorts are black; sock colour is unrestricted",
+      "Each player must wear alternate-colour sleeves to match the ball",
+      "Only shirts need to match; shorts and socks may vary"
+    ], answer:0
+  },
+  {
+    q:"What numbers may be used on shirts in 3x3?",
+    cat:"Uniforms",
+    options:[
+      "0, 00 and 1–99; no duplicate numbers on a team",
+      "1–15 only; duplicates permitted",
+      "0–9 only; duplicates permitted if colours differ",
+      "Any three-digit number"
+    ], answer:0
+  },
+  {
+    q:"Which accessory policy is correct?",
+    cat:"Other equipment",
+    options:[
+      "Hair accessories and jewellery are not permitted; compression sleeves and properly designed headgear are permitted",
+      "All jewellery is allowed if taped; headgear is prohibited",
+      "Compression sleeves are prohibited; jewellery is allowed",
+      "Only team-coloured jewellery is allowed"
+    ], answer:0
+  },
+  {
+    q:"What is required when a player is bleeding?",
+    cat:"Injury",
+    options:[
+      "He must be substituted and may return only after bleeding has stopped and the area is securely covered",
+      "Play continues if the bleeding is minor",
+      "A time-out is automatically granted to treat bleeding",
+      "The opposing team chooses whether he must be substituted"
+    ], answer:0
+  },
+
+  // PLAYING REGULATIONS
+  {
+    q:"What is the regular playing time in official 3x3 competitions?",
+    cat:"Timing",
+    options:[
+      "One period of 10 minutes with the clock stopped on dead balls and free throws",
+      "Two periods of 5 minutes with a running clock",
+      "Four periods of 5 minutes with clock stops only in the last minute",
+      "One period of 12 minutes with a running clock"
+    ], answer:0
+  },
+  {
+    q:"How is the winner determined in overtime?",
+    cat:"Overtime",
+    options:[
+      "First team to score 2 points in overtime wins",
+      "First team to lead by 2 points in overtime wins",
+      "Overtime is a 5-minute period; highest score wins",
+      "Overtime ends after one possession each"
+    ], answer:0
+  },
+  {
+    q:"Which statement about starting possessions is correct?",
+    cat:"Start",
+    options:[
+      "A coin flip decides the initial possession; the winner may choose to start either the game or a potential overtime",
+      "The visiting team always starts with the ball",
+      "The home team chooses whether to start or defend",
+      "Referees assign first possession at random"
+    ], answer:0
+  },
+  {
+    q:"When does the game start and end in regulation?",
+    cat:"Timing",
+    options:[
+      "Starts when the ball is in the offensive player's hands after the check-ball; ends at the horn or when a team reaches 21 or 22 points",
+      "Starts at the horn and ends only at the horn",
+      "Starts with a jump ball and ends when a team leads by two",
+      "Starts when the referee tosses the ball to the defense; ends at 20 points"
+    ], answer:0
+  },
+  {
+    q:"What makes the ball live after a made basket or last free throw?",
+    cat:"Status of the ball",
+    options:[
+      "The ball is live following each successful field goal or last free throw",
+      "The ball becomes live only after a check-ball",
+      "The ball is live only after crossing midcourt",
+      "The ball is live only after the referee's whistle"
+    ], answer:0
+  },
+  {
+    q:"Which statement about the ball becoming dead is correct?",
+    cat:"Status of the ball",
+    options:[
+      "It becomes dead when a referee blows the whistle while the ball is live",
+      "It becomes dead whenever a pass is deflected",
+      "It is dead whenever a shot hits the ring",
+      "It is dead whenever the ball is dribbled in the restricted area"
+    ], answer:0
+  },
+  {
+    q:"How is a jump-ball situation resumed in 3x3?",
+    cat:"Jump ball",
+    options:[
+      "Check-ball for the last defensive team and the shot clock resets to 12 seconds",
+      "Alternating-possession arrow decides the throw-in",
+      "A traditional centre jump is used",
+      "Coin flip determines possession"
+    ], answer:0
+  },
+
+  // FUNDAMENTALS
+  {
+    q:"Which action is illegal under 'How the ball is played'?",
+    cat:"Ball play",
+    options:[
+      "Running with the ball or deliberately kicking or blocking it with the leg",
+      "Passing, tapping, rolling or dribbling the ball",
+      "Throwing the ball against the backboard and regaining control",
+      "Tapping a pass to a teammate"
+    ], answer:0
+  },
+  {
+    q:"When does team control start and end?",
+    cat:"Team control",
+    options:[
+      "Starts when a player holds or dribbles a live ball; ends when the opponents gain control, the ball becomes dead, or leaves the player's hands on a shot or free throw",
+      "Starts only after a team crosses midcourt; ends at a turnover or foul only",
+      "Starts at the check-ball and ends at a field goal",
+      "Starts on a pass reception and ends on the next dribble"
+    ], answer:0
+  },
+  {
+    q:"Which describes the act of shooting?",
+    cat:"Act of shooting",
+    options:[
+      "Begins with the continuous motion preceding release and ends when the ball leaves the hand(s) or the airborne shooter returns both feet to the floor",
+      "Begins when the ball first touches the ring and ends after a rebound",
+      "Begins when the dribble starts and ends when a pass is made",
+      "Begins only at the top of the jump and ends on landing"
+    ], answer:0
+  },
+  {
+    q:"How many points is a successful shot worth from behind the arc?",
+    cat:"Scoring",
+    options:[
+      "2 points",
+      "1 point",
+      "3 points",
+      "Value depends on team fouls"
+    ], answer:0
+  },
+  {
+    q:"What happens after a made basket in 3x3?",
+    cat:"Restart",
+    options:[
+      "The non-scoring team takes the ball directly under the basket and must clear behind the arc without a check-ball",
+      "The scoring team throws in from the endline",
+      "The referee administers a check-ball at the top",
+      "The ball is inbounded from the sideline at midcourt"
+    ], answer:0
+  },
+  {
+    q:"Which statement about the check-ball is correct?",
+    cat:"Check-ball",
+    options:[
+      "The defender hands or bounces the ball to the offensive player at the top behind the arc",
+      "The offensive player hands the ball to the defender anywhere on the court",
+      "The referee always bounces the ball to start play",
+      "The check-ball is taken on the sideline nearest the foul"
+    ], answer:0
+  },
+  {
+    q:"During a check-ball, what spacing is recommended between the two players?",
+    cat:"Check-ball",
+    options:[
+      "Approximately 1 metre",
+      "No more than 0.3 metres",
+      "At least 3 metres",
+      "Arm's length plus a step"
+    ], answer:0
+  },
+
+  // TIME-OUTS & SUBS
+  {
+    q:"What is the team time-out entitlement and length?",
+    cat:"Time-outs",
+    options:[
+      "One time-out of 30 seconds per team; plus TV time-outs at 6:59 and 3:59 if used",
+      "Two time-outs of 60 seconds each per team with no TV time-outs",
+      "Unlimited 20-second time-outs",
+      "One 60-second time-out only, no TV time-outs"
+    ], answer:0
+  },
+  {
+    q:"When can substitutions occur and how are they made?",
+    cat:"Substitution",
+    options:[
+      "On any dead ball before a check-ball or free throw, from behind the endline without referee action",
+      "Only after made baskets and from the scorer's table",
+      "At any time while the ball is live",
+      "Only during time-outs with referee beckoning"
+    ], answer:0
+  },
+
+  // VIOLATIONS / CLOCK
+  {
+    q:"How long may an offensive player remain in the restricted area?",
+    cat:"3 seconds",
+    options:[
+      "No more than 3 consecutive seconds while his team controls a live ball and the game clock is running",
+      "No more than 5 seconds regardless of control",
+      "As long as he is posting up",
+      "There is no restriction in 3x3"
+    ], answer:0
+  },
+  {
+    q:"What is required of a closely-guarded player holding the ball?",
+    cat:"5 seconds",
+    options:[
+      "He must pass, shoot or dribble within 5 seconds",
+      "He must shoot within 3 seconds",
+      "He must pivot or pass within 4 seconds",
+      "He must call a time-out"
+    ], answer:0
+  },
+  {
+    q:"What is the shot-clock duration in 3x3 and the basic requirement?",
+    cat:"12 seconds",
+    options:[
+      "12 seconds; the ball must be released before the signal and then touch the ring or enter",
+      "14 seconds; the ball must be released and hit the backboard",
+      "24 seconds; only release is required",
+      "10 seconds; any try counts regardless of ring contact"
+    ], answer:0
+  },
+  {
+    q:"After a defensive rebound or steal, what must the team do before attempting to score?",
+    cat:"Clearing",
+    options:[
+      "Return the ball behind the arc by passing or dribbling",
+      "Advance the ball to midcourt",
+      "Call for a check-ball",
+      "Attempt a shot immediately without restrictions"
+    ], answer:0
+  },
+  {
+    q:"What is the penalty if a team shoots before clearing after a change of possession?",
+    cat:"Clearing",
+    options:[
+      "Basket is cancelled; opponents get the ball for a check-ball",
+      "Two free throws to the opponents",
+      "Technical foul to the shooter",
+      "Play resumes with alternating-possession"
+    ], answer:0
+  },
+  {
+    q:"Which statement about goaltending/interference is correct?",
+    cat:"Goal tending",
+    options:[
+      "Defensive goaltending awards 1 point on a free throw, 1 point on a shot from inside the arc, or 2 points from behind the arc",
+      "Offensive goaltending always awards 2 points",
+      "Interference is ignored if the ball is over the cylinder",
+      "Defensive goaltending results in a jump ball"
+    ], answer:0
+  },
+
+  // FOULS & PENALTIES
+  {
+    q:"What is the cylinder principle?",
+    cat:"Contact",
+    options:[
+      "The space within an imaginary cylinder occupied by a player, including the space above him",
+      "The space defined by the restricted area lines only",
+      "A special area used only for post play",
+      "The area outside the arc where screening occurs"
+    ], answer:0
+  },
+  {
+    q:"Which is a legal initial guarding position?",
+    cat:"Guarding",
+    options:[
+      "Defender facing the opponent with both feet on the floor",
+      "Defender with one foot on the floor and back turned",
+      "Defender side-on with extended arms beyond cylinder",
+      "Defender stepping into the path from behind"
+    ], answer:0
+  },
+  {
+    q:"How is charging defined in 3x3?",
+    cat:"Charging",
+    options:[
+      "Illegal personal contact by pushing or moving into an opponent's torso",
+      "Any contact by the defender while set",
+      "Contact while attempting to block a shot",
+      "Legal contact if the offensive player is airborne"
+    ], answer:0
+  },
+  {
+    q:"What is the interpretation inside the no-charge semi-circle?",
+    cat:"No-charge",
+    options:[
+      "Contact caused by an airborne offensive player with a defender inside the semi-circle is not an offensive foul",
+      "Any contact in the semi-circle is a defensive foul",
+      "Charges cannot occur anywhere on the court",
+      "Only screens are judged inside the semi-circle"
+    ], answer:0
+  },
+  {
+    q:"Which is true about team-foul penalties?",
+    cat:"Team fouls",
+    options:[
+      "Team fouls 7–9: two free throws; Team foul 10+: two free throws and possession",
+      "Team fouls 5–7: one free throw; 8+: possession only",
+      "Team fouls 7–9: one free throw; 10+: one free throw and possession",
+      "Only shooting fouls count toward team fouls"
+    ], answer:0
+  },
+  {
+    q:"Which is the basic penalty for a technical foul in 3x3?",
+    cat:"Technical",
+    options:[
+      "One free throw to the opponents; it also counts as a team foul",
+      "Two free throws and possession",
+      "Automatic ejection of the offender",
+      "No free throws; only possession"
+    ], answer:0
+  },
+  {
+    q:"What happens when a player commits his second unsportsmanlike foul?",
+    cat:"Unsportsmanlike",
+    options:[
+      "Two free throws and possession; the player is disqualified",
+      "One free throw only; the player remains in the game",
+      "No free throws; ball to the opponents",
+      "Team foul penalty only"
+    ], answer:0
+  },
+  {
+    q:"Which best defines a disqualifying foul?",
+    cat:"Disqualifying",
+    options:[
+      "Any flagrant unsportsmanlike action by players or substitutes",
+      "Any technical foul while arguing",
+      "Any blocking foul in the restricted area",
+      "Any contact during a rebound"
+    ], answer:0
+  },
+
+  // FREE THROWS
+  {
+    q:"Which statement about free throws is correct?",
+    cat:"Free throws",
+    options:[
+      "The shooter must release within 5 seconds and not enter or touch the line until the ball enters or touches the ring",
+      "The shooter may step over the line if the ball has left his hand",
+      "The shooter has 10 seconds to release the ball",
+      "Players may cross the free-throw line on release"
+    ], answer:0
+  },
+  {
+    q:"Where must players not occupying rebound spaces stand during free throws that will be followed by another set or by a check-ball?",
+    cat:"Free throws",
+    options:[
+      "Behind the free-throw line extended and behind the arc until the free throw ends",
+      "On the sideline nearest their bench",
+      "Anywhere inside the arc but outside the restricted area",
+      "On the centre circle"
+    ], answer:0
+  },
+
+  // OFFICIALS / TABLE
+  {
+    q:"Which game staff are required at the table?",
+    cat:"Officials",
+    options:[
+      "A scorer, a scoreboard operator and a shot clock operator",
+      "A timekeeper only",
+      "Two scorers and two statisticians",
+      "A public-address announcer and a replay technician only"
+    ], answer:0
+  },
+  {
+    q:"When does the shot clock start or restart?",
+    cat:"Shot clock",
+    options:[
+      "When a team gains control of a live ball on the playing court or after a completed check-ball",
+      "Only when the ball crosses behind the arc",
+      "Only when the ball is dribbled",
+      "On the referee's whistle after every pass"
+    ], answer:0
+  },
+  {
+    q:"When is the shot clock reset to 12 seconds?",
+    cat:"Shot clock",
+    options:[
+      "When the ball legally enters the basket, after control changes on a foul or violation, after a jump-ball result, after the ball touches the ring and any team gains control, or when free throws are awarded",
+      "Only after a defensive rebound",
+      "Only after the ball touches the backboard",
+      "At the start of each minute"
+    ], answer:0
+  },
+
+  // GAME RESULTS
+  {
+    q:"When does a team lose by forfeit?",
+    cat:"Game result",
+    options:[
+      "If at scheduled start time it is not on the court with 3 players ready to play",
+      "If it trails by 10 points at any time",
+      "If it commits 10 team fouls",
+      "If it fails to score in the first 2 minutes"
+    ], answer:0
+  },
+  {
+    q:"What is a loss by default?",
+    cat:"Game result",
+    options:[
+      "Leaving the court before the end of the game or when all players of a team are injured or disqualified",
+      "Failing to win the coin flip",
+      "Having fewer than 4 players on the roster",
+      "Exceeding the time-out limit"
+    ], answer:0
+  }
 ];
 
 /* ============================================================
-   Build text questions using exact sentences as correct answers
-   Distractors are algorithmically perturbed variants.
+   Assemble pool (text + signals), shuffle, no duplicates
    ============================================================ */
-function tweakNumbers(s, delta=1){
-  return s.replace(/(\d+)(\.\d+)?\s*(m|cm|minutes?|seconds?|free throws?|team fouls?|\b)/gi, (m,num,dec,unit)=>{
-    const base = dec ? parseFloat(num+dec) : parseInt(num,10);
-    let n = base;
-    if (base===1) n=2; else if (base===2) n=1; else n = base+delta;
-    const out = dec ? String(n) : String(n);
-    return m.replace(String(base), out);
-  });
-}
-function swapWords(s){
-  // simple swaps: shall<->may, is<->is not, inside<->outside, offensive<->defensive
-  let t=s;
-  t=t.replace(/\bshall\b/g,'may')
-     .replace(/\bis\b/g,'is not')
-     .replace(/\binside\b/g,'outside')
-     .replace(/\boutside\b/g,'inside')
-     .replace(/\boffensive\b/g,'defensive')
-     .replace(/\bdefensive\b/g,'offensive');
-  return t;
-}
-function softParaphrase(s){
-  return s.replace(/\bthe\b/gi,'the')
-          .replace(/\bmay\b/gi,'shall')
-          .replace(/\bare\b/gi,'are not');
-}
-function makeTextItem(sentence, idx){
-  const correct = sentence.trim().replace(/\s+/g,' ').replace(/\s+\./g,'.');
-  const d1 = tweakNumbers(correct,1);
-  const d2 = swapWords(correct);
-  const d3 = softParaphrase(correct);
-  const pool = uniqBy([correct,d1,d2,d3], x=>x).slice(0,4);
-  const options = shuffle(pool.length<4 ? [...pool, "(intentionally left blank)", "(not stated)", "(contradicts the rule)"].slice(0,4) : pool);
-  return {
-    id:`TXT::${idx}`, type:"text", cat:"Rule text",
-    q:"Select the exact sentence from the official rules:",
-    options, answer: options.indexOf(correct),
-    rationale: `Correct (verbatim): “${correct}”.`
-  };
-}
-const TEXT_QS = FACT_SENTENCES.map(makeTextItem);
-
-/* ============================================================
-   Assemble the full pool, shuffle order, no duplicates
-   ============================================================ */
-const POOL = shuffle(uniqBy([...TEXT_QS, ...buildSignalQuestions()], q=>q.id));
+const POOL = shuffle(uniqBy([...TEXT_QS, ...buildSignalQuestions()], q=>q.id || q.q));
 const TOTAL = POOL.length;
 const RUN = { order: POOL, answers: Array(TOTAL).fill(null), i: 0, score: 0 };
 
 /* ============================================================
-   DOM bindings
+   DOM bindings & rendering
    ============================================================ */
 const $qtext = document.getElementById("qtext");
 const $qimg  = document.getElementById("qimg");
@@ -380,8 +732,13 @@ function render(i){
     $qimg.src = q.img; $qimg.classList.remove("hidden"); $qimg.alt="Referee signal";
   } else { $qimg.classList.add("hidden"); }
 
+  // ensure exactly 4 options, shuffled
+  const options = shuffle(q.options.slice(0,4));
+  q._shuffled = options;
+  q.answer = options.indexOf(q.options[q.answer]); // map to new index
+
   $opts.innerHTML = "";
-  q.options.forEach((opt,idx)=>{
+  options.forEach((opt,idx)=>{
     const div = document.createElement("label");
     div.className = "opt";
     div.innerHTML = `<input type="radio" name="q${i}"> <span>${opt}</span>`;
@@ -393,7 +750,7 @@ function render(i){
         if(j===idx && idx!==q.answer) c.classList.add("wrong");
       });
       if(idx===q.answer) RUN.score++;
-      $fb.innerHTML = `<span class="${idx===q.answer?'good':'bad'}"><b>${idx===q.answer?'Correct':'Incorrect'}</b></span> — ${q.rationale||''}`;
+      $fb.innerHTML = `${idx===q.answer?'<span class="good"><b>Correct.</b></span>':'<span class="bad"><b>Incorrect.</b></span>'} ${q.rationale?q.rationale:''}`;
     });
     $opts.appendChild(div);
   });
@@ -404,9 +761,9 @@ function render(i){
   $prog.style.width = `${(i)/TOTAL*100}%`;
 }
 
-$next.addEventListener("click", ()=>{ RUN.i=Math.min(TOTAL-1,RUN.i+1); render(RUN.i); });
-$back.addEventListener("click", ()=>{ RUN.i=Math.max(0,RUN.i-1); render(RUN.i); });
-$submit.addEventListener("click", finish);
+document.getElementById("next").addEventListener("click", ()=>{ RUN.i=Math.min(TOTAL-1,RUN.i+1); render(RUN.i); });
+document.getElementById("back").addEventListener("click", ()=>{ RUN.i=Math.max(0,RUN.i-1); render(RUN.i); });
+document.getElementById("submit").addEventListener("click", finish);
 
 function finish(){
   const container = document.getElementById("quiz");
@@ -430,10 +787,12 @@ function finish(){
       left.innerHTML = `<div class="pill">${q.cat||"General"}</div>`;
     }
     const right = document.createElement("div");
+    const correctText = (q._shuffled||q.options)[q.answer];
+    const chosenText  = chosen!=null ? (q._shuffled||q.options)[chosen] : "(no answer)";
     right.innerHTML = `
       <div><strong>Q${idx+1}.</strong> ${q.q}</div>
-      <div><span class="good"><b>Correct answer:</b></span> ${q.options[q.answer]}</div>
-      <div><span class="${chosen===q.answer?'good':'bad'}"><b>Your answer:</b></span> ${chosen!=null ? q.options[chosen] : "(no answer)"} </div>
+      <div><span class="good"><b>Correct answer:</b></span> ${correctText}</div>
+      <div><span class="${chosen===q.answer?'good':'bad'}"><b>Your answer:</b></span> ${chosenText}</div>
     `;
     row.appendChild(left); row.appendChild(right);
     keyEl.appendChild(row);
