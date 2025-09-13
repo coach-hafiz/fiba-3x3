@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>FIBA 3x3 MCQ Quiz</title>
+  <title>FIBA 3x3 MCQ Quiz (Improved)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root { --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --muted:#9da7b3; --accent:#f6c945; --good:#2ea043; --bad:#f85149; }
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    header{padding:16px 20px;border-bottom:1px solid #232a34;background:linear-gradient(180deg,#0f1320,#0e1117)}
+    header{padding:16px 20px;border-bottom:1px solid #232a34;background:linear-gradient(180deg,#0f1320,#0e1117);display:flex;justify-content:space-between;align-items:center;gap:10px}
     h1{margin:0;font-size:18px;letter-spacing:.3px}
+    .reset{background:#0b1320;border:1px solid #243044;color:#c8d1dc;border-radius:8px;padding:8px 10px;font-weight:600;cursor:pointer}
     main{max-width:960px;margin:0 auto;padding:20px}
     .card{background:var(--panel);border:1px solid #232a34;border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.20)}
-    .row{display:flex;gap:18px;flex-wrap:wrap}
-    .meta{display:flex;justify-content:space-between;gap:12px;margin:8px 0 14px;color:var(--muted);font-size:13px}
-    .progress-wrap{height:8px;background:#0b0f16;border-radius:999px;overflow:hidden;border:1px solid #1f2630}
+    .meta{display:flex;justify-content:space-between;gap:12px;margin:8px 0 14px;color:var(--muted);font-size:13px;align-items:center}
+    .progress-wrap{height:8px;background:#0b0f16;border-radius:999px;overflow:hidden;border:1px solid #1f2630;flex:1}
     .progress{height:100%;background:linear-gradient(90deg,var(--accent),#ffd86b);width:0%}
-    .q-text{font-size:18px;margin:10px 0 14px}
     .pill{display:inline-block;background:#111826;border:1px solid #233043;border-radius:999px;padding:6px 10px;color:var(--muted);font-size:12px}
+    .q-text{font-size:18px;margin:10px 0 14px}
     .options{display:grid;gap:10px}
     .opt{border:1px solid #2a3442;border-radius:10px;padding:12px 14px;cursor:pointer;background:#111826;transition:transform .05s ease,border-color .2s}
     .opt:hover{transform:translateY(-1px)}
@@ -40,13 +40,17 @@
   </style>
 </head>
 <body>
-  <header><h1>FIBA 3x3 Quiz — Playing Rules & Referee Signals</h1></header>
+  <header>
+    <h1>FIBA 3x3 Quiz — Playing Rules & Referee Signals</h1>
+    <button class="reset" id="resetBtn" title="Clear saved session & reshuffle">Reset quiz</button>
+  </header>
+
   <main>
     <div class="card">
       <div class="meta">
-        <div><span class="pill" id="catPill">Category</span></div>
-        <div class="progress-wrap" style="flex:1"><div class="progress" id="progress"></div></div>
-        <div><span class="pill" id="countPill">Q 1/1</span></div>
+        <span class="pill" id="catPill">Category</span>
+        <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+        <span class="pill" id="countPill">Q 1/1</span>
       </div>
 
       <div id="imageZone" class="img-wrap" style="display:none"></div>
@@ -73,11 +77,11 @@
           <summary>Rule categories to review</summary>
           <ul id="catList" class="badlist"></ul>
         </details>
-        <div class="foot">Reload the page to reshuffle questions & options.</div>
+        <div class="foot">Reload the page to keep your answers; press “Reset quiz” to reshuffle from scratch.</div>
       </section>
     </div>
 
-    <!-- Put/keep your full rules text here. The script below will parse it into paragraphs and categories. -->
+    <!-- FULL RULES TEXT (trimmed here for brevity; keep your original full paste to maximize coverage) -->
     <script type="text/plain" id="rules">
 PLAYING COURT AND EQUIPMENT
 
@@ -162,15 +166,14 @@ Coaches on the playing court and/or on the seats for substitutes and/or remote c
 A substitute becomes a player after his teammate steps off the court.
 
 Uniforms
-... (content continues — full text kept to generate questions)
+... (keep your full text here)
     </script>
 
     <script>
       // ------------------ CONFIG: add your referee hand-signal images here ------------------
       // The filename (without extension) is the CORRECT answer.
       const signalImages = [
-        // Examples (replace with your real files):
-        // "signals/traveling.png",
+        // "signals/travelling.png",
         // "signals/charging.jpg",
         // "signals/blocking.png",
         // "signals/unsportsmanlike.png",
@@ -178,179 +181,251 @@ Uniforms
       ];
       // --------------------------------------------------------------------------------------
 
-      // Small helper: seeded-ish shuffle per load via crypto (ensures different order each visit)
-      const rnd = (() => {
-        const seed = (crypto.getRandomValues(new Uint32Array(1))[0] >>> 0) / 2**32;
-        let s = seed || 0.5;
-        return () => (s = (s * 9301 + 49297) % 233280) / 233280;
-      })();
+      // ====== Persistence (save all responses & exact shuffle) ======
+      const STORAGE_KEY = 'fiba3x3_quiz_v2';
+      const rulesText = document.getElementById('rules').textContent.trim();
+      function hashString(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); } return (h>>>0).toString(16); }
+      const RULES_HASH = hashString(rulesText + JSON.stringify(signalImages));
 
-      function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()* (i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+      function saveSession(sess){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sess));
+      }
+      function loadSession(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(!raw) return null;
+          const sess = JSON.parse(raw);
+          if(!sess || sess.rulesHash !== RULES_HASH) return null; // rules changed → new session
+          return sess;
+        }catch{ return null; }
+      }
+      function clearSession(){ localStorage.removeItem(STORAGE_KEY); }
 
-      // Extract rules text and split into [category -> paragraphs]
-      const raw = document.getElementById('rules').textContent.trim();
-      const lines = raw.split(/\r?\n/);
-      const categories = [];
-      let current = null;
+      // ====== RNG (per-session deterministic) ======
+      function makePRNG(seed){
+        let s = seed>>>0 || 1;
+        return ()=> (s = (s * 1664525 + 1013904223)>>>0) / 4294967296;
+      }
+      function shuffleInPlace(arr, rnd){
+        for(let i=arr.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+        return arr;
+      }
 
+      // ====== Parse rules into categories & paragraphs ======
       function isHeading(line){
         if(!line) return false;
-        // a heuristic: lines without periods, short-ish, or ALL CAPS words suggest headings
         const noDot = !/[.!?]$/.test(line.trim());
         const capsish = /^[A-Z0-9 .:;'()/-]+$/.test(line.trim());
         const lenOK = line.trim().length <= 42;
         return (capsish && lenOK) || (noDot && lenOK && /^[A-Z]/.test(line.trim()));
       }
-      const catMap = {}; // {cat: [paragraphs]}
-      let buf = [];
-
-      for(const l of lines){
-        const line = l.replace(/\s+$/,'');
-        if(isHeading(line)){
-          if(buf.length && current){
-            const para = buf.join(' ').trim();
-            if(para) (catMap[current] ??= []).push(para);
-            buf = [];
-          }
-          current = line.trim().replace(/\s+/g,' ').toUpperCase();
-          if(!categories.includes(current)) categories.push(current);
-          continue;
-        }
-        if(line.trim()===''){ // paragraph break
+      function parseRules(raw){
+        const lines = raw.split(/\r?\n/);
+        const categories = [];
+        const catMap = {};
+        let current = null, buf = [];
+        const flush = ()=>{
           const para = buf.join(' ').trim();
-          if(para && current){
-            (catMap[current] ??= []).push(para);
-          }
+          if(para && current){ (catMap[current] ??= []).push(para); }
           buf = [];
-        } else {
-          buf.push(line.trim());
+        };
+        for(const L of lines){
+          const line = L.replace(/\s+$/,'');
+          if(isHeading(line)){
+            if(buf.length && current) flush();
+            current = line.trim().replace(/\s+/g,' ').toUpperCase();
+            if(!categories.includes(current)) categories.push(current);
+          } else if(line.trim()===''){
+            if(buf.length) flush();
+          } else {
+            buf.push(line.trim());
+          }
         }
-      }
-      if(buf.length && current){
-        const para = buf.join(' ').trim();
-        if(para) (catMap[current] ??= []).push(para);
+        if(buf.length && current) flush();
+        return {categories, catMap};
       }
 
-      // Utility: clean paragraph to a concise statement (basic paraphrase-lite)
+      // ====== Concise + Relevant Distractors ======
       function concise(p){
         let s = p.replace(/\s+/g,' ').trim();
-        // drop parenthetical diagram references etc.
         s = s.replace(/\(Diagram[^)]+\)/gi,'').replace(/\(see[^)]+\)/gi,'');
-        // shorten long paragraphs
-        if(s.length>320){
-          s = s.slice(0,300).replace(/[,;:]?\s+\S+$/,'') + '…';
-        }
+        if(s.length>320){ s = s.slice(0,300).replace(/[,;:]?\s+\S+$/,'') + '…'; }
         return s;
       }
 
-      // Distractor generator: tweak numbers & key terms to create clearly different (but relevant) options
-      const swaps = [
-        ['baseline','sideline'], ['endline','baseline'], ['inside','outside'],
-        ['offensive','defensive'], ['defensive','offensive'], ['free throw','field goal'],
-        ['field goal','free throw'], ['arc','restricted area'], ['restricted area','no-charge semi-circle'],
-        ['12 seconds','10 seconds'], ['10 minutes','12 minutes'], ['2 points','1 point'], ['1 point','2 points'],
-        ['6.75 m','6.25 m'], ['5.80 m','5.00 m'], ['1.25 m','1.50 m'], ['1.20 m','1.00 m'],
-        ['2 free throws','1 free throw'], ['1 free throw','2 free throws'],
-        ['behind the arc','inside the arc'], ['live','dead'], ['dead','live']
+      // Controlled term variants (keep relevance; one controlled change per distractor)
+      const TERM_MAP = [
+        ['inside the arc','behind the arc'],
+        ['behind the arc','inside the arc'],
+        ['restricted area','no-charge semi-circle area'],
+        ['no-charge semi-circle area','restricted area'],
+        ['baseline','endline'],
+        ['endline','baseline'],
+        ['sidelines','baseline'],
+        ['free throw','field goal'],
+        ['field goal','free throw'],
+        ['offensive','defensive'],
+        ['defensive','offensive'],
+        ['live ball','dead ball'],
+        ['dead ball','live ball'],
+        ['1 point','2 points'],
+        ['2 points','1 point'],
+        ['12 seconds','10 seconds'],
+        ['10 minutes','12 minutes'],
       ];
-      function tweakOnce(s){
-        // numbers
-        s = s.replace(/(\d+(?:\.\d+)?)\s?m/g,(_,n)=>{
-          const v = parseFloat(n);
-          const alt = (v* (1 + (rnd()<.5?-1:1)* (0.1 + rnd()*0.25))).toFixed(2);
-          return `${alt} m`;
-        });
-        s = s.replace(/\b(\d{1,2})\s?seconds?\b/g,(_,n)=>{
-          let v = parseInt(n,10);
-          v = Math.max(1, v + (rnd()<.5?-1:1)* (1+Math.floor(rnd()*3)));
-          return `${v} seconds`;
-        });
-        s = s.replace(/\b(\d{1,2})\s?minutes?\b/g,(_,n)=>{
-          let v = parseInt(n,10);
-          v = Math.max(1, v + (rnd()<.5?-1:1)* (1+Math.floor(rnd()*2)));
-          return `${v} minutes`;
-        });
-        // term swaps
-        let out = s;
-        for(let i=0;i<2;i++){
-          const [a,b] = swaps[Math.floor(rnd()*swaps.length)];
-          out = out.replace(new RegExp(`\\b${a}\\b`,'i'), b);
+
+      function firstMatchVariant(s){
+        for(const [a,b] of TERM_MAP){
+          const re = new RegExp(`\\b${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i');
+          if(re.test(s)) return {from:a,to:b};
         }
-        // minor negation flip if present
-        if(/\bshall not\b/i.test(out) && rnd()<.4) out = out.replace(/\bshall not\b/ig,'shall');
-        else if(/\bshall\b/i.test(out) && rnd()<.2) out = out.replace(/\bshall\b/ig,'shall not');
-        return out;
+        return null;
       }
-      function distinctDistractors(base, n=4){
-        const set = new Set();
+
+      function adjustNumberToken(s){
+        // adjust a single numeric measurement/time while keeping unit to stay relevant
+        // meters
+        let m = s.match(/(\d+(?:\.\d+)?)\s?m\b/i);
+        if(m){
+          const num = parseFloat(m[1]);
+          const factor = 1 + (Math.random()<.5?-1:1) * (0.08 + Math.random()*0.12); // 8–20%
+          const alt = (Math.max(0.1, num*factor)).toFixed(2);
+          return s.replace(m[0], `${alt} m`);
+        }
+        // seconds
+        m = s.match(/\b(\d{1,2})\s?seconds?\b/i);
+        if(m){
+          let v = Math.max(1, parseInt(m[1],10) + (Math.random()<.5?-1:1)* (1+Math.floor(Math.random()*3)));
+          return s.replace(m[0], `${v} seconds`);
+        }
+        // minutes
+        m = s.match(/\b(\d{1,2})\s?minutes?\b/i);
+        if(m){
+          let v = Math.max(1, parseInt(m[1],10) + (Math.random()<.5?-1:1)* (1+Math.floor(Math.random()*2)));
+          return s.replace(m[0], `${v} minutes`);
+        }
+        // points
+        m = s.match(/\b(1|2)\s?points?\b/i);
+        if(m){
+          const alt = m[1]==='1' ? '2 points' : '1 point';
+          return s.replace(m[0], alt);
+        }
+        return null; // no numeric token found
+      }
+
+      function makeRelevantDistractors(correct, need=4, rnd){
+        const outs = new Set();
         let guard = 0;
-        while(set.size<n && guard<60){
-          let d = tweakOnce(base);
-          // ensure different enough
-          if(d!==base && d.length>0 && Math.abs(d.length - base.length)>3 && !set.has(d)) set.add(d);
+
+        // Strategy: produce at most one controlled change per distractor
+        while(outs.size < need && guard < 80){
+          let candidate = correct;
+
+          // 50% numeric tweak if exists; else 100% term swap if exists
+          if(rnd() < 0.6){
+            const tweaked = adjustNumberToken(candidate);
+            if(tweaked) candidate = tweaked;
+            else {
+              const v = firstMatchVariant(candidate);
+              if(v){ candidate = candidate.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to); }
+              else { // last resort: minor phrasing swap that stays relevant
+                candidate = candidate.replace(/\bshall\b/ig,'must'); // mild, not negating meaning
+              }
+            }
+          } else {
+            const v = firstMatchVariant(candidate);
+            if(v){ candidate = candidate.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to); }
+            else {
+              const tweaked = adjustNumberToken(candidate);
+              if(tweaked) candidate = tweaked;
+            }
+          }
+
+          // ensure not identical and not trivially same
+          if(candidate !== correct && Math.abs(candidate.length - correct.length) <= Math.max(10, correct.length*0.25)){
+            outs.add(candidate);
+          }
           guard++;
         }
-        // fallbacks if still short
-        while(set.size<n){
-          set.add(base.split(' ').reverse().join(' '));
+
+        // If still short, clone with a different single swap that remains relevant
+        const variants = Array.from(outs);
+        while(variants.length < need){
+          const v = firstMatchVariant(correct);
+          if(v){
+            const c2 = correct.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to);
+            if(c2 !== correct && !variants.includes(c2)) variants.push(c2);
+          } else {
+            // as a last fallback, only small numeric tweak of +1/-1 on seconds if present
+            const m = correct.match(/\b(\d{1,2})\s?seconds?\b/i);
+            if(m){
+              const base = parseInt(m[1],10);
+              const alt = `${base + (variants.length%2?1:-1)} seconds`;
+              const c2 = correct.replace(m[0], alt);
+              if(c2 !== correct && !variants.includes(c2)) variants.push(c2);
+            } else {
+              break;
+            }
+          }
         }
-        return Array.from(set);
+        return variants.slice(0, need).map(t => ({t, ok:false}));
       }
 
-      // Build questions from paragraphs
-      const questions = [];
-      for(const cat of categories){
-        const paras = (catMap[cat]||[]).filter(p => /\w/.test(p));
-        for(const p of paras){
-          const stem = concise(p);
-          if(stem.length < 15) continue;
-          const prompt = `Scenario (${cat}): In a 3x3 game situation, which option best aligns with the rule below?`;
-          const correct = stem;
-          const distractors = distinctDistractors(correct, 4);
-          const opts = shuffle([ {t:correct, ok:true}, ...distractors.map(t=>({t,ok:false})) ]);
-          questions.push({
-            type:'rule',
-            category:cat,
-            paragraph:p,
-            prompt,
-            options:opts,
-            explain:`Rule reference: <span class="mono">${correct}</span>`
-          });
+      // ====== Build question set (once per session) ======
+      function buildQuestions(rnd){
+        const {categories, catMap} = parseRules(rulesText);
+        const qs = [];
+
+        for(const cat of categories){
+          const paras = (catMap[cat]||[]).filter(p => /\w/.test(p));
+          for(const p of paras){
+            const stem = concise(p);
+            if(stem.length < 15) continue;
+
+            const prompt = `Scenario (${cat}): In a 3x3 situation, which option best aligns with the rule stated?`;
+            const correct = stem;
+            const distractors = makeRelevantDistractors(correct, 4, rnd);
+            const opts = [{t:correct, ok:true}, ...distractors];
+            shuffleInPlace(opts, rnd);
+
+            qs.push({
+              type:'rule',
+              category:cat,
+              paragraph:p,
+              prompt,
+              options:opts,
+              explain:`Rule reference: <span class="mono">${correct}</span>`
+            });
+          }
         }
+
+        // Hand-signal questions (all options are names from actual files → inherently relevant)
+        if(signalImages.length){
+          const names = signalImages.map(src => src.split('/').pop().replace(/\.[a-z0-9]+$/i,''));
+          for(const src of signalImages){
+            const answer = src.split('/').pop().replace(/\.[a-z0-9]+$/i,'');
+            const pool = names.filter(n => n!==answer);
+            shuffleInPlace(pool, rnd);
+            const dists = pool.slice(0,4).map(t=>({t, ok:false}));
+            const opts = [{t:answer, ok:true}, ...dists];
+            shuffleInPlace(opts, rnd);
+
+            qs.push({
+              type:'signal',
+              category:'REFEREE HAND SIGNALS',
+              image:src,
+              prompt:`Referee Signal: Identify the correct hand signal name.`,
+              options:opts,
+              explain:`Answer is the image filename: <span class="mono">${answer}</span>`
+            });
+          }
+        }
+
+        shuffleInPlace(qs, rnd);
+        return qs;
       }
 
-      // Add hand-signal image questions (if any files are configured)
-      function filenameBase(path){ return path.split('/').pop().replace(/\.[a-z0-9]+$/i,''); }
-      if(signalImages.length){
-        const labels = signalImages.map(filenameBase);
-        for(const src of signalImages){
-          const answer = filenameBase(src);
-          const dists = shuffle(labels.filter(x=>x!==answer)).slice(4); // we need 4 distractors -> slice(0,4), but keep clearly distinct
-          const pool = shuffle(labels.filter(x=>x!==answer));
-          const distractors = (pool.length>=4? pool.slice(0,4) : pool.concat(['blocking','charging','travelling','unsportsmanlike']).slice(0,4));
-          const opts = shuffle([ {t:answer, ok:true}, ...distractors.map(t=>({t,ok:false})) ]);
-          questions.push({
-            type:'signal',
-            category:'REFEREE HAND SIGNALS',
-            image:src,
-            prompt:`Referee Signal: Identify the correct hand signal name.`,
-            options:opts,
-            explain:`Answer is the image filename: <span class="mono">${answer}</span>`
-          });
-        }
-      }
-
-      // Shuffle questions per visit
-      shuffle(questions);
-
-      // State
-      const state = {
-        i: 0,
-        answers: Array(questions.length).fill(null),      // index of chosen option
-        correctness: Array(questions.length).fill(null),  // true/false
-      };
-
-      // DOM
+      // ====== UI + State ======
       const qText = document.getElementById('qText');
       const optionsEl = document.getElementById('options');
       const feedbackEl = document.getElementById('feedback');
@@ -368,21 +443,38 @@ Uniforms
       const sumWrong = document.getElementById('sumWrong');
       const wrongList = document.getElementById('wrongList');
       const catList = document.getElementById('catList');
+      const resetBtn = document.getElementById('resetBtn');
+
+      let session = loadSession();
+      if(!session){
+        // create new session with its own deterministic RNG seed so shuffles are consistent across reloads
+        const seed = (crypto.getRandomValues(new Uint32Array(1))[0]>>>0) || (Date.now()>>>0);
+        const rnd = makePRNG(seed);
+        const questions = buildQuestions(rnd);
+        session = {
+          rulesHash: RULES_HASH,
+          seed,
+          i: 0,
+          questions,
+          answers: Array(questions.length).fill(null),      // selected index
+          correctness: Array(questions.length).fill(null),  // true/false
+          finished: false
+        };
+        saveSession(session);
+      }
+      const rnd = makePRNG(session.seed);
 
       function render(){
-        const total = questions.length;
-        const idx = state.i;
-        const q = questions[idx];
+        const total = session.questions.length;
+        const idx = Math.max(0, Math.min(session.i, total-1));
+        const q = session.questions[idx];
 
-        // header/meta
         catPill.textContent = q.category;
         countPill.textContent = `Q ${idx+1}/${total}`;
-        progressBar.style.width = `${((idx)/total)*100}%`;
+        progressBar.style.width = `${(idx/total)*100}%`;
 
-        // question
         qText.innerHTML = q.prompt;
 
-        // image (signals)
         imageZone.style.display = (q.type==='signal') ? 'flex' : 'none';
         imageZone.innerHTML = '';
         if(q.type==='signal'){
@@ -392,10 +484,9 @@ Uniforms
           imageZone.appendChild(img);
         }
 
-        // options
         optionsEl.innerHTML = '';
         feedbackEl.textContent = '';
-        const previous = state.answers[idx];
+        const previous = session.answers[idx];
 
         q.options.forEach((opt, k)=>{
           const div = document.createElement('div');
@@ -403,27 +494,21 @@ Uniforms
           div.setAttribute('role','button');
           div.setAttribute('tabindex','0');
           div.innerHTML = `<b>${String.fromCharCode(65+k)}.</b> ${opt.t}`;
+
+          // Always show saved selection + grading when revisiting (forward/back)
           if(previous===k){
             div.classList.add('selected');
-            // show correctness immediately on revisit
-            if(state.correctness[idx] !== null){
-              div.classList.add(opt.ok ? 'correct' : 'incorrect');
-              feedbackEl.className = 'feedback ' + (state.correctness[idx] ? 'good' : 'bad');
-              feedbackEl.innerHTML = state.correctness[idx]
-                ? '✔ Correct!' 
-                : `✖ Incorrect. ${q.explain}`;
-            }
           }
           div.addEventListener('click',()=>{
-            state.answers[idx] = k;
-            // mark selection
+            // save answer
+            session.answers[idx] = k;
+            const ok = q.options[k].ok===true;
+            session.correctness[idx] = ok;
+            saveSession(session); // persist immediately
+
+            // update UI (persisted selection visible)
             [...optionsEl.children].forEach(c=>c.classList.remove('selected','correct','incorrect'));
             div.classList.add('selected');
-
-            // grade & reveal
-            const ok = q.options[k].ok===true;
-            state.correctness[idx] = ok;
-
             if(ok){
               div.classList.add('correct');
               feedbackEl.className = 'feedback good';
@@ -432,17 +517,37 @@ Uniforms
               div.classList.add('incorrect');
               feedbackEl.className = 'feedback bad';
               feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
-              // also reveal which was correct
+              // mark correct
               [...optionsEl.children].forEach((c,ci)=>{
                 if(q.options[ci].ok) c.classList.add('correct');
               });
             }
-            maybeAutoAdvance();
           });
           optionsEl.appendChild(div);
         });
 
-        // controls
+        // If there is a saved answer, show grading immediately (without forcing click)
+        if(previous !== null){
+          const ok = session.correctness[idx] === true;
+          const chosenDiv = optionsEl.children[previous];
+          if(chosenDiv){
+            chosenDiv.classList.add('selected');
+            if(ok){
+              chosenDiv.classList.add('correct');
+              feedbackEl.className = 'feedback good';
+              feedbackEl.textContent = '✔ Correct!';
+            } else {
+              chosenDiv.classList.add('incorrect');
+              feedbackEl.className = 'feedback bad';
+              feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
+              // mark correct option
+              [...optionsEl.children].forEach((c,ci)=>{
+                if(q.options[ci].ok) c.classList.add('correct');
+              });
+            }
+          }
+        }
+
         backBtn.disabled = idx===0;
         const last = idx===total-1;
         nextBtn.style.display = last ? 'none':'inline-block';
@@ -450,38 +555,9 @@ Uniforms
         summaryBox.style.display = 'none';
       }
 
-      function maybeAutoAdvance(){
-        // Gentle auto-advance after answering (except on last)
-        const last = state.i === questions.length-1;
-        if(!last){
-          setTimeout(()=>{ state.i++; render(); }, 550);
-        }
-      }
-
-      backBtn.addEventListener('click',()=>{
-        if(state.i>0){ state.i--; render(); }
-      });
-      nextBtn.addEventListener('click',()=>{
-        // require an answer before moving on
-        if(state.answers[state.i]===null){
-          feedbackEl.className = 'feedback bad';
-          feedbackEl.textContent = 'Please choose an answer before continuing.';
-          return;
-        }
-        if(state.i < questions.length-1){ state.i++; render(); }
-      });
-      finishBtn.addEventListener('click',()=>{
-        if(state.answers[state.i]===null){
-          feedbackEl.className = 'feedback bad';
-          feedbackEl.textContent = 'Please choose an answer before finishing.';
-          return;
-        }
-        showSummary();
-      });
-
       function showSummary(){
-        const total = questions.length;
-        const correct = state.correctness.filter(x=>x===true).length;
+        const total = session.questions.length;
+        const correct = session.correctness.filter(x=>x===true).length;
         const wrong = total - correct;
         sumTotal.textContent = total;
         sumCorrect.textContent = correct;
@@ -489,10 +565,10 @@ Uniforms
 
         wrongList.innerHTML = '';
         const catCount = {};
-        questions.forEach((q, i)=>{
-          if(state.correctness[i]===false){
+        session.questions.forEach((q, i)=>{
+          if(session.correctness[i]===false){
             const li = document.createElement('li');
-            const chosenIdx = state.answers[i];
+            const chosenIdx = session.answers[i];
             const chosen = chosenIdx!=null ? q.options[chosenIdx].t : '(no answer)';
             const correctText = q.options.find(o=>o.ok).t;
             li.innerHTML = `<div style="margin-bottom:6px"><b>Q${i+1} — ${q.category}</b></div>
@@ -522,11 +598,40 @@ Uniforms
         backBtn.disabled = true;
         nextBtn.style.display = 'none';
         finishBtn.style.display = 'none';
+
+        session.finished = true;
+        saveSession(session);
       }
 
-      // Kick off
-      if(questions.length===0){
-        qText.textContent = 'No questions could be generated. Please keep the rules text in the page.';
+      backBtn.addEventListener('click',()=>{
+        if(session.i>0){ session.i--; saveSession(session); render(); }
+      });
+      nextBtn.addEventListener('click',()=>{
+        if(session.answers[session.i]===null){
+          feedbackEl.className = 'feedback bad';
+          feedbackEl.textContent = 'Please choose an answer before continuing.';
+          return;
+        }
+        if(session.i < session.questions.length-1){ session.i++; saveSession(session); render(); }
+      });
+      finishBtn.addEventListener('click',()=>{
+        if(session.answers[session.i]===null){
+          feedbackEl.className = 'feedback bad';
+          feedbackEl.textContent = 'Please choose an answer before finishing.';
+          return;
+        }
+        showSummary();
+      });
+      resetBtn.addEventListener('click',()=>{
+        if(confirm('Reset quiz? This clears saved answers and reshuffles questions.')){
+          clearSession();
+          location.reload();
+        }
+      });
+
+      // Initial render (always shows saved selections & correctness)
+      if(session.questions.length===0){
+        qText.textContent = 'No questions could be generated. Please keep the full rules text in the page.';
         optionsEl.innerHTML = '';
         document.querySelector('.controls').style.display = 'none';
       }else{
