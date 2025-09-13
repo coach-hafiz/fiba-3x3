@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>FIBA 3x3 MCQ Quiz (Improved)</title>
+  <title>FIBA 3x3 MCQ Quiz — Stable</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root { --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --muted:#9da7b3; --accent:#f6c945; --good:#2ea043; --bad:#f85149; }
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    header{padding:16px 20px;border-bottom:1px solid #232a34;background:linear-gradient(180deg,#0f1320,#0e1117);display:flex;justify-content:space-between;align-items:center;gap:10px}
-    h1{margin:0;font-size:18px;letter-spacing:.3px}
+    header{padding:14px 18px;border-bottom:1px solid #232a34;background:linear-gradient(180deg,#0f1320,#0e1117);display:flex;justify-content:space-between;align-items:center}
+    h1{margin:0;font-size:18px}
     .reset{background:#0b1320;border:1px solid #243044;color:#c8d1dc;border-radius:8px;padding:8px 10px;font-weight:600;cursor:pointer}
-    main{max-width:960px;margin:0 auto;padding:20px}
+    main{max-width:960px;margin:0 auto;padding:18px}
     .card{background:var(--panel);border:1px solid #232a34;border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.20)}
-    .meta{display:flex;justify-content:space-between;gap:12px;margin:8px 0 14px;color:var(--muted);font-size:13px;align-items:center}
+    .meta{display:flex;gap:12px;align-items:center;margin:8px 0 14px;color:var(--muted);font-size:13px}
+    .pill{display:inline-block;background:#111826;border:1px solid #233043;border-radius:999px;padding:6px 10px}
     .progress-wrap{height:8px;background:#0b0f16;border-radius:999px;overflow:hidden;border:1px solid #1f2630;flex:1}
     .progress{height:100%;background:linear-gradient(90deg,var(--accent),#ffd86b);width:0%}
-    .pill{display:inline-block;background:#111826;border:1px solid #233043;border-radius:999px;padding:6px 10px;color:var(--muted);font-size:12px}
     .q-text{font-size:18px;margin:10px 0 14px}
     .options{display:grid;gap:10px}
     .opt{border:1px solid #2a3442;border-radius:10px;padding:12px 14px;cursor:pointer;background:#111826;transition:transform .05s ease,border-color .2s}
@@ -37,15 +37,18 @@
     details{border:1px dashed #2a3442;border-radius:10px;padding:10px;margin-top:10px}
     details summary{cursor:pointer;color:#d2dbe7}
     .foot{margin-top:18px;color:var(--muted);font-size:12px}
+    .alert{padding:10px;border-radius:8px;border:1px solid #3b2b17;background:#17120b;color:#fff;margin-bottom:12px}
   </style>
 </head>
 <body>
   <header>
-    <h1>FIBA 3x3 Quiz — Playing Rules & Referee Signals</h1>
-    <button class="reset" id="resetBtn" title="Clear saved session & reshuffle">Reset quiz</button>
+    <h1>FIBA 3x3 Quiz</h1>
+    <button class="reset" id="resetBtn">Reset quiz</button>
   </header>
 
   <main>
+    <div id="warnBox" class="alert" style="display:none"></div>
+
     <div class="card">
       <div class="meta">
         <span class="pill" id="catPill">Category</span>
@@ -68,7 +71,7 @@
 
       <section id="summary" class="summary" style="display:none;margin-top:8px">
         <h2>Summary</h2>
-        <p>Total questions: <b id="sumTotal">0</b> &middot; Correct: <b id="sumCorrect">0</b> &middot; Wrong: <b id="sumWrong">0</b></p>
+        <p>Total: <b id="sumTotal">0</b> · Correct: <b id="sumCorrect">0</b> · Wrong: <b id="sumWrong">0</b></p>
         <details open>
           <summary>Wrong questions & explanations</summary>
           <ol id="wrongList" class="badlist"></ol>
@@ -77,101 +80,63 @@
           <summary>Rule categories to review</summary>
           <ul id="catList" class="badlist"></ul>
         </details>
-        <div class="foot">Reload the page to keep your answers; press “Reset quiz” to reshuffle from scratch.</div>
+        <div class="foot">Your answers are saved locally. Use “Reset quiz” to clear & reshuffle.</div>
       </section>
     </div>
 
-    <!-- FULL RULES TEXT (trimmed here for brevity; keep your original full paste to maximize coverage) -->
+    <!-- Paste your FULL rules text between these tags -->
     <script type="text/plain" id="rules">
 PLAYING COURT AND EQUIPMENT
-
-Playing court
-A regular 3x3 playing court shall have a flat, hard surface free from obstructions (Diagram 1) with dimensions of 15 m in width and 11 m in length measured from the inner edge of the boundary line. The court shall have a regular basketball playing court sized zone, including a free throw line (5.80 m), a 2-point line (6.75m) and a "no-charge semi-circle" area underneath the basket.
-
-At grassroots level, 3x3 can be played anywhere; court makings - if any are used - shall be adapted to available space, however FIBA 3x3 Official Competitions must fully comply with the above specifications including backstop with the shot clock integrated in the backstop padding.
-
-Lines
-All lines shall be of the same colour and drawn in white or other contrasting colour, 5 cm in width and clearly visible.
-Boundary line/Boundary area
-
-The playing court shall be limited by the boundary line, consisting of the baseline (behind the basket), endline (opposite the basket) and the sidelines. These lines are not part of the playing court.
-
-There shall be an additional boundary area of 1 m at the endline, 1.5 m at the sidelines (exceptionally for matters of limited space a minimum of 1 m) and 2 m at the baseline around the playing court.
-
-The scorer's table and its chairs must be placed behind the endline on the lefthand side (when facing the basket).
-
-Exceptionally (for matters of limited space) in Pro Circuit events the scorer's table may cut the corner at the endline (Diagram 5).
-To the side of the scorer's table there shall be 2 seats available (one for each team) for the substitutes (Diagram 4).
-
-Free-throw line, restricted area and free-throw rebound places
-The free-throw line shall be drawn parallel to the baseline and endline. It shall have its furthest edge 5.80 m from the inner edge of the baseline and shall be 3.60 m long.
-
-Its mid-point shall lie on the imaginary line joining the mid-point of the endline and baseline.
-
-The restricted area shall be the rectangular area marked on the playing court limited by the baseline, the extended free-throw line and the lines which originate at the baseline, its outer edges being 2.45 m from the mid-point of the baseline and terminating at the outer edge of the extended free-throw line. These lines, excluding the baseline, are part of the restricted area.
-
-2-point field goal area
-The teams' 2-point field goal area shall be the entire floor area of the playing court, except for the area inside the arc, limited by and including:
-• The 2 parallel lines extending from and perpendicular to the baseline, with the outer edge 0.90 m from the inner edge of the sidelines.
-• An arc of radius 6.75 m measured from the point on the floor beneath the exact centre of the basket to the outer edge of the arc. The distance of the point on the floor from the inner edge of the mid-point of the baseline is 1.575 m. The arc is joined to the parallel lines.
-
-The 2-point line (the arc) is not part of the 2-point field goal area.
-
-No-charge semi-circle area
-The no-charge semi-circle area shall be marked on the playing court, limited by:
-• A semi-circle with the radius of 1.25 m measured from the point on the floor beneath the exact centre of the basket to the inner edge of the semi-circle. The semi-circle is joined to:
-• The 2 parallel lines perpendicular to the baseline, the inner edge 1.25 m from the point on the floor beneath the exact centre of the basket, 0.375 m in length and ending 1.20 m from the inner edge of the baseline.
-
-The no-charge semi-circle area is completed by imaginary lines joining the ends of the parallel lines directly below the front edges of the backboard
-
-The no-charge semi-circle line is part of the no-charge semi-circle area.
-
-Equipment
-The following equipment shall be required:
-• Backstop unit, consisting of:
-- Backboard
-- Basket comprising (pressure release) ring and net
-- Backboard support structure including padding.
-3x3 Basketballs
-• Game clock
-Scoreboard
-• Shot clock
-2 separate, distinctly different and loud signals, one of each for the
-- shot clock operator,
-- scorer/timer.
-Scoresheet
-• Playing floor
-Playing court
-• Adequate lighting.
-
-TEAMS
-Teams
-
-Definition
-A team member is eligible to play when he has been authorised to play for a team according to the regulations, including regulations governing age limits, of the organising body of the competition.
-
-A team member is entitled to play when his name has been entered on the scoresheet before the beginning of the game and as long as he has not been disqualified.
-
-During playing time, a team member is:
-• A player when he is on the playing court and is entitled to play.
-• A substitute when he is not on the playing court but he is entitled to play.
-
-During an interval of play, all team members entitled to play are considered as players.
-
-Rule
-Each team shall consist of no more than 4 team members entitled to play (3 players on the court and 1 substitute).
-
-Coaches on the playing court and/or on the seats for substitutes and/or remote coaching from outside the court are not allowed.
-
-A substitute becomes a player after his teammate steps off the court.
-
-Uniforms
-... (keep your full text here)
+(keep your full text here; I left only the heading so this demo loads. The generator works best with the full paste.)
     </script>
 
     <script>
-      // ------------------ CONFIG: add your referee hand-signal images here ------------------
-      // The filename (without extension) is the CORRECT answer.
+    (function(){
+      // ---------- SAFE UTILITIES ----------
+      const warnBox = document.getElementById('warnBox');
+      function showWarn(msg){
+        warnBox.textContent = msg;
+        warnBox.style.display = 'block';
+      }
+      function tryLocalStorage(){
+        try{
+          const k='__t'; localStorage.setItem(k,'1'); localStorage.removeItem(k);
+          return localStorage;
+        }catch(e){ return null; }
+      }
+      const LS = tryLocalStorage();
+      if(!LS){ showWarn('Note: Your browser blocked local storage. Answers will not persist after closing the tab.'); }
+
+      function safePRNG(seed){
+        // Mulberry32 – tiny, stable
+        let t = seed >>> 0;
+        return function(){
+          t += 0x6D2B79F5;
+          let r = Math.imul(t ^ t>>>15, 1 | t);
+          r ^= r + Math.imul(r ^ r>>>7, 61 | r);
+          return ((r ^ r>>>14) >>> 0) / 4294967296;
+        };
+      }
+      function getSeed(){
+        try{
+          if (window.crypto && crypto.getRandomValues){
+            return (crypto.getRandomValues(new Uint32Array(1))[0]>>>0) || (Date.now()>>>0);
+          }
+        }catch(e){}
+        return (Date.now()>>>0);
+      }
+      function shuffleInPlace(a, rnd){
+        for(let i=a.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+        return a;
+      }
+      function hashString(s){
+        let h=2166136261>>>0;
+        for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); }
+        return (h>>>0).toString(16);
+      }
+      function escapeRegex(x){ return x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+      // ---------- CONFIG: Add signal images (filenames become answers) ----------
       const signalImages = [
         // "signals/travelling.png",
         // "signals/charging.jpg",
@@ -179,45 +144,18 @@ Uniforms
         // "signals/unsportsmanlike.png",
         // "signals/technical.png"
       ];
-      // --------------------------------------------------------------------------------------
 
-      // ====== Persistence (save all responses & exact shuffle) ======
-      const STORAGE_KEY = 'fiba3x3_quiz_v2';
+      // ---------- PARSE RULES ----------
       const rulesText = document.getElementById('rules').textContent.trim();
-      function hashString(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); } return (h>>>0).toString(16); }
       const RULES_HASH = hashString(rulesText + JSON.stringify(signalImages));
 
-      function saveSession(sess){
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sess));
-      }
-      function loadSession(){
-        try{
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if(!raw) return null;
-          const sess = JSON.parse(raw);
-          if(!sess || sess.rulesHash !== RULES_HASH) return null; // rules changed → new session
-          return sess;
-        }catch{ return null; }
-      }
-      function clearSession(){ localStorage.removeItem(STORAGE_KEY); }
-
-      // ====== RNG (per-session deterministic) ======
-      function makePRNG(seed){
-        let s = seed>>>0 || 1;
-        return ()=> (s = (s * 1664525 + 1013904223)>>>0) / 4294967296;
-      }
-      function shuffleInPlace(arr, rnd){
-        for(let i=arr.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-        return arr;
-      }
-
-      // ====== Parse rules into categories & paragraphs ======
       function isHeading(line){
         if(!line) return false;
-        const noDot = !/[.!?]$/.test(line.trim());
-        const capsish = /^[A-Z0-9 .:;'()/-]+$/.test(line.trim());
-        const lenOK = line.trim().length <= 42;
-        return (capsish && lenOK) || (noDot && lenOK && /^[A-Z]/.test(line.trim()));
+        const s = line.trim();
+        const noDot = !/[.!?]$/.test(s);
+        const capsish = /^[A-Z0-9 .:;'()/-]+$/.test(s);
+        const lenOK = s.length <= 42;
+        return (capsish && lenOK) || (noDot && lenOK && /^[A-Z]/.test(s));
       }
       function parseRules(raw){
         const lines = raw.split(/\r?\n/);
@@ -230,7 +168,7 @@ Uniforms
           buf = [];
         };
         for(const L of lines){
-          const line = L.replace(/\s+$/,'');
+          const line = (L||'').replace(/\s+$/,'');
           if(isHeading(line)){
             if(buf.length && current) flush();
             current = line.trim().replace(/\s+/g,' ').toUpperCase();
@@ -244,8 +182,6 @@ Uniforms
         if(buf.length && current) flush();
         return {categories, catMap};
       }
-
-      // ====== Concise + Relevant Distractors ======
       function concise(p){
         let s = p.replace(/\s+/g,' ').trim();
         s = s.replace(/\(Diagram[^)]+\)/gi,'').replace(/\(see[^)]+\)/gi,'');
@@ -253,7 +189,7 @@ Uniforms
         return s;
       }
 
-      // Controlled term variants (keep relevance; one controlled change per distractor)
+      // ---------- RELEVANT DISTRACTORS (controlled single-change) ----------
       const TERM_MAP = [
         ['inside the arc','behind the arc'],
         ['behind the arc','inside the arc'],
@@ -273,159 +209,151 @@ Uniforms
         ['12 seconds','10 seconds'],
         ['10 minutes','12 minutes'],
       ];
-
-      function firstMatchVariant(s){
+      function firstVariant(s){
         for(const [a,b] of TERM_MAP){
-          const re = new RegExp(`\\b${a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i');
+          const re = new RegExp(`\\b${escapeRegex(a)}\\b`,'i');
           if(re.test(s)) return {from:a,to:b};
         }
         return null;
       }
-
-      function adjustNumberToken(s){
-        // adjust a single numeric measurement/time while keeping unit to stay relevant
-        // meters
+      function tweakNumber(s){
         let m = s.match(/(\d+(?:\.\d+)?)\s?m\b/i);
         if(m){
           const num = parseFloat(m[1]);
-          const factor = 1 + (Math.random()<.5?-1:1) * (0.08 + Math.random()*0.12); // 8–20%
-          const alt = (Math.max(0.1, num*factor)).toFixed(2);
+          const alt = Math.max(0.1, +(num * 1.15).toFixed(2));
           return s.replace(m[0], `${alt} m`);
         }
-        // seconds
         m = s.match(/\b(\d{1,2})\s?seconds?\b/i);
         if(m){
-          let v = Math.max(1, parseInt(m[1],10) + (Math.random()<.5?-1:1)* (1+Math.floor(Math.random()*3)));
+          const v = Math.max(1, parseInt(m[1],10) + 2);
           return s.replace(m[0], `${v} seconds`);
         }
-        // minutes
         m = s.match(/\b(\d{1,2})\s?minutes?\b/i);
         if(m){
-          let v = Math.max(1, parseInt(m[1],10) + (Math.random()<.5?-1:1)* (1+Math.floor(Math.random()*2)));
+          const v = Math.max(1, parseInt(m[1],10) + 2);
           return s.replace(m[0], `${v} minutes`);
         }
-        // points
         m = s.match(/\b(1|2)\s?points?\b/i);
         if(m){
           const alt = m[1]==='1' ? '2 points' : '1 point';
           return s.replace(m[0], alt);
         }
-        return null; // no numeric token found
+        return null;
       }
-
-      function makeRelevantDistractors(correct, need=4, rnd){
-        const outs = new Set();
+      function makeRelevantDistractors(correct, need, rnd){
+        const out = new Set();
         let guard = 0;
-
-        // Strategy: produce at most one controlled change per distractor
-        while(outs.size < need && guard < 80){
-          let candidate = correct;
-
-          // 50% numeric tweak if exists; else 100% term swap if exists
+        while(out.size < need && guard < 80){
+          let c = correct;
           if(rnd() < 0.6){
-            const tweaked = adjustNumberToken(candidate);
-            if(tweaked) candidate = tweaked;
+            const numT = tweakNumber(c);
+            if(numT) c = numT;
             else {
-              const v = firstMatchVariant(candidate);
-              if(v){ candidate = candidate.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to); }
-              else { // last resort: minor phrasing swap that stays relevant
-                candidate = candidate.replace(/\bshall\b/ig,'must'); // mild, not negating meaning
-              }
+              const v = firstVariant(c);
+              if(v) c = c.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
+              else c = c.replace(/\bshall\b/ig,'must'); // gentle phrasing only
             }
           } else {
-            const v = firstMatchVariant(candidate);
-            if(v){ candidate = candidate.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to); }
+            const v = firstVariant(c);
+            if(v) c = c.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
             else {
-              const tweaked = adjustNumberToken(candidate);
-              if(tweaked) candidate = tweaked;
+              const numT = tweakNumber(c);
+              if(numT) c = numT;
             }
           }
-
-          // ensure not identical and not trivially same
-          if(candidate !== correct && Math.abs(candidate.length - correct.length) <= Math.max(10, correct.length*0.25)){
-            outs.add(candidate);
+          if(c !== correct && Math.abs(c.length - correct.length) <= Math.max(12, correct.length*0.3)){
+            out.add(c);
           }
           guard++;
         }
-
-        // If still short, clone with a different single swap that remains relevant
-        const variants = Array.from(outs);
-        while(variants.length < need){
-          const v = firstMatchVariant(correct);
+        // fallback: ensure we have exactly 'need'
+        const list = Array.from(out);
+        while(list.length < need){
+          const v = firstVariant(correct);
           if(v){
-            const c2 = correct.replace(new RegExp(`\\b${v.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'i'), v.to);
-            if(c2 !== correct && !variants.includes(c2)) variants.push(c2);
+            const c2 = correct.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
+            if(c2 !== correct && !list.includes(c2)) list.push(c2);
           } else {
-            // as a last fallback, only small numeric tweak of +1/-1 on seconds if present
             const m = correct.match(/\b(\d{1,2})\s?seconds?\b/i);
             if(m){
               const base = parseInt(m[1],10);
-              const alt = `${base + (variants.length%2?1:-1)} seconds`;
+              const alt = `${base+ (list.length%2?1:-1)} seconds`;
               const c2 = correct.replace(m[0], alt);
-              if(c2 !== correct && !variants.includes(c2)) variants.push(c2);
-            } else {
-              break;
-            }
+              if(c2 !== correct && !list.includes(c2)) list.push(c2);
+            } else break;
           }
         }
-        return variants.slice(0, need).map(t => ({t, ok:false}));
+        return list.slice(0, need).map(t => ({t, ok:false}));
       }
 
-      // ====== Build question set (once per session) ======
+      // ---------- BUILD QUESTIONS ----------
       function buildQuestions(rnd){
         const {categories, catMap} = parseRules(rulesText);
         const qs = [];
-
         for(const cat of categories){
-          const paras = (catMap[cat]||[]).filter(p => /\w/.test(p));
+          const paras = (catMap[cat]||[]).filter(p=>/\w/.test(p));
           for(const p of paras){
             const stem = concise(p);
             if(stem.length < 15) continue;
-
-            const prompt = `Scenario (${cat}): In a 3x3 situation, which option best aligns with the rule stated?`;
+            const prompt = `Scenario (${cat}): Which option best reflects this rule in play?`;
             const correct = stem;
             const distractors = makeRelevantDistractors(correct, 4, rnd);
-            const opts = [{t:correct, ok:true}, ...distractors];
-            shuffleInPlace(opts, rnd);
-
-            qs.push({
-              type:'rule',
-              category:cat,
-              paragraph:p,
-              prompt,
-              options:opts,
-              explain:`Rule reference: <span class="mono">${correct}</span>`
-            });
+            const options = [{t:correct, ok:true}, ...distractors];
+            shuffleInPlace(options, rnd);
+            qs.push({ type:'rule', category:cat, paragraph:p, prompt, options,
+              explain:`Rule reference: <span class="mono">${correct}</span>` });
           }
         }
-
-        // Hand-signal questions (all options are names from actual files → inherently relevant)
         if(signalImages.length){
-          const names = signalImages.map(src => src.split('/').pop().replace(/\.[a-z0-9]+$/i,''));
+          const names = signalImages.map(s=>s.split('/').pop().replace(/\.[a-z0-9]+$/i,''));
           for(const src of signalImages){
-            const answer = src.split('/').pop().replace(/\.[a-z0-9]+$/i,'');
-            const pool = names.filter(n => n!==answer);
-            shuffleInPlace(pool, rnd);
-            const dists = pool.slice(0,4).map(t=>({t, ok:false}));
-            const opts = [{t:answer, ok:true}, ...dists];
+            const ans = src.split('/').pop().replace(/\.[a-z0-9]+$/i,'');
+            const pool = names.filter(n=>n!==ans); shuffleInPlace(pool, rnd);
+            const opts = [{t:ans, ok:true}, ...pool.slice(0,4).map(t=>({t, ok:false}))];
             shuffleInPlace(opts, rnd);
-
-            qs.push({
-              type:'signal',
-              category:'REFEREE HAND SIGNALS',
-              image:src,
-              prompt:`Referee Signal: Identify the correct hand signal name.`,
-              options:opts,
-              explain:`Answer is the image filename: <span class="mono">${answer}</span>`
-            });
+            qs.push({ type:'signal', category:'REFEREE HAND SIGNALS', image:src,
+              prompt:'Referee Signal: Identify the correct name.', options:opts,
+              explain:`Answer is the filename: <span class="mono">${ans}</span>` });
           }
         }
-
         shuffleInPlace(qs, rnd);
         return qs;
       }
 
-      // ====== UI + State ======
+      // ---------- SESSION (persistent) ----------
+      const STORAGE_KEY = 'fiba3x3_quiz_stable_v1';
+      function loadSession(){
+        if(!LS) return null;
+        try{
+          const raw = LS.getItem(STORAGE_KEY);
+          if(!raw) return null;
+          const s = JSON.parse(raw);
+          if(!s || s.rulesHash !== RULES_HASH) return null;
+          return s;
+        }catch(e){ return null; }
+      }
+      function saveSession(s){ if(LS){ try{ LS.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){} } }
+      function clearSession(){ if(LS){ try{ LS.removeItem(STORAGE_KEY); }catch(e){} } }
+
+      let session = loadSession();
+      if(!session){
+        const seed = getSeed();
+        const rnd = safePRNG(seed);
+        const questions = buildQuestions(rnd);
+        session = {
+          rulesHash: RULES_HASH,
+          seed,
+          i: 0,
+          questions,
+          answers: Array(questions.length).fill(null),
+          correctness: Array(questions.length).fill(null),
+          finished: false
+        };
+        saveSession(session);
+      }
+      const rnd = safePRNG(session.seed);
+
+      // ---------- UI ----------
       const qText = document.getElementById('qText');
       const optionsEl = document.getElementById('options');
       const feedbackEl = document.getElementById('feedback');
@@ -436,6 +364,7 @@ Uniforms
       const catPill = document.getElementById('catPill');
       const countPill = document.getElementById('countPill');
       const progressBar = document.getElementById('progress');
+      const resetBtn = document.getElementById('resetBtn');
 
       const summaryBox = document.getElementById('summary');
       const sumTotal = document.getElementById('sumTotal');
@@ -443,29 +372,14 @@ Uniforms
       const sumWrong = document.getElementById('sumWrong');
       const wrongList = document.getElementById('wrongList');
       const catList = document.getElementById('catList');
-      const resetBtn = document.getElementById('resetBtn');
-
-      let session = loadSession();
-      if(!session){
-        // create new session with its own deterministic RNG seed so shuffles are consistent across reloads
-        const seed = (crypto.getRandomValues(new Uint32Array(1))[0]>>>0) || (Date.now()>>>0);
-        const rnd = makePRNG(seed);
-        const questions = buildQuestions(rnd);
-        session = {
-          rulesHash: RULES_HASH,
-          seed,
-          i: 0,
-          questions,
-          answers: Array(questions.length).fill(null),      // selected index
-          correctness: Array(questions.length).fill(null),  // true/false
-          finished: false
-        };
-        saveSession(session);
-      }
-      const rnd = makePRNG(session.seed);
 
       function render(){
         const total = session.questions.length;
+        if(total === 0){
+          qText.textContent = 'No questions generated. Paste full rules text into the page.';
+          document.querySelector('.controls').style.display = 'none';
+          return;
+        }
         const idx = Math.max(0, Math.min(session.i, total-1));
         const q = session.questions[idx];
 
@@ -479,14 +393,14 @@ Uniforms
         imageZone.innerHTML = '';
         if(q.type==='signal'){
           const img = document.createElement('img');
-          img.alt = "Referee Hand Signal";
+          img.alt = 'Referee Signal';
           img.src = q.image;
           imageZone.appendChild(img);
         }
 
         optionsEl.innerHTML = '';
         feedbackEl.textContent = '';
-        const previous = session.answers[idx];
+        const prev = session.answers[idx];
 
         q.options.forEach((opt, k)=>{
           const div = document.createElement('div');
@@ -495,18 +409,12 @@ Uniforms
           div.setAttribute('tabindex','0');
           div.innerHTML = `<b>${String.fromCharCode(65+k)}.</b> ${opt.t}`;
 
-          // Always show saved selection + grading when revisiting (forward/back)
-          if(previous===k){
-            div.classList.add('selected');
-          }
           div.addEventListener('click',()=>{
-            // save answer
             session.answers[idx] = k;
             const ok = q.options[k].ok===true;
             session.correctness[idx] = ok;
-            saveSession(session); // persist immediately
+            saveSession(session);
 
-            // update UI (persisted selection visible)
             [...optionsEl.children].forEach(c=>c.classList.remove('selected','correct','incorrect'));
             div.classList.add('selected');
             if(ok){
@@ -517,33 +425,29 @@ Uniforms
               div.classList.add('incorrect');
               feedbackEl.className = 'feedback bad';
               feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
-              // mark correct
-              [...optionsEl.children].forEach((c,ci)=>{
-                if(q.options[ci].ok) c.classList.add('correct');
-              });
+              // show correct
+              [...optionsEl.children].forEach((c,ci)=>{ if(q.options[ci].ok) c.classList.add('correct'); });
             }
           });
+
           optionsEl.appendChild(div);
         });
 
-        // If there is a saved answer, show grading immediately (without forcing click)
-        if(previous !== null){
+        // Reapply saved selection & feedback
+        if(prev !== null){
           const ok = session.correctness[idx] === true;
-          const chosenDiv = optionsEl.children[previous];
-          if(chosenDiv){
-            chosenDiv.classList.add('selected');
+          const chosen = optionsEl.children[prev];
+          if(chosen){
+            chosen.classList.add('selected');
             if(ok){
-              chosenDiv.classList.add('correct');
+              chosen.classList.add('correct');
               feedbackEl.className = 'feedback good';
               feedbackEl.textContent = '✔ Correct!';
             } else {
-              chosenDiv.classList.add('incorrect');
+              chosen.classList.add('incorrect');
               feedbackEl.className = 'feedback bad';
               feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
-              // mark correct option
-              [...optionsEl.children].forEach((c,ci)=>{
-                if(q.options[ci].ok) c.classList.add('correct');
-              });
+              [...optionsEl.children].forEach((c,ci)=>{ if(q.options[ci].ok) c.classList.add('correct'); });
             }
           }
         }
@@ -572,11 +476,11 @@ Uniforms
             const chosen = chosenIdx!=null ? q.options[chosenIdx].t : '(no answer)';
             const correctText = q.options.find(o=>o.ok).t;
             li.innerHTML = `<div style="margin-bottom:6px"><b>Q${i+1} — ${q.category}</b></div>
-                             <div><i>Prompt:</i> ${q.prompt}</div>
-                             ${q.type==='signal' ? `<div class="img-wrap" style="margin:8px 0"><img src="${q.image}" alt="signal" style="max-width:220px;max-height:140px"></div>`:''}
-                             <div style="margin:4px 0">Your answer: <span class="bad">${chosen}</span></div>
-                             <div>Correct answer: <span class="good">${correctText}</span></div>
-                             <div style="margin-top:4px">${q.explain}</div>`;
+                            <div><i>Prompt:</i> ${q.prompt}</div>
+                            ${q.type==='signal' ? `<div class="img-wrap" style="margin:8px 0"><img src="${q.image}" alt="signal" style="max-width:220px;max-height:140px"></div>`:''}
+                            <div style="margin:4px 0">Your answer: <span class="bad">${chosen}</span></div>
+                            <div>Correct answer: <span class="good">${correctText}</span></div>
+                            <div style="margin-top:4px">${q.explain}</div>`;
             wrongList.appendChild(li);
             catCount[q.category] = (catCount[q.category]||0)+1;
           }
@@ -603,10 +507,11 @@ Uniforms
         saveSession(session);
       }
 
-      backBtn.addEventListener('click',()=>{
+      // Buttons
+      document.getElementById('backBtn').addEventListener('click',()=>{
         if(session.i>0){ session.i--; saveSession(session); render(); }
       });
-      nextBtn.addEventListener('click',()=>{
+      document.getElementById('nextBtn').addEventListener('click',()=>{
         if(session.answers[session.i]===null){
           feedbackEl.className = 'feedback bad';
           feedbackEl.textContent = 'Please choose an answer before continuing.';
@@ -614,7 +519,7 @@ Uniforms
         }
         if(session.i < session.questions.length-1){ session.i++; saveSession(session); render(); }
       });
-      finishBtn.addEventListener('click',()=>{
+      document.getElementById('finishBtn').addEventListener('click',()=>{
         if(session.answers[session.i]===null){
           feedbackEl.className = 'feedback bad';
           feedbackEl.textContent = 'Please choose an answer before finishing.';
@@ -622,21 +527,15 @@ Uniforms
         }
         showSummary();
       });
-      resetBtn.addEventListener('click',()=>{
+      document.getElementById('resetBtn').addEventListener('click',()=>{
         if(confirm('Reset quiz? This clears saved answers and reshuffles questions.')){
-          clearSession();
-          location.reload();
+          clearSession(); location.reload();
         }
       });
 
-      // Initial render (always shows saved selections & correctness)
-      if(session.questions.length===0){
-        qText.textContent = 'No questions could be generated. Please keep the full rules text in the page.';
-        optionsEl.innerHTML = '';
-        document.querySelector('.controls').style.display = 'none';
-      }else{
-        render();
-      }
+      // Start
+      render();
+    })();
     </script>
   </main>
 </body>
