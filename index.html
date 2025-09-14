@@ -2,101 +2,123 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>FIBA 3x3 Rules — Training Quiz</title>
 <style>
   :root{
-    --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --card:#0b1220; --accent:#22d3ee; --correct:#16a34a; --wrong:#ef4444;
-    --text:#e5e7eb; --text-weak:#cbd5e1; --chip:#1f2937; --border:#1f2937;
+    --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --border:#1f2937; --accent:#22d3ee;
+    --text:#e5e7eb; --ok:#16a34a; --no:#ef4444;
   }
   *{box-sizing:border-box}
-  body{margin:0; font:16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background:linear-gradient(180deg,#0a0f1e, #0f172a 40%, #0b1220); color:var(--text);}
-  header{position:sticky; top:0; z-index:9; background:rgba(15,23,42,.85); backdrop-filter: blur(6px); border-bottom:1px solid var(--border)}
-  .wrap{max-width:900px; margin:0 auto; padding:16px}
-  h1{margin:0; font-size:20px; letter-spacing:.2px}
-  .subtitle{color:var(--muted); font-size:13px}
-  .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:18px}
-  .muted{color:var(--muted)}
-  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  .btn{appearance:none; border:1px solid var(--border); background:#0a0f1e; color:var(--text); padding:10px 14px; border-radius:12px; cursor:pointer}
-  .btn:hover{border-color:#2b3447}
+  html,body{height:100%}
+  body{
+    margin:0; background:linear-gradient(180deg,#0a0f1e, #0f172a 40%, #0b1220);
+    color:var(--text); font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    overflow:hidden; /* keep to one screen */
+  }
+  header{position:sticky; top:0; z-index:9; background:rgba(15,23,42,.9); border-bottom:1px solid var(--border)}
+  .wrap{max-width:780px; margin:0 auto; padding:10px 12px}
+  h1{margin:0; font-size:16px; letter-spacing:.2px}
+  .subtitle{color:var(--muted); font-size:12px}
+  main{height:calc(100vh - 58px); display:flex; align-items:center; justify-content:center; padding:8px}
+  .card{width:min(720px,100%); background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:10px}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .pill{padding:2px 8px; border-radius:999px; background:#1f2937; color:#cbd5e1; border:1px solid var(--border); font-size:11px}
+  .btn{appearance:none; border:1px solid var(--border); background:#0a0f1e; color:var(--text); padding:6px 10px; border-radius:10px; cursor:pointer; font-size:12px}
   .btn.primary{background:var(--accent); color:#001219; border-color:transparent}
   .btn.ghost{background:transparent}
-  .btn.small{padding:7px 10px; font-size:14px}
-  .pill{padding:4px 10px; border-radius:999px; background:var(--chip); color:var(--text-weak); border:1px solid var(--border); font-size:12px}
-  .q-meta{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px}
-  .stem{font-size:18px; margin:8px 0 10px}
-  .context{color:var(--muted); font-size:14px; margin:0 0 12px}
-  .choices{display:grid; gap:10px; margin-top:10px}
-  .choice{border:1px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer; background:#0b1220}
-  .choice:hover{border-color:#2b3447}
+  .q-meta{display:flex; align-items:center; gap:6px; color:var(--muted); font-size:12px}
+  .counter{font-size:12px; color:var(--muted)}
+  .stem{font-size:16px; margin:6px 0 6px}
+  .context{color:var(--muted); font-size:12px; margin:0 0 8px}
+  .choices{display:grid; gap:6px; margin-top:4px}
+  .choice{border:1px solid var(--border); border-radius:10px; padding:8px 10px; cursor:pointer; background:#0b1220; font-size:13px}
   .choice.selected{outline:2px solid #334155}
   .choice.correct{background: rgba(22,163,74,.12); border-color: rgba(22,163,74,.4)}
   .choice.wrong{background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.4)}
-  .feedback{margin-top:12px; padding:10px 12px; border-radius:12px; font-size:14px}
+  .feedback{margin-top:6px; padding:8px 10px; border-radius:10px; font-size:12px; display:none}
   .ok{background: rgba(22,163,74,.13); border:1px solid rgba(22,163,74,.35)}
   .no{background: rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35)}
-  .nav{display:flex; justify-content:space-between; margin-top:14px}
-  .counter{font-size:13px; color:var(--muted)}
-  .imgwrap{margin:auto 0 auto; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#020617}
-  .imgwrap img{display:block; width:75%; height:75%}
+  .nav{display:flex; justify-content:space-between; margin-top:8px}
+  .imgwrap{margin:6px 0 4px; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#020617; display:flex; align-items:center; justify-content:center}
+  /* Make images compact so the entire screen fits on mobile without scrolling */
+  .imgwrap img{display:block; width:auto; height:110px; max-width:100%; object-fit:contain}
+
+  /* Summary view */
   .summary{display:none}
-  .summary table{width:100%; border-collapse:collapse}
-  .summary th, .summary td{border-bottom:1px solid var(--border); text-align:left; padding:8px}
-  .tag{font-size:12px; color:#a5b4fc; padding:2px 8px; border:1px solid #3730a3; border-radius:999px; background:#11103a}
-  .note{font-size:12px; color:var(--muted)}
+  .summary .card{max-height:calc(100vh - 90px); overflow:auto}
+  .summary .mini{font-size:12px; color:var(--muted)}
+  .summary .wrong-item{border:1px solid var(--border); border-radius:10px; padding:8px; margin:8px 0; background:#0b1220}
+  .summary .wrong-item .imgwrap img{height:80px}
+
+  @media (max-width:420px){
+    .stem{font-size:15px}
+    .choice{font-size:12.5px; padding:8px}
+    .imgwrap img{height:95px}
+    main{padding:6px}
+  }
 </style>
 </head>
 <body>
   <header>
-    <div class="wrap row" style="justify-content:space-between">
-      <div>
-        <h1>FIBA 3x3 Rules — Training Quiz</h1>
+    <div class="wrap">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>FIBA 3x3 Rules — Training Quiz</h1>
+          <div class="subtitle">One-question-per-page • Immediate feedback • Compact mobile layout</div>
+        </div>
+        <div class="row">
+          <button id="restart" class="btn">Restart</button>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <div class="wrap">
+  <main>
     <div id="screen-quiz" class="card">
       <div class="row" style="justify-content:space-between">
         <div class="q-meta"><span class="pill" id="topic-pill">Topic</span> <span class="counter" id="progress">Question 1 / N</span></div>
         <div class="row">
-          <button id="back" class="btn ghost small">◀ Back</button>
-          <button id="skip" class="btn ghost small">Skip</button>
+          <button id="back" class="btn ghost">◀ Back</button>
+          <button id="skip" class="btn ghost">Skip</button>
+          <button id="next" class="btn primary">Next ▶</button>
         </div>
       </div>
 
       <div id="image-area" class="imgwrap" style="display:none"><img id="q-image" alt="Referee signal"/></div>
       <div id="stem" class="stem"></div>
       <div id="context" class="context"></div>
-
       <div id="choices" class="choices"></div>
-
-      <div id="feedback" class="feedback" style="display:none"></div>
+      <div id="feedback" class="feedback"></div>
 
       <div class="nav">
         <div class="counter" id="answered"></div>
-        <button id="next" class="btn primary">Next ▶</button>
+        <div class="counter">Mode: Training (all questions)</div>
       </div>
     </div>
 
-    <div id="screen-summary" class="card summary">
-      <h2 style="margin:0 0 8px">Summary</h2>
-      <p class="muted" id="scoreline"></p>
-      <div id="weakness"></div>
-      <h3 style="margin:14px 0 6px">Incorrect & Skipped</h3>
-      <div id="wrong-list"></div>
-      <div class="row" style="margin-top:12px">
-        <button id="again" class="btn">Try again (reshuffle)</button>
-        <button id="review-wrong" class="btn ghost">Review wrong only</button>
+    <div id="screen-summary" class="summary" style="width:100%">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Summary</h2>
+        <p class="mini" id="scoreline"></p>
+        <div id="weakness" class="mini" style="margin-bottom:8px"></div>
+        <h3 style="margin:8px 0 6px">Incorrect & Skipped</h3>
+        <div id="wrong-list"></div>
+        <div class="row" style="margin-top:8px; justify-content:flex-end">
+          <button id="again" class="btn">Try again</button>
+          <button id="review-wrong" class="btn ghost">Review wrong only</button>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
 <script>
-/* ==============================
-   QUESTION BANK
-   ============================== */
+/* =========================================
+   QUESTION BANK (rules + referee signals)
+   — T1 (remember) & T2 (understand) only
+   ========================================= */
 
-/* Referee Signal Images: exact filenames (1–20, 31–56). Signals 21–30 do not exist. */
+/* Exact filenames for hand signals (images/...) */
 const SIGNAL_FILES = [
   "1. Stop the clock.jpeg","2. Stop the clock for foul.jpeg","3. 1 Point.jpeg","4. 2 points.jpeg","5. Charged time-out.jpeg","6. TV time-out.jpeg","7. Cancel score, cancel play.jpeg","8. Visible count.jpeg","9. Communication.jpeg","10. Shot clock reset.jpeg",
   "11. Out-of-bounds.jpeg","12. Held ball:jump ball situation.jpeg","13. Travelling.jpeg","14. Illegal Dribble_Double dribbling.jpeg","15. Illegal dribble_Carrying the ball.jpeg","16. 3 seconds.jpeg","17. 5 seconds.jpeg","18. 12 seconds.jpeg","19. Deliberate kick or block of the ball.jpeg","20. Ball not cleared.jpeg",
@@ -104,13 +126,9 @@ const SIGNAL_FILES = [
   "41. Foul by team in control of the ball.jpeg","42. Foul on the act of shooting.jpeg","43. Foul not on the act of shooting.jpeg","44. Double foul.jpeg","45. Technical foul.jpeg","46. Unsportsmanlike foul.jpeg","47. Disqualifying foul.jpeg","48. Fake a foul.jpeg","49. IRS review.jpeg","50. Challenge.jpeg",
   "51. After foul without free throw(s).jpeg","52. After foul by team in control of the ball.jpeg","53. 1 free throw.jpeg","54. 2 free throws.jpeg","55. 1 free throw.jpeg","56. 2 free throws.jpeg"
 ];
-
-/* Helper to infer label from filename */
 function prettySignalName(file){
   return file.replace(/^\d+\.\s*/, '').replace(/\.(jpe?g|png|gif)$/i,'').trim();
 }
-
-/* Usage options for signals (1 correct + 3 plausible distractors) */
 function usageOptions(name){
   const n = name.toLowerCase();
   if(n.includes('stop the clock for foul')) return {correct:"Stop the game clock after a foul is called", d:["Stop the clock for substitutions only","Indicate a charged time-out","Acknowledge a successful basket"]};
@@ -160,13 +178,16 @@ function usageOptions(name){
   return {correct:"Use as indicated for this specific referee signal", d:["Grant a time-out","Reset the shot clock","Start a visible count"]};
 }
 
-/* Two questions per signal: identify (T1) + usage (T2) */
+/* Build two questions per signal file */
 const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
   const name = prettySignalName(file);
   const u = usageOptions(name);
   const img = 'images/' + file;
 
-  // T1 Identify
+  // Identify (T1)
+  const baseFillers = ['Stop the clock','TV time-out','Visible count','Out-of-bounds','1 free throw','2 free throws'];
+  const uniq = Array.from(new Set([name, ...shuffle(baseFillers).slice(0,3)]));
+  if(!uniq.includes(name)) uniq[0]=name;
   const idQ = {
     id:`sig-${idx+1}-a`,
     topic:'Referees & Officials',
@@ -174,13 +195,13 @@ const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
     stem:'Identify this referee signal.',
     context:null,
     image:img,
-    choices: unique(['Stop the clock','TV time-out','Visible count', name]), // ensure correct present
-    answer: null, explain:`Signal: ${name}.`
+    choices: shuffle(uniq),
+    answer: null,
+    explain:`Signal: ${name}.`
   };
-  idQ.choices = shuffle(idQ.choices);
   idQ.answer = idQ.choices.indexOf(name);
 
-  // T2 Usage
+  // Usage (T2)
   const usageChoices = shuffle([u.correct, ...u.d]);
   const useQ = {
     id:`sig-${idx+1}-b`,
@@ -193,69 +214,49 @@ const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
     answer: usageChoices.indexOf(u.correct),
     explain:`Usage: ${u.correct}.`
   };
-
   return [idQ, useQ];
 });
 
-/* Hand-written rules questions (T1/T2), concise stems & relevant distractors */
+/* Hand-written rules questions */
 const RULE_QUESTIONS = [
-  /* Playing Court & Equipment */
+  // Playing Court & Equipment
   {id:'pc-1', topic:'Playing Court & Equipment', taxonomy:'T1',
    stem:'What are the official FIBA 3x3 court dimensions measured from the inner edge of the boundary line?',
-   context:null,
-   choices:['15 m wide × 11 m long','28 m × 15 m','14 m × 15 m','16 m × 11 m'],
-   answer:0, explain:'3x3 court: 15 m width, 11 m length.'},
+   context:null, choices:['15 m wide × 11 m long','28 m × 15 m','14 m × 15 m','16 m × 11 m'], answer:0,
+   explain:'3x3 court: 15 m width, 11 m length.'},
   {id:'pc-2', topic:'Playing Court & Equipment', taxonomy:'T1',
    stem:'What is the radius of the two-point arc in FIBA 3x3?',
-   context:null,
-   choices:['6.75 m','6.25 m','7.00 m','6.50 m'],
-   answer:0, explain:'Arc radius is 6.75 m.'},
+   context:null, choices:['6.75 m','6.25 m','7.00 m','6.50 m'], answer:0,
+   explain:'Arc radius is 6.75 m.'},
   {id:'pc-3', topic:'Playing Court & Equipment', taxonomy:'T2',
-   stem:'A venue adapts court markings for a grassroots event. What is correct under FIBA 3x3?',
-   context:'Limited space at a community tournament.',
-   choices:[
-     'Adaptation of markings is allowed at grassroots level',
-     'Official events may also ignore the arc distance',
-     'Lines can be any width if visible',
-     'No shot clock is allowed at grassroots level'
-   ],
-   answer:0, explain:'Adaptation allowed for grassroots; official competitions must fully comply.'},
+   stem:'A venue adapts markings due to space limits for a grassroots event. What is correct?',
+   context:'Grassroots event with limited space.',
+   choices:['Adaptation is allowed at grassroots level','Official events may ignore the arc distance','Lines can be any width if visible','No shot clock is allowed at grassroots level'],
+   answer:0, explain:'Adaptation allowed at grassroots; official events must fully comply.'},
 
-  /* Teams & Uniforms */
+  // Teams & Uniforms
   {id:'tm-1', topic:'Teams & Uniforms', taxonomy:'T1',
    stem:'How many team members are permitted on a FIBA 3x3 team roster for a game?',
-   context:null,
-   choices:['4 (3 players + 1 substitute)','5 (3 players + 2 substitutes)','3 only','6 including a coach'],
-   answer:0, explain:'Max 4 entitled to play.'},
+   context:null, choices:['4 (3 players + 1 substitute)','5 (3 players + 2 substitutes)','3 only','6 including a coach'], answer:0,
+   explain:'Max 4 entitled to play.'},
   {id:'tm-2', topic:'Teams & Uniforms', taxonomy:'T2',
-   stem:'Two teammates wear the same jersey number. What should apply?',
-   context:'Pre-game check.',
-   choices:[
-     'Players on the same team must wear different numbers',
-     'Identical numbers are allowed if different colours',
-     'Numbers are optional in 3x3',
-     'Only the front number must differ'
-   ],
+   stem:'Two teammates wear the same jersey number. What applies?',
+   context:'Pre-game equipment check.',
+   choices:['Players on the same team must wear different numbers','Identical numbers are allowed if different colours','Numbers are optional in 3x3','Only the front number must differ'],
    answer:0, explain:'Same number not allowed.'},
 
-  /* Playing Regulations */
+  // Playing Regulations
   {id:'pr-1', topic:'Playing Regulations', taxonomy:'T1',
    stem:'How long is regular playing time in FIBA 3x3 official competitions?',
-   context:null,
-   choices:['1 period of 10 minutes','4 periods of 10 minutes','2 halves of 10 minutes','1 period of 12 minutes'],
-   answer:0, explain:'One period of 10 minutes.'},
+   context:null, choices:['1 period of 10 minutes','4 periods of 10 minutes','2 halves of 10 minutes','1 period of 12 minutes'], answer:0,
+   explain:'Regular time is one period of 10 minutes.'},
   {id:'pr-2', topic:'Playing Regulations', taxonomy:'T2',
    stem:'The score is tied at the end of regular time. What decides the game in overtime?',
-   context:'Start of OT.',
-   choices:[
-     'First team to score 2 points wins',
-     'Three-minute extra period',
-     'First team to reach 25 points wins',
-     'Jump ball then play to horn'
-   ],
-   answer:0, explain:'OT: first to 2 points.'},
+   context:'Start of overtime.',
+   choices:['First team to score 2 points wins','Three-minute extra period','First team to reach 25 points wins','Jump ball then play to horn'],
+   answer:0, explain:'OT: first to 2 points wins.'},
   {id:'pr-3', topic:'Playing Regulations', taxonomy:'T2',
-   stem:'After a defensive rebound, the player shoots immediately from inside the arc without clearing. What is the correct ruling?',
+   stem:'After a defensive rebound, the player shoots immediately from inside the arc without clearing. What is correct?',
    context:'Ball not cleared behind the arc.',
    choices:[
      'No-clear violation; cancel potential field goal; opponents get check-ball',
@@ -263,29 +264,26 @@ const RULE_QUESTIONS = [
      'Travel violation on rebounder',
      'Double-dribble violation on rebounder'
    ],
-   answer:0, explain:'Defense must clear before attempting to score.'},
+   answer:0, explain:'Defense must clear before scoring attempt.'},
 
-  /* Violations */
+  // Violations
   {id:'vi-1', topic:'Violations', taxonomy:'T1',
-   stem:'During a dribble, which action makes it an illegal carry?',
-   context:null,
-   choices:[
+   stem:'During a dribble, which action is an illegal carry?',
+   context:null, choices:[
      'Placing the hand under the ball and bringing it to a pause',
      'Changing hands while dribbling',
      'Taking steps while the ball is in the air',
-     'Starting a dribble after a deflection'
-   ],
-   answer:0, explain:'Hand under the ball + pause = carry.'},
+     'Starting a dribble after a deflected pass'
+   ], answer:0, explain:'Hand under the ball + pause = carry.'},
   {id:'vi-2', topic:'Violations', taxonomy:'T2',
-   stem:'An offensive player stands in the restricted area while his team controls the ball. After about three seconds, he begins to exit the lane. What is correct?',
+   stem:'An offensive player stands in the restricted area while his team controls the ball. After about three seconds, he begins to exit. What is correct?',
    context:'Lane occupancy and allowances.',
    choices:[
      'No violation if he is making an attempt to leave',
-     '3-second violation immediately at 3.0 seconds',
+     '3-second violation at exactly 3.0 seconds',
      'Violation only if defender is present',
      'Reset when ball is passed to perimeter'
-   ],
-   answer:0, explain:'Allowance is made when attempting to leave.'},
+   ], answer:0, explain:'Allowance when attempting to leave.'},
   {id:'vi-3', topic:'Violations', taxonomy:'T2',
    stem:'Near the end of the shot clock, the ball is released and misses the ring. The defense secures clear control immediately. What is correct?',
    context:'End-of-12-second situation.',
@@ -294,79 +292,58 @@ const RULE_QUESTIONS = [
      'Shot-clock violation; check-ball to defense',
      'Jump ball situation',
      'Reset to 12 and offense keeps the ball'
-   ],
-   answer:0, explain:'If opponents gain immediate and clear control, disregard the horn and continue.'},
+   ], answer:0, explain:'Immediate clear control by defense—disregard horn.'},
 
-  /* Fouls */
+  // Fouls
   {id:'fl-1', topic:'Fouls', taxonomy:'T1',
-   stem:'At team foul 7, what is the penalty for a common non-shooting foul?',
-   context:null,
-   choices:['Two free throws','One free throw','Check-ball only','Two free throws and possession'],
-   answer:0, explain:'Team fouls 7–9 = 2 FTs.'},
+   stem:'At team foul 7, what is the standard penalty for a common non-shooting foul?',
+   context:null, choices:['Two free throws','One free throw','Check-ball only','Two free throws and possession'], answer:0,
+   explain:'Team fouls 7–9 = 2 FTs.'},
   {id:'fl-2', topic:'Fouls', taxonomy:'T2',
    stem:'A defender commits excessive contact on a drive. It is the defender’s first such foul. What penalty applies?',
    context:'Forceful contact with risk.',
    choices:[
-     'Unsportsmanlike foul: 2 free throws (no possession); if goal made: count + 2 FTs',
+     'Unsportsmanlike foul: 2 free throws (no possession), or if goal made: count + 2 FTs',
      'Technical foul: 1 free throw',
      'Disqualifying foul automatically',
      'Personal foul only; check-ball'
-   ],
-   answer:0, explain:'Unsportsmanlike first U = 2 FTs; if in act & made, count + 2 FTs.'},
+   ], answer:0, explain:'Unsportsmanlike: first U = 2 FTs; if goal made, count + 2 FTs.'},
   {id:'fl-3', topic:'Fouls', taxonomy:'T2',
    stem:'Two opponents commit contact fouls on each other at about the same time. What is the ruling?',
    context:'Simultaneous contact by opponents.',
    choices:[
-     'Double foul; no free throws; resume per status (e.g., last defense check-ball)',
+     'Double foul; no free throws; resume per status',
      'Technical fouls for both',
      'Jump ball with arrow',
      'Two free throws for both players'
-   ],
-   answer:0, explain:'Double foul: record both; no FTs; resume based on prior status.'},
+   ], answer:0, explain:'Double foul: record both; no FTs; resume based on status.'},
 
-  /* Referees & Officials (non-image) */
+  // Referees & Officials (non-image)
   {id:'of-1', topic:'Referees & Officials', taxonomy:'T1',
    stem:'How many referees officiate a FIBA 3x3 game?',
-   context:null,
-   choices:['Two referees','One referee','Three referees','Two plus a crew chief'],
-   answer:0, explain:'Two referees.'},
+   context:null, choices:['Two referees','One referee','Three referees','Two plus a crew chief'], answer:0,
+   explain:'Two referees.'},
   {id:'of-2', topic:'Referees & Officials', taxonomy:'T2',
    stem:'What can a team request a video Challenge for near the end of the game?',
-   context:'IRS available.',
+   context:'End-game with IRS available.',
    choices:[
      'Whether a last shot beat the shot clock and/or counts for 1 or 2 points',
      'Any no-call anywhere on the floor',
      'A routine substitution question',
      'Whether a coach may call time-out during live ball'
-   ],
-   answer:0, explain:'Challengeable items include last-shot timing/value (plus other specified cases).'}
+   ], answer:0, explain:'Challengeable items include last-shot timing and value.'},
 ];
 
-/* Final pool */
 const QUESTIONS = [...RULE_QUESTIONS, ...SIGNAL_QUESTIONS];
 
-/* ==============================
-   QUIZ ENGINE
-   ============================== */
-
+/* ======================
+   QUIZ ENGINE (compact)
+   ====================== */
 const STORAGE_KEY = 'fiba3x3_quiz_state_v2';
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function unique(arr){ return [...new Set(arr)]; }
+function shuffle(arr){const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
 function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
-let order = [];
-let pool = [];
-let idx = 0;
-let answers = {};
-let wrong = new Set();
+let pool=[], order=[], idx=0, answers={}, wrong=new Set();
 
 function buildPool(){
   const raw = QUESTIONS;
@@ -381,88 +358,55 @@ function buildPool(){
   order = [...pool.keys()];
   idx = 0;
 }
-
 function saveState(){
-  const state = {answers, idx, order};
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify({answers, idx, order}));
 }
 function loadState(){
   const s = sessionStorage.getItem(STORAGE_KEY);
   if(!s) return false;
   try{
-    const state = JSON.parse(s);
+    const st = JSON.parse(s);
     buildPool();
-    if(Array.isArray(state.order) && state.order.length===order.length){ order = state.order; }
-    idx = Math.min(Math.max(0, state.idx||0), order.length-1);
-    answers = state.answers||{};
+    if(Array.isArray(st.order) && st.order.length===order.length){ order=st.order; }
+    idx = Math.min(Math.max(0, st.idx||0), order.length-1);
+    answers = st.answers||{};
     Object.keys(answers).forEach(id=>{ if(!answers[id].correct) wrong.add(id); });
     return true;
   }catch(e){ return false; }
 }
-
-function startQuiz(resetAnswers=true){
-  buildPool();
-  if(resetAnswers){ answers={}; wrong.clear(); sessionStorage.removeItem(STORAGE_KEY); }
-  document.getElementById('screen-quiz').style.display='';
-  document.getElementById('screen-summary').style.display='none';
-  updateUI();
-  saveState();
-}
-
-function currentQ(){
-  const i = order[idx] ?? 0;
-  return pool[i];
-}
+function currentQ(){ return pool[order[idx] ?? 0]; }
 
 function updateUI(){
-  const q = currentQ();
-  if(!q){ showSummary(); return; }
+  const q = currentQ(); if(!q){ showSummary(); return; }
   document.getElementById('progress').textContent = `Question ${idx+1} / ${order.length}`;
   document.getElementById('topic-pill').textContent = q.topic;
-
   const imgWrap = document.getElementById('image-area');
-  if(q.image){ imgWrap.style.display='block'; document.getElementById('q-image').src = q.image; document.getElementById('q-image').alt = 'Signal image'; }
+  if(q.image){ imgWrap.style.display='flex'; const im=document.getElementById('q-image'); im.src=q.image; im.alt='Referee signal'; }
   else { imgWrap.style.display='none'; }
-
   document.getElementById('stem').textContent = q.stem;
   document.getElementById('context').textContent = q.context || '';
-
-  const choices = document.getElementById('choices');
-  choices.innerHTML='';
+  const choices = document.getElementById('choices'); choices.innerHTML='';
   q.choices.forEach((text,i)=>{
-    const d=document.createElement('div');
-    d.className='choice';
-    d.textContent = text;
-    d.onclick=()=>selectChoice(i);
-    choices.appendChild(d);
+    const d=document.createElement('div'); d.className='choice'; d.textContent=text; d.onclick=()=>selectChoice(i); choices.appendChild(d);
   });
-
+  const feedback = document.getElementById('feedback'); feedback.style.display='none'; feedback.className='feedback'; feedback.textContent='';
   const prev = answers[q.id];
-  const feedback = document.getElementById('feedback');
-  feedback.style.display='none';
-  feedback.className='feedback';
-  feedback.textContent='';
-
   if(prev){
     markChoices(prev.choice, q.answer);
     feedback.style.display='block';
     feedback.classList.add(prev.correct?'ok':'no');
-    feedback.innerHTML = (prev.correct?'✔ Correct. ':'✖ Incorrect. ') + `<span class="muted">${q.explain}</span>`;
+    feedback.innerHTML = (prev.correct?'✔ Correct. ':'✖ Incorrect. ') + `<span class="mini">${q.explain}</span>`;
   }
-
   document.getElementById('back').disabled = (idx===0);
   document.getElementById('answered').textContent = `${Object.keys(answers).length} answered`;
 }
-
 function markChoices(sel, correct){
-  const nodes = [...document.querySelectorAll('.choice')];
-  nodes.forEach((n,i)=>{
+  [...document.querySelectorAll('.choice')].forEach((n,i)=>{
     n.classList.toggle('selected', i===sel);
     n.classList.toggle('correct', i===correct);
     n.classList.toggle('wrong', i===sel && sel!==correct);
   });
 }
-
 function selectChoice(i){
   const q = currentQ();
   const isCorrect = (i===q.answer);
@@ -472,84 +416,79 @@ function selectChoice(i){
   markChoices(i, q.answer);
   feedback.style.display='block';
   feedback.className='feedback ' + (isCorrect?'ok':'no');
-  feedback.innerHTML = (isCorrect?'✔ Correct. ':'✖ Incorrect. ') + `<span class="muted">${q.explain}</span>`;
+  feedback.innerHTML = (isCorrect?'✔ Correct. ':'✖ Incorrect. ') + `<span class="mini">${q.explain}</span>`;
   saveState();
 }
-
-function nextQ(){
-  if(idx < order.length-1){ idx++; updateUI(); saveState(); }
-  else { showSummary(); }
-}
-function backQ(){
-  if(idx>0){ idx--; updateUI(); saveState(); }
-}
+function nextQ(){ if(idx<order.length-1){ idx++; updateUI(); saveState(); } else { showSummary(); } }
+function backQ(){ if(idx>0){ idx--; updateUI(); saveState(); } }
 function skipQ(){ nextQ(); }
 
 function showSummary(){
   document.getElementById('screen-quiz').style.display='none';
-  const sum = document.getElementById('screen-summary');
-  sum.style.display='block';
-
-  const total = order.length;
-  const correct = Object.values(answers).filter(a=>a.correct).length;
+  const sum = document.getElementById('screen-summary'); sum.style.display='block';
+  const total = order.length; const correct = Object.values(answers).filter(a=>a.correct).length;
   document.getElementById('scoreline').textContent = `You answered ${correct} of ${total} correctly.`;
-
-  // Weak topics
+  // By topic
   const byTopic = {};
-  order.forEach((ordIdx)=>{
-    const q = pool[ordIdx];
-    const a = answers[q.id];
+  order.forEach(i=>{
+    const q = pool[i], a = answers[q.id];
     if(!byTopic[q.topic]) byTopic[q.topic] = {total:0, wrong:0};
     byTopic[q.topic].total++;
     if(!a || !a.correct) byTopic[q.topic].wrong++;
   });
-  const weakWrap = document.getElementById('weakness');
-  const topicList = Object.entries(byTopic).map(([t,s])=>{
-    const pct = Math.round(100*(s.total - s.wrong)/s.total);
-    return `<span class="tag" title="${s.total-s.wrong}/${s.total}">${t}: ${pct}%</span>`;
-  }).join(' ');
-  weakWrap.innerHTML = `<div class="row" style="flex-wrap:wrap; gap:8px; margin:10px 0">${topicList}</div>`;
-
-  // Wrong / skipped list
+  document.getElementById('weakness').innerHTML =
+    Object.entries(byTopic).map(([t,s])=>{
+      const pct = Math.round(100*(s.total - s.wrong)/s.total);
+      return `<span class="pill" title="${s.total-s.wrong}/${s.total}">${t}: ${pct}%</span>`;
+    }).join(' ');
+  // Wrong list
   const wrongWrap = document.getElementById('wrong-list');
   const rows = order.map(i=>{
-    const q = pool[i], a = answers[q.id];
-    if(a && a.correct) return '';
+    const q = pool[i], a = answers[q.id]; if(a && a.correct) return '';
     const your = a? q.choices[a.choice] : '<i>Skipped</i>';
     const correctTxt = q.choices[q.answer];
-    const img = q.image? `<div class="imgwrap" style="margin-top:8px"><img src="${q.image}" alt=""></div>` : '';
+    const img = q.image? `<div class="imgwrap" style="margin-top:6px"><img src="${q.image}" alt=""></div>` : '';
     return `
-      <div class="card" style="padding:12px; margin:10px 0">
-        <div class="q-meta"><span class="pill">${q.topic}</span></div>
-        <div class="stem">${q.stem}</div>
-        ${q.context?`<div class="context">${q.context}</div>`:''}
+      <div class="wrong-item">
+        <div class="mini"><span class="pill">${q.topic}</span></div>
+        <div class="stem" style="margin:4px 0 2px; font-size:14px">${q.stem}</div>
+        ${q.context?`<div class="context" style="margin:0 0 4px">${q.context}</div>`:''}
         ${img}
-        <div class="muted">Your answer: ${your}</div>
-        <div>Correct: <strong>${correctTxt}</strong></div>
-        <div class="note" style="margin-top:6px">${q.explain}</div>
+        <div class="mini">Your answer: ${your}</div>
+        <div class="mini">Correct: <strong>${correctTxt}</strong></div>
+        <div class="mini" style="margin-top:4px">${q.explain}</div>
       </div>`;
   }).filter(Boolean).join('');
-  wrongWrap.innerHTML = rows || '<p class="muted">Nice—no incorrect answers.</p>';
+  wrongWrap.innerHTML = rows || '<p class="mini">Nice—no incorrect answers.</p>';
 }
 
-/* Buttons */
+/* Controls */
 document.getElementById('next').onclick = nextQ;
 document.getElementById('back').onclick = backQ;
 document.getElementById('skip').onclick = skipQ;
-document.getElementById('restart').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(true); };
-document.getElementById('again').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(true); };
+document.getElementById('restart').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(false); };
+document.getElementById('again').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(false); };
 document.getElementById('review-wrong').onclick = ()=>{
   const wrongIds = new Set(Object.keys(answers).filter(id=>!answers[id].correct));
-  if(!wrongIds.size){ startQuiz(true); return; }
+  if(!wrongIds.size){ startQuiz(false); return; }
   pool = pool.filter(q=>wrongIds.has(q.id));
   order = [...pool.keys()];
   idx=0;
   sessionStorage.removeItem(STORAGE_KEY);
+  document.getElementById('screen-summary').style.display='none';
+  document.getElementById('screen-quiz').style.display='';
   updateUI();
 };
 
-/* Init */
-if(!loadState()){ startQuiz(true); }
+/* Start */
+function startQuiz(keep=false){
+  buildPool();
+  if(!keep){ answers={}; wrong.clear(); }
+  document.getElementById('screen-summary').style.display='none';
+  document.getElementById('screen-quiz').style.display='';
+  updateUI(); saveState();
+}
+if(!loadState()){ startQuiz(false); }
 </script>
 </body>
 </html>
