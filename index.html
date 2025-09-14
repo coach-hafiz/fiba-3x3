@@ -704,7 +704,7 @@ function usageOptions(name){
 const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
   const name = prettySignalName(file);
   const u = usageOptions(name);
-  const img = 'images/' + file;
+  const img = file;
 
   // T1 Identify
   const idQ = {
