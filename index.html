@@ -12,14 +12,9 @@
   *{box-sizing:border-box}
   body{margin:0; font:16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background:linear-gradient(180deg,#0a0f1e, #0f172a 40%, #0b1220); color:var(--text);}
   header{position:sticky; top:0; z-index:9; background:rgba(15,23,42,.85); backdrop-filter: blur(6px); border-bottom:1px solid var(--border)}
-  .wrap{max-width:1100px; margin:0 auto; padding:16px}
+  .wrap{max-width:900px; margin:0 auto; padding:16px}
   h1{margin:0; font-size:20px; letter-spacing:.2px}
   .subtitle{color:var(--muted); font-size:13px}
-  .grid{display:grid; gap:16px}
-  .layout{grid-template-columns: 320px 1fr}
-  @media (max-width:1000px){ .layout{grid-template-columns: 1fr} }
-  aside{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px}
-  main{display:grid; gap:16px}
   .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:18px}
   .muted{color:var(--muted)}
   .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
@@ -29,8 +24,6 @@
   .btn.ghost{background:transparent}
   .btn.small{padding:7px 10px; font-size:14px}
   .pill{padding:4px 10px; border-radius:999px; background:var(--chip); color:var(--text-weak); border:1px solid var(--border); font-size:12px}
-  .topic-chip{cursor:pointer}
-  .topic-chip.active{background:var(--accent); color:#001219; border-color:transparent}
   .q-meta{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px}
   .stem{font-size:18px; margin:8px 0 10px}
   .context{color:var(--muted); font-size:14px; margin:0 0 12px}
@@ -47,12 +40,6 @@
   .counter{font-size:13px; color:var(--muted)}
   .imgwrap{margin:10px 0 6px; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#020617}
   .imgwrap img{display:block; width:100%; height:auto}
-  details.rules{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:0}
-  details.rules > summary{cursor:pointer; padding:16px 18px; font-weight:600; list-style:none; border-bottom:1px solid var(--border)}
-  details.rules[open] > summary{border-bottom:1px solid var(--border)}
-  .rules-body{padding:8px 18px 18px; max-height:45vh; overflow:auto}
-  .rules-body h3{margin:12px 0 6px; font-size:16px}
-  .rules-body pre{white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; line-height:1.5; color:#dbeafe; background:#060b16; padding:12px; border:1px solid var(--border); border-radius:10px}
   .summary{display:none}
   .summary table{width:100%; border-collapse:collapse}
   .summary th, .summary td{border-bottom:1px solid var(--border); text-align:left; padding:8px}
@@ -62,268 +49,58 @@
 </head>
 <body>
   <header>
-    <div class="wrap">
-      <h1>FIBA 3x3 Rules — Training Quiz</h1>
-      <div class="subtitle">One-question-per-page • Immediate feedback • Answers persist on Back • End summary by topic</div>
+    <div class="wrap row" style="justify-content:space-between">
+      <div>
+        <h1>FIBA 3x3 Rules — Training Quiz</h1>
+        <div class="subtitle">One-question-per-page • Immediate feedback • Answers persist on Back • End summary by topic</div>
+      </div>
+      <button id="restart" class="btn small">Restart & reshuffle</button>
     </div>
   </header>
-    <main>
-      <div id="screen-quiz" class="card">
-        <div class="row" style="justify-content:space-between">
-          <div class="q-meta"><span class="pill" id="topic-pill">Topic</span> <span class="counter" id="progress">Question 1 / N</span></div>
-          <div class="row">
-            <button id="back" class="btn ghost small">◀ Back</button>
-            <button id="skip" class="btn ghost small">Skip</button>
-          </div>
-        </div>
 
-        <div id="image-area" class="imgwrap" style="display:none"><img id="q-image" alt="Referee signal"/></div>
-        <div id="stem" class="stem"></div>
-        <div id="context" class="context"></div>
-
-        <div id="choices" class="choices"></div>
-
-        <div id="feedback" class="feedback" style="display:none"></div>
-
-        <div class="nav">
-          <div class="counter" id="answered"></div>
-          <button id="next" class="btn primary">Next ▶</button>
+  <div class="wrap">
+    <div id="screen-quiz" class="card">
+      <div class="row" style="justify-content:space-between">
+        <div class="q-meta"><span class="pill" id="topic-pill">Topic</span> <span class="counter" id="progress">Question 1 / N</span></div>
+        <div class="row">
+          <button id="back" class="btn ghost small">◀ Back</button>
+          <button id="skip" class="btn ghost small">Skip</button>
         </div>
       </div>
 
-      <div id="screen-summary" class="card summary">
-        <h2 style="margin:0 0 8px">Summary</h2>
-        <p class="muted" id="scoreline"></p>
-        <div id="weakness"></div>
-        <h3 style="margin:14px 0 6px">Incorrect & Skipped</h3>
-        <div id="wrong-list"></div>
-        <div class="row" style="margin-top:12px">
-          <button id="again" class="btn">Try again (reshuffle)</button>
-          <button id="review-wrong" class="btn ghost">Review wrong only</button>
-        </div>
+      <div id="image-area" class="imgwrap" style="display:none"><img id="q-image" alt="Referee signal"/></div>
+      <div id="stem" class="stem"></div>
+      <div id="context" class="context"></div>
+
+      <div id="choices" class="choices"></div>
+
+      <div id="feedback" class="feedback" style="display:none"></div>
+
+      <div class="nav">
+        <div class="counter" id="answered"></div>
+        <button id="next" class="btn primary">Next ▶</button>
       </div>
-    </main>
+    </div>
+
+    <div id="screen-summary" class="card summary">
+      <h2 style="margin:0 0 8px">Summary</h2>
+      <p class="muted" id="scoreline"></p>
+      <div id="weakness"></div>
+      <h3 style="margin:14px 0 6px">Incorrect & Skipped</h3>
+      <div id="wrong-list"></div>
+      <div class="row" style="margin-top:12px">
+        <button id="again" class="btn">Try again (reshuffle)</button>
+        <button id="review-wrong" class="btn ghost">Review wrong only</button>
+      </div>
+    </div>
   </div>
 
 <script>
 /* ==============================
-   FULL RULES TEXT (from your paste)
-   ============================== */
-
-const RULES_TEXT = {
-  playingCourt: `
-Playing court
-A regular 3x3 playing court shall have a flat, hard surface free from obstructions with dimensions of 15 m in width and 11 m in length ... including a free throw line (5.80 m), a 2-point line (6.75 m) and a "no-charge semi-circle".
-At grassroots level, 3x3 can be played anywhere; markings adapted to space. FIBA 3x3 Official Competitions must fully comply including backstop with integrated shot clock.
-
-Lines
-All lines shall be the same colour, clearly visible, 5 cm in width.
-
-Boundary line/Boundary area
-The playing court is limited by the baseline, endline, and sidelines. These lines are not part of the playing court.
-There shall be an additional boundary area of 1 m at the endline, 1.5 m at the sidelines (min 1 m exceptionally), and 2 m at the baseline.
-The scorer's table and chairs must be placed behind the endline on the left-hand side (facing the basket).
-
-Free-throw line, restricted area and free-throw rebound places
-Free-throw line: parallel to baseline; furthest edge 5.80 m from the inner edge of baseline; 3.60 m long; mid-point on line joining mid-points of endline and baseline.
-Restricted area: rectangular; outer edges 2.45 m from the mid-point of baseline; lines (excluding baseline) are part of restricted area.
-
-2-point field goal area
-Entire floor except area inside the arc, limited by and including two parallel lines 0.90 m from inner edge of sidelines, and an arc radius 6.75 m measured from the floor point below the basket centre (1.575 m from inner edge of baseline mid-point). The arc line is not part of the 2-point area.
-
-No-charge semi-circle area
-Semi-circle radius 1.25 m from the floor point below basket centre; two parallel lines 0.375 m long ending 1.20 m from inner edge of baseline. The semi-circle line is part of this area.
-
-Equipment (required)
-Backstop unit (backboard, basket with release ring and net, support with padding); 3x3 basketballs; game clock; scoreboard; shot clock; two separate loud signals (shot clock operator and scorer/timer); scoresheet; playing floor; adequate lighting.
-  `.trim(),
-
-  teams: `
-Teams — Definition & Rule
-A team member is eligible when authorised under competition regs (incl. age limits).
-A team member is entitled to play when entered on scoresheet before the game and not disqualified.
-During playing time: on court = player; off court but entitled = substitute. During intervals, all entitled are considered players.
-Rule: Each team consists of max 4 team members entitled to play (3 players + 1 substitute). Coaches on the court/seats or remote coaching are not allowed. A substitute becomes a player after teammate steps off the court.
-
-Uniforms
-Shirts and shorts same dominant colour (front and back). Socks same dominant colour and visible. Numbers plain, contrasting: back ≥15 cm, front ≥5 cm, width ≥2 cm. Numbers allowed: 0, 00, 1–99 (no duplicates on same team). Ads/logos ≥5 cm away from numbers. Two sets of shirts: first team light (preferably white), second team dark; can swap by agreement.
-
-Other equipment
-Must be appropriate; no unfair advantage devices. Dangerous objects not allowed (e.g., hard guards/braces even if padded; sharp objects; hair accessories/jewellery). Allowed if safe/padded: shoulder/arm/thigh/lower-leg protectors, compression sleeves, headgear (not covering face, no protrusions/closures around face/neck), knee braces (covered), nose protector, spectacles (safe), wrist/headbands (≤10 cm), taping, ankle braces.
-Team accessory colour: black (except national teams: same solid colour — black/white/predominant).
-Shoes any colour (no lights/reflective/adornments). No commercial/promotional/charitable identifiers unless permitted.
-
-Players: Injury
-Refs may stop for injury. If ball live, ref waits until shot/loss/withhold/dead unless necessary to protect player. If injured player cannot continue immediately (~15 s) or receives treatment, must be substituted. Substitutes may enter with ref’s permission to attend injured player before substitution. Doctor may enter without permission if immediate treatment required. Bleeding/open wound: player must be substituted and may return when covered. If recovery occurs during a time-out, player may continue.
-  `.trim(),
-
-  playingRegs: `
-Playing time, tied score and overtime
-Regular playing time: one period of 10 minutes (official). Game clock stopped on dead balls and free throws. One-minute interval before overtime. If tied at end of regular, play overtime; first team to score 2 points in overtime wins. If foul near end of period, free throws administered after period; if overtime required as result, fouls after end are in interval and shots before overtime. If no game clock, organizer sets running time/score limit (e.g., 10 min/10 pts; 15/15; 21/21).
-
-Beginning and end of the game
-Simultaneous warm-up. Coin flip decides first possession or overtime possession choice. Game cannot begin (official competitions) unless a team is on court with 3 players ready. Regular time or overtime begins when ball is in offensive player’s hands after check-ball is completed. Regular time ends when horn sounds or a team reaches 21 or 22 points (sudden death). Overtime ends when a team scores 2 or more points.
-
-Status of the ball
-Ball becomes live: after check-ball completed (until whistle or clock signal); following each successful field goal or last free throw; during free throw when at shooter’s disposal.
-Ball becomes dead: on referee whistle; apparent missed free throw to be followed by another or further penalty; period end horn; shot-clock signal; or when a shot in flight is touched after whistle/horn/signal. Exceptions: goal counts if ball in flight and whistle/horn/signal occurs; or whistle on free throw not by shooter; or continuous shooting motion before foul (with exceptions).
-
-Location (player/referee)
-A player’s location = where they touch the floor; airborne retains status from last floor touch (incl. boundary lines and arc/lines). Referee location same; ball touching referee equals floor at referee location.
-
-Jump ball situation
-Held ball = opponents with firm control so neither can gain without roughness. Jump ball situations: held ball; out-of-bounds and uncertainty on last touch; double free-throw violation on last free throw; lodged ball (not between free throws / after last FT followed by check-ball); ball dead with neither team control; after cancelling equal penalties/no other penalties and neither had control. Resume with check-ball for last defensive team (shot clock reset to 12).
-
-How the ball is played
-Ball played by hand(s) only; may be passed/thrown/tapped/rolled/dribbled. A player shall not run with ball, deliberately kick/block with leg, or strike with fist (accidental leg contact is not a violation). These infractions are violations.
-
-Control of the ball
-Team control starts when a player controls a live ball or has it at disposal; continues while controlled or during passes; ends when opponent gains control, ball becomes dead, or ball leaves hand(s) on shot/FT.
-
-Player in act of shooting
-Shot: ball held then thrown toward basket; tap: ball directed by hand(s); dunk: ball forced downward into basket. Continuous movement starts before release and ends when ball leaves hand(s) (or new act) and airborne shooter returns both feet. Number of steps is unrelated to act of shooting. If held by opponent preventing score, shot attempt not required. If fouled in act then passes off, no longer in act.
-
-Goal: when made and value
-Goal when live ball enters from above and remains/passes through; considered within basket if any part is within basket below ring. Values: free throw = 1; inside arc = 1; behind arc = 2. If deflection/tap by defender sends ball in, goal counts for last offensive controller (1 or 2 based on area). Defensive accidental score counts for last offensive controller; deliberate defensive score is violation (cancel, check-ball offense). Any defensive score without clearing after gaining control is cancelled. Causing ball through basket from below is violation. For a catch/rebound to attempt a shot: need ≥0.3 on game or shot clock; at 0.2 or 0.1 only a direct tap is valid.
-
-Check-ball
-After dead ball, possession starts with exchange behind the arc (top). Offense behind arc; defense hands/bounces ball to offense; ~1 m separation (Infinity logo positioning at world level). If positions incorrect, referee passes ball to defense to assure proper execution. Start of periods: administered by referee.
-
-Time-out
-Each team granted 1 time-out (30 s). In official competitions, 2 TV time-outs at first dead ball after 6:59 and 3:59. Time-out opportunity begins when ball becomes dead before check-ball or FT. No time-out during live ball. Unused time-out can carry to overtime.
-
-Substitution
-May be requested when ball dead before check-ball or FT. Sub can enter without prior notice to refs/table while ball dead and clock stopped; behind endline; no action required by officials. If FT shooter must be substituted (injury/disqualification), his substitute attempts the FTs.
-
-Forfeit & Default
-Forfeit: not present with 3 players at scheduled start (not mandatory for grassroots) ⇒ score w–0 or 0–w; losing team uses 0 pts for average; tortuous forfeit ⇒ disqualified; second forfeit/no-show in pools ⇒ disqualified and unranked.
-Default: team leaves court before end or all players injured/disqualified ⇒ winner may keep score or have game forfeited (defaulting team 0). Team losing by default is disqualified.
-  `.trim(),
-
-  violations: `
-Violations (award: check-ball to opponents)
-
-Out of bounds
-Player out when any body part contacts floor/object on/above/outside boundary. Ball out when it touches an out-of-bounds person/player/floor/object, backboard supports/back, or any object above court. Caused out by last to touch or be touched; if touched by player on/outside line, that player caused it. Moving out during held ball ⇒ jump ball situation.
-
-Dribbling
-Dribble = movement of live ball by throwing/tapping/rolling/bouncing and touching it again before another player. Ends on two-hand touch or ball coming to rest. No carrying (hand under ball), no pause then continue. Ball can be thrown up if it hits floor/another player before retouch. Steps unlimited while the ball is not in contact with hand. Not dribbles: successive shots, fumbles, taps to gain control, tapping from another’s control, deflect-and-control, hand-to-hand toss with rest (if no travel), throw against backboard and regain.
-No second dribble after end unless: shot, opponent touch, or pass/fumble touched by another.
-
-Travelling
-Illegal movement of pivot/feet while holding live ball. Pivot = step(s) with same foot while other remains at the point. Rules define establishing pivot for standing/progressing catches, two steps, pivots, jumps, etc. Falling/sliding while holding ball is legal; rolling/attempting to stand while holding = violation.
-
-3 seconds
-No more than 3 consecutive seconds in restricted area while team controls a live ball and game clock running, with allowances (attempt to leave, shot in process, dribble to shoot after <3 s). To leave, place both feet outside restricted area.
-
-5 seconds (closely guarded)
-Player holding live ball with opponent in active legal guarding position at ≤1 m must pass, shoot, or dribble within 5 s.
-
-Back to the basket
-After clearing, offense shall not dribble inside the arc with back/side to basket for more than 3 s.
-
-12 seconds (shot clock)
-Team must attempt a shot within 12 s after control (incl. after check-ball, after opponents’ score). To count: ball must leave hand(s) before horn and then touch ring or score. End-of-clock try: if score or ring touch, play on; if miss ring, violation unless opponents immediately gain clear control (then disregard). When equipped with yellow backboard lighting, lighting prevails over horn. Goaltending/interference rules apply. No shot clock: refs count aloud final 5 s if team not attacking.
-
-Shot clock reset
-Reset to 12 on fouls/violations by defense or valid reasons by defense; on opponents’ check-ball; on jump-ball to new offense; on second unsportsmanlike or disqualifying penalty with check-ball; after ring touch with control by any team; on free throws award; off when new control and game clock <12. Errors/signals corrected as described.
-
-Clearing the ball
-After score/last FT (except followed by possession): non-scoring team resumes from inside court directly under basket to behind arc by dribble or pass; defense may not play for the ball in no-charge semi-circle. Behind arc = neither foot inside/on arc line. After misses: offensive rebound may continue without clearing; defensive rebound/steal/block must clear behind arc. If attempted shot before clearing ⇒ “no-cleared ball” violation (cancel) and check-ball to opponents.
-  `.trim(),
-
-  fouls: `
-Fouls — Definition
-Illegal personal contact and/or unsportsmanlike behaviour. Team fouls are recorded; personal fouls not individually recorded unless unsportsmanlike/disqualifying.
-
-General principles
-Cylinder & verticality: each player has right to space (cylinder) and vertical movement. Offense cannot create contact to gain space; defense not penalised for verticality within cylinder.
-
-Legal guarding
-Initial legal position: facing opponent, both feet on floor; extends vertically. With ball: no time/distance needed; dribbler must expect to be guarded; defender may move laterally/backward; contact on torso indicates defender arrived first.
-
-Without ball
-Time/distance apply; cannot jump into path too near/quickly; distance proportional to speed (≥1 step). Once established, defender may move but not extend body to block path.
-
-Airborne player
-Right to land on same/another spot if free; moving under airborne player usually unsportsmanlike.
-
-Screening
-Legal: stationary inside cylinder, feet on floor. Illegal: moving at contact; insufficient distance outside field of vision; no time/distance for moving opponent. Within vision: may be set close if no contact. Distance needed when opponent moving: 1–2 steps. Legally screened player responsible for contact.
-
-Common definitions
-Charging: illegal contact by pushing/moving into torso. Blocking: illegal contact impeding progress. Handchecking/illegal use of hands; holding; pushing; illegal from rear; post play restrictions; excessive elbows; contact to the head; hooking; fake being fouled.
-
-Contact foul — Penalty
-On non-shooting: check-ball to non-offending team (or FTs as of 7th team foul).
-On shooting: if made, count + 1 FT (2 FTs as of 7th team foul); miss inside arc: 1 FT (2 FTs as of 7th team foul); miss behind arc: 2 FTs. End-of-period situations as stated.
-
-Double foul
-Two opponents commit contact fouls on each other at approximately same time → record both; no FTs; resume based on status (non-scoring team check-ball; team in control resumes; or jump-ball to last defense with 12 s).
-
-Technical foul
-Behavioural non-contact (examples listed: disrespect, taunting, obstructing vision, delay, fake being fouled, goaltend on last FT, etc.). Counts as team foul. Penalty: 1 FT; resume to team that had or was entitled to ball at time of call; if goal scored, last defensive check-ball; if neither had control, last defensive check-ball.
-
-Unsportsmanlike foul
-Excessive/hard/dangerous contact; holding player in control is unsportsmanlike. First U: 2 FTs (no possession; if in act and goal made: +2 FTs). Second U: 2 FTs + possession (if in act and goal made: +2 FTs + possession). Each U counts as two team fouls. Disqualification after second U; no extra penalty beyond the U foul itself.
-
-Disqualifying foul & Violence
-Flagrant unsportsmanlike actions; acts of violence → disqualification; 2 FTs (non-contact: any opponent; contact: fouled player) + check-ball. All count as two team fouls. Organiser may further disqualify individuals/teams for offences.
-
-Fighting (bench)
-Substitutes leaving bench area during/leading to a fight are disqualified (unless assisting officials). Resume similar to double situations. Logged as team fouls.
-
-Team fouls: penalty ladder
-Team fouls 7–9: 2 FTs. Team fouls 10+: 2 FTs + possession. Applies also to U fouls and shooting fouls; not to technical fouls. Offensive contact foul with team control: check-ball to opponents.
-
-Special situations
-Order penalties; cancel equal/double penalties; administer remaining in order; possession of last penalty cancels prior possession rights.
-
-Free throws
-FT shooter rules (positioning, 5 seconds, not faking, line/restricted-area entry). Violations and resulting penalties including substitute FT when defender violates and last FT misses; jump-ball to defense if both teams violate on last FT.
-
-Correctable errors (Cat 1 & Cat 2)
-Cat 1: unmerited/merited FTs, wrong shooter/directed, wrong player/team recorded, scorekeeping errors, game-clock errors. Correct if recognised before ball live after first dead ball following the error. Cat 2: shot-clock malfunctions/starts/stops/time setting; correct if recognised while ball still with team in control at first stoppage.
-  `.trim(),
-
-  officials: `
-Referees, Table Officials, Sports Supervisor
-Two referees, table officials (scorer, scoreboard operator, shot clock operator), and sports supervisor (if present). Distinctive dress; conduct game per rules; cannot change rules.
-
-Sports Supervisor duties
-Inspect/approve equipment; designate clocks; select game ball; ensure safety; may stop game; determine forfeit before signing sheet; examine scoresheet; ensure refs sign; record misconduct pre/post; manage IRS if available; decide points not covered.
-
-Referees: duties & powers
-Make decisions on infractions in/around court; stop play as needed; coin flip; apply advantage/disadvantage and common sense while preserving game flow and integrity; use IRS in listed situations (scorekeeping clock issues, last-shot timing/1 or 2 points, challengeable situations at endgame or ≥19 pts, verify goaltending, identify participants in violence, team Challenge process); process protests; handle injury/replacement of a referee; English for international explanations.
-
-Scorer / Scoreboard / Shot clock operators
-Scorer keeps sheet: players, running score, team fouls ladder (notify at 6 and 10), U fouls, time-outs, coin flip note; correct errors at proper times.
-Scoreboard operator runs clock/stopwatch; start/stop conditions; timeout and interval timing.
-Shot clock operator: start/restart on control, show remaining, not reset for certain stoppages, reset to 12 in listed cases, switch off late-game when <12 on game clock and new control, horn does not kill ball unless team control.
-  `.trim(),
-};
-
-/* Inject rules text (as visible, self-contained content) */
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('rules-playing-court').textContent = RULES_TEXT.playingCourt;
-  document.getElementById('rules-teams').textContent = RULES_TEXT.teams;
-  document.getElementById('rules-playing-regs').textContent = RULES_TEXT.playingRegs;
-  document.getElementById('rules-violations').textContent = RULES_TEXT.violations;
-  document.getElementById('rules-fouls').textContent = RULES_TEXT.fouls;
-  document.getElementById('rules-officials').textContent = RULES_TEXT.officials;
-});
-
-/* ==============================
    QUESTION BANK
-   - T1 (remember) and T2 (understand) only
-   - 1 correct + 3 relevant distractors
-   - Clear stems; include repeated phrasing in stem
-   - No negatives/extremes/vague; no "All of the above"
-   - Scenario-based when possible
    ============================== */
 
-/* ---- Referee Signal Images: list EXACT filenames provided (1–20, 31–56) ---- */
-/* Note: Signals 21–30 do not exist. */
+/* Referee Signal Images: exact filenames (1–20, 31–56). Signals 21–30 do not exist. */
 const SIGNAL_FILES = [
   "1. Stop the clock.jpeg","2. Stop the clock for foul.jpeg","3. 1 Point.jpeg","4. 2 points.jpeg","5. Charged time-out.jpeg","6. TV time-out.jpeg","7. Cancel score, cancel play.jpeg","8. Visible count.jpeg","9. Communication.jpeg","10. Shot clock reset.jpeg",
   "11. Out-of-bounds.jpeg","12. Held ball:jump ball situation.jpeg","13. Travelling.jpeg","14. Illegal Dribble_Double dribbling.jpeg","15. Illegal dribble_Carrying the ball.jpeg","16. 3 seconds.jpeg","17. 5 seconds.jpeg","18. 12 seconds.jpeg","19. Deliberate kick or block of the ball.jpeg","20. Ball not cleared.jpeg",
@@ -332,334 +109,62 @@ const SIGNAL_FILES = [
   "51. After foul without free throw(s).jpeg","52. After foul by team in control of the ball.jpeg","53. 1 free throw.jpeg","54. 2 free throws.jpeg","55. 1 free throw.jpeg","56. 2 free throws.jpeg"
 ];
 
-/* Helper to infer a concise label from filename for T1 identify questions */
+/* Helper to infer label from filename */
 function prettySignalName(file){
-  // strip leading number and extension
-  const name = file.replace(/^\d+\.\s*/, '').replace(/\.(jpe?g|png|gif)$/i,'').trim();
-  return name;
+  return file.replace(/^\d+\.\s*/, '').replace(/\.(jpe?g|png|gif)$/i,'').trim();
 }
 
-/* For T2 usage questions, provide tailored usage options per known signals */
+/* Usage options for signals (1 correct + 3 plausible distractors) */
 function usageOptions(name){
   const n = name.toLowerCase();
-  // Build relevant options (1 correct + 3 plausible distractors)
-  if(n.includes('stop the clock for foul')){
-    return {correct:"Stop the game clock after a foul is called", d:[
-      "Stop the clock for substitutions only",
-      "Indicate a charged time-out",
-      "Acknowledge a successful basket"
-    ]};
-  }
-  if(n === 'stop the clock'){
-    return {correct:"Stop the game clock for reasons other than a foul", d:[
-      "Indicate a technical foul",
-      "Signal a TV time-out",
-      "Validate a 2-point goal"
-    ]};
-  }
-  if(n.includes('1 point')){
-    return {correct:"Validate a successful 1-point goal/free throw", d:[
-      "Validate a 2-point goal",
-      "Reset the shot clock to 12 seconds",
-      "Indicate a time-out"
-    ]};
-  }
-  if(n.includes('2 points')){
-    return {correct:"Validate a successful 2-point goal", d:[
-      "Validate a 1-point goal",
-      "Announce a substitution",
-      "Indicate a jump ball situation"
-    ]};
-  }
-  if(n.includes('charged time-out')){
-    return {correct:"Grant a team-requested 30-second time-out", d:[
-      "Announce a TV time-out",
-      "Grant a substitution",
-      "Cancel a play"
-    ]};
-  }
-  if(n.includes('tv time-out')){
-    return {correct:"Announce an automatic media time-out per timing rules", d:[
-      "Grant a team-requested time-out",
-      "Warn a bench for delay",
-      "Indicate end of period"
-    ]};
-  }
-  if(n.includes('cancel score')){
-    return {correct:"Cancel a basket or nullify a play", d:[
-      "Confirm the score",
-      "Indicate offensive control foul",
-      "Announce overtime"
-    ]};
-  }
-  if(n.includes('visible count')){
-    return {correct:"Display a visible count (e.g., 5 seconds or late 12 seconds)", d:[
-      "Start the game clock",
-      "Reset the shot clock",
-      "Signal 3 seconds"
-    ]};
-  }
-  if(n.includes('communication')){
-    return {correct:"Acknowledge communication or indicate 'OK'", d:[
-      "Grant a time-out",
-      "Call a technical foul",
-      "Indicate an IRS review"
-    ]};
-  }
-  if(n.includes('shot clock reset')){
-    return {correct:"Indicate that the shot clock is reset to 12 seconds", d:[
-      "Start a 5-second count",
-      "Indicate a jump ball situation",
-      "Signal ball out-of-bounds"
-    ]};
-  }
-  if(n.includes('out-of-bounds')){
-    return {correct:"Indicate the ball or player is out of bounds", d:[
-      "Signal a travel",
-      "Signal a double dribble",
-      "Cancel a goal"
-    ]};
-  }
-  if(n.includes('held ball')||n.includes('jump ball')){
-    return {correct:"Indicate a held-ball/jump-ball situation", d:[
-      "Grant a time-out",
-      "Charge a technical foul",
-      "Validate a field goal"
-    ]};
-  }
-  if(n.includes('travelling')){
-    return {correct:"Indicate a travelling violation", d:[
-      "Indicate 3 seconds",
-      "Indicate 12 seconds",
-      "Indicate an illegal dribble"
-    ]};
-  }
-  if(n.includes('double dribbling')){
-    return {correct:"Indicate an illegal second dribble", d:[
-      "Indicate carrying the ball",
-      "Indicate backcourt violation",
-      "Indicate offensive goaltending"
-    ]};
-  }
-  if(n.includes('carrying')){
-    return {correct:"Indicate carrying/palming the ball", d:[
-      "Indicate double dribble",
-      "Indicate travelling",
-      "Indicate 5 seconds closely guarded"
-    ]};
-  }
-  if(n.includes('3 seconds')){
-    return {correct:"Indicate a 3-second restricted area violation", d:[
-      "Indicate 5 seconds closely guarded",
-      "Indicate 12 seconds shot clock",
-      "Indicate back-to-the-basket"
-    ]};
-  }
-  if(n.includes('5 seconds')){
-    return {correct:"Indicate 5 seconds (closely guarded) violation", d:[
-      "Indicate 3 seconds",
-      "Indicate 12 seconds",
-      "Indicate illegal screen"
-    ]};
-  }
-  if(n.includes('12 seconds')){
-    return {correct:"Indicate 12 seconds shot-clock violation", d:[
-      "Indicate 5 seconds closely guarded",
-      "Indicate 3 seconds",
-      "Indicate time-out granted"
-    ]};
-  }
-  if(n.includes('deliberate kick')||n.includes('block of the ball')){
-    return {correct:"Indicate deliberate kick or leg block of the ball", d:[
-      "Indicate interference",
-      "Indicate goaltending",
-      "Indicate carrying"
-    ]};
-  }
-  if(n.includes('ball not cleared')){
-    return {correct:"Indicate a no-clear violation (shot before clearing behind arc)", d:[
-      "Indicate backcourt violation",
-      "Indicate lane violation",
-      "Indicate substitution"
-    ]};
-  }
-  if(n.includes('holding')){
-    return {correct:"Indicate a holding foul", d:[
-      "Indicate a blocking foul",
-      "Indicate a travel",
-      "Indicate a double dribble"
-    ]};
-  }
-  if(n.includes('blocking')||n.includes('illegal screen')){
-    return {correct:"Indicate blocking on defense or illegal screen on offense", d:[
-      "Indicate charging",
-      "Indicate handchecking",
-      "Indicate out-of-bounds"
-    ]};
-  }
-  if(n.includes('pushing or charging without the ball')){
-    return {correct:"Indicate pushing/charging without the ball", d:[
-      "Indicate goaltending",
-      "Indicate technical foul",
-      "Indicate 5 seconds"
-    ]};
-  }
-  if(n.includes('handchecking')){
-    return {correct:"Indicate handchecking", d:[
-      "Indicate holding",
-      "Indicate blocking",
-      "Indicate time-out"
-    ]};
-  }
-  if(n.includes('illegal use of hands')){
-    return {correct:"Indicate illegal use of hands", d:[
-      "Indicate travel",
-      "Indicate ball out-of-bounds",
-      "Indicate challenge"
-    ]};
-  }
-  if(n.includes('charging with the ball')){
-    return {correct:"Indicate charging (player with the ball)", d:[
-      "Indicate blocking",
-      "Indicate double foul",
-      "Indicate 12 seconds"
-    ]};
-  }
-  if(n.includes('illegal contact to the hand')){
-    return {correct:"Indicate illegal contact to the hand (not the ball)", d:[
-      "Indicate legal play",
-      "Indicate travel",
-      "Indicate out-of-bounds"
-    ]};
-  }
-  if(n.includes('hooking')){
-    return {correct:"Indicate hooking by the offensive player", d:[
-      "Indicate blocking",
-      "Indicate goaltending",
-      "Indicate lane violation"
-    ]};
-  }
-  if(n.includes('excessive swinging')){
-    return {correct:"Indicate excessive swinging of elbows", d:[
-      "Indicate travel",
-      "Indicate technical for delay",
-      "Indicate out-of-bounds"
-    ]};
-  }
-  if(n.includes('hit to the head')){
-    return {correct:"Indicate illegal contact to the head", d:[
-      "Indicate play-on advantage",
-      "Indicate travel",
-      "Indicate goaltending"
-    ]};
-  }
-  if(n.includes('foul by team in control')){
-    return {correct:"Indicate a foul by the team in control of the ball (offensive)", d:[
-      "Indicate defensive foul on shot",
-      "Indicate double foul",
-      "Indicate technical foul only"
-    ]};
-  }
-  if(n.includes('foul on the act of shooting')){
-    return {correct:"Indicate a foul on a shooter (in the act of shooting)", d:[
-      "Indicate non-shooting foul",
-      "Indicate travel",
-      "Indicate jump ball"
-    ]};
-  }
-  if(n.includes('foul not on the act')){
-    return {correct:"Indicate a non-shooting foul", d:[
-      "Indicate act-of-shooting foul",
-      "Indicate travel",
-      "Indicate technical"
-    ]};
-  }
-  if(n.includes('double foul')){
-    return {correct:"Indicate a double foul by opponents at about the same time", d:[
-      "Indicate unsportsmanlike foul",
-      "Indicate technical foul",
-      "Indicate time-out"
-    ]};
-  }
-  if(n.includes('technical foul')){
-    return {correct:"Indicate a technical foul (behavioural, non-contact)", d:[
-      "Indicate unsportsmanlike foul",
-      "Indicate double foul",
-      "Indicate travel"
-    ]};
-  }
-  if(n.includes('unsportsmanlike foul')){
-    return {correct:"Indicate an unsportsmanlike foul (excessive/hard/dangerous)", d:[
-      "Indicate technical foul",
-      "Indicate double foul",
-      "Indicate jump ball"
-    ]};
-  }
-  if(n.includes('disqualifying foul')){
-    return {correct:"Indicate a disqualifying foul (flagrant unsportsmanlike action)", d:[
-      "Indicate unsportsmanlike only",
-      "Indicate technical only",
-      "Indicate goaltending"
-    ]};
-  }
-  if(n.includes('fake a foul')){
-    return {correct:"Indicate a fake being fouled", d:[
-      "Indicate legal guarding",
-      "Indicate time-out",
-      "Indicate substitution"
-    ]};
-  }
-  if(n.includes('irs review')){
-    return {correct:"Indicate an Instant Replay System review", d:[
-      "Indicate coach challenge denied",
-      "Indicate 2 points validated",
-      "Indicate media time-out"
-    ]};
-  }
-  if(n.includes('challenge')){
-    return {correct:"Indicate a team-initiated challenge", d:[
-      "Indicate IRS by officials only",
-      "Indicate double foul",
-      "Indicate 3 seconds"
-    ]};
-  }
-  if(n.includes('after foul without free throw')){
-    return {correct:"Indicate resumption after a foul without free throws (check-ball)", d:[
-      "Indicate 1 free throw",
-      "Indicate 2 free throws",
-      "Indicate technical foul"
-    ]};
-  }
-  if(n.includes('after foul by team in control')){
-    return {correct:"Indicate resumption after offensive team-control foul", d:[
-      "Indicate defensive shooting foul",
-      "Indicate double foul",
-      "Indicate TV time-out"
-    ]};
-  }
-  if(n.match(/(^|[^0-9])1 free throw/)){
-    return {correct:"Indicate penalty of 1 free throw", d:[
-      "Indicate 2 free throws",
-      "Indicate check-ball only",
-      "Indicate 2 FTs + possession"
-    ]};
-  }
-  if(n.match(/(^|[^0-9])2 free throws/)){
-    return {correct:"Indicate penalty of 2 free throws", d:[
-      "Indicate 1 free throw",
-      "Indicate check-ball only",
-      "Indicate technical (1 FT)"
-    ]};
-  }
-  // default safe
-  return {correct:"Use as indicated for this specific referee signal", d:[
-    "Grant a time-out",
-    "Reset the shot clock",
-    "Start a visible count"
-  ]};
+  if(n.includes('stop the clock for foul')) return {correct:"Stop the game clock after a foul is called", d:["Stop the clock for substitutions only","Indicate a charged time-out","Acknowledge a successful basket"]};
+  if(n === 'stop the clock') return {correct:"Stop the game clock for reasons other than a foul", d:["Indicate a technical foul","Signal a TV time-out","Validate a 2-point goal"]};
+  if(n.includes('1 point')) return {correct:"Validate a successful 1-point goal/free throw", d:["Validate a 2-point goal","Reset the shot clock to 12 seconds","Indicate a time-out"]};
+  if(n.includes('2 points')) return {correct:"Validate a successful 2-point goal", d:["Validate a 1-point goal","Announce a substitution","Indicate a jump ball situation"]};
+  if(n.includes('charged time-out')) return {correct:"Grant a team-requested 30-second time-out", d:["Announce a TV time-out","Grant a substitution","Cancel a play"]};
+  if(n.includes('tv time-out')) return {correct:"Announce an automatic media time-out per timing rules", d:["Grant a team-requested time-out","Warn a bench for delay","Indicate end of period"]};
+  if(n.includes('cancel score')) return {correct:"Cancel a basket or nullify a play", d:["Confirm the score","Indicate offensive control foul","Announce overtime"]};
+  if(n.includes('visible count')) return {correct:"Display a visible count (e.g., 5 seconds or late 12 seconds)", d:["Start the game clock","Reset the shot clock","Signal 3 seconds"]};
+  if(n.includes('communication')) return {correct:"Acknowledge communication or indicate 'OK'", d:["Grant a time-out","Call a technical foul","Indicate an IRS review"]};
+  if(n.includes('shot clock reset')) return {correct:"Indicate that the shot clock is reset to 12 seconds", d:["Start a 5-second count","Indicate a jump ball situation","Signal ball out-of-bounds"]};
+  if(n.includes('out-of-bounds')) return {correct:"Indicate the ball or player is out of bounds", d:["Signal a travel","Signal a double dribble","Cancel a goal"]};
+  if(n.includes('held ball')||n.includes('jump ball')) return {correct:"Indicate a held-ball/jump-ball situation", d:["Grant a time-out","Charge a technical foul","Validate a field goal"]};
+  if(n.includes('travelling')) return {correct:"Indicate a travelling violation", d:["Indicate 3 seconds","Indicate 12 seconds","Indicate an illegal dribble"]};
+  if(n.includes('double dribbling')) return {correct:"Indicate an illegal second dribble", d:["Indicate carrying the ball","Indicate travelling","Indicate offensive goaltending"]};
+  if(n.includes('carrying')) return {correct:"Indicate carrying/palming the ball", d:["Indicate double dribble","Indicate travelling","Indicate 5 seconds closely guarded"]};
+  if(n.includes('3 seconds')) return {correct:"Indicate a 3-second restricted area violation", d:["Indicate 5 seconds closely guarded","Indicate 12 seconds shot clock","Indicate back-to-the-basket"]};
+  if(n.includes('5 seconds')) return {correct:"Indicate 5 seconds (closely guarded) violation", d:["Indicate 3 seconds","Indicate 12 seconds","Indicate illegal screen"]};
+  if(n.includes('12 seconds')) return {correct:"Indicate 12 seconds shot-clock violation", d:["Indicate 5 seconds closely guarded","Indicate 3 seconds","Indicate time-out granted"]};
+  if(n.includes('deliberate kick')||n.includes('block of the ball')) return {correct:"Indicate deliberate kick or leg block of the ball", d:["Indicate interference","Indicate goaltending","Indicate carrying"]};
+  if(n.includes('ball not cleared')) return {correct:"Indicate a no-clear violation (shot before clearing behind arc)", d:["Indicate backcourt violation","Indicate lane violation","Indicate substitution"]};
+  if(n.includes('holding')) return {correct:"Indicate a holding foul", d:["Indicate a blocking foul","Indicate a travel","Indicate a double dribble"]};
+  if(n.includes('blocking')||n.includes('illegal screen')) return {correct:"Indicate blocking on defense or illegal screen on offense", d:["Indicate charging","Indicate handchecking","Indicate out-of-bounds"]};
+  if(n.includes('pushing or charging without the ball')) return {correct:"Indicate pushing/charging without the ball", d:["Indicate goaltending","Indicate technical foul","Indicate 5 seconds"]};
+  if(n.includes('handchecking')) return {correct:"Indicate handchecking", d:["Indicate holding","Indicate blocking","Indicate time-out"]};
+  if(n.includes('illegal use of hands')) return {correct:"Indicate illegal use of hands", d:["Indicate travel","Indicate ball out-of-bounds","Indicate challenge"]};
+  if(n.includes('charging with the ball')) return {correct:"Indicate charging (player with the ball)", d:["Indicate blocking","Indicate double foul","Indicate 12 seconds"]};
+  if(n.includes('illegal contact to the hand')) return {correct:"Indicate illegal contact to the hand (not the ball)", d:["Indicate legal play","Indicate travel","Indicate out-of-bounds"]};
+  if(n.includes('hooking')) return {correct:"Indicate hooking by the offensive player", d:["Indicate blocking","Indicate goaltending","Indicate lane violation"]};
+  if(n.includes('excessive swinging')) return {correct:"Indicate excessive swinging of elbows", d:["Indicate travel","Indicate technical for delay","Indicate out-of-bounds"]};
+  if(n.includes('hit to the head')) return {correct:"Indicate illegal contact to the head", d:["Indicate play-on advantage","Indicate travel","Indicate goaltending"]};
+  if(n.includes('foul by team in control')) return {correct:"Indicate a foul by the team in control of the ball (offensive)", d:["Indicate defensive foul on shot","Indicate double foul","Indicate technical foul only"]};
+  if(n.includes('foul on the act of shooting')) return {correct:"Indicate a foul on a shooter (in the act of shooting)", d:["Indicate non-shooting foul","Indicate travel","Indicate jump ball"]};
+  if(n.includes('foul not on the act')) return {correct:"Indicate a non-shooting foul", d:["Indicate act-of-shooting foul","Indicate travel","Indicate technical"]};
+  if(n.includes('double foul')) return {correct:"Indicate a double foul by opponents at about the same time", d:["Indicate unsportsmanlike foul","Indicate technical foul","Indicate time-out"]};
+  if(n.includes('technical foul')) return {correct:"Indicate a technical foul (behavioural, non-contact)", d:["Indicate unsportsmanlike foul","Indicate double foul","Indicate travel"]};
+  if(n.includes('unsportsmanlike foul')) return {correct:"Indicate an unsportsmanlike foul (excessive/hard/dangerous)", d:["Indicate technical foul","Indicate double foul","Indicate jump ball"]};
+  if(n.includes('disqualifying foul')) return {correct:"Indicate a disqualifying foul (flagrant unsportsmanlike action)", d:["Indicate unsportsmanlike only","Indicate technical only","Indicate goaltending"]};
+  if(n.includes('fake a foul')) return {correct:"Indicate a fake being fouled", d:["Indicate legal guarding","Indicate time-out","Indicate substitution"]};
+  if(n.includes('irs review')) return {correct:"Indicate an Instant Replay System review", d:["Indicate coach challenge denied","Indicate 2 points validated","Indicate media time-out"]};
+  if(n.includes('challenge')) return {correct:"Indicate a team-initiated challenge", d:["Indicate IRS by officials only","Indicate double foul","Indicate 3 seconds"]};
+  if(n.includes('after foul without free throw')) return {correct:"Indicate resumption after a foul without free throws (check-ball)", d:["Indicate 1 free throw","Indicate 2 free throws","Indicate technical foul"]};
+  if(n.includes('after foul by team in control')) return {correct:"Indicate resumption after offensive team-control foul", d:["Indicate defensive shooting foul","Indicate double foul","Indicate TV time-out"]};
+  if(n.match(/(^|[^0-9])1 free throw/)) return {correct:"Indicate penalty of 1 free throw", d:["Indicate 2 free throws","Indicate check-ball only","Indicate 2 FTs + possession"]};
+  if(n.match(/(^|[^0-9])2 free throws/)) return {correct:"Indicate penalty of 2 free throws", d:["Indicate 1 free throw","Indicate check-ball only","Indicate technical (1 FT)"]};
+  return {correct:"Use as indicated for this specific referee signal", d:["Grant a time-out","Reset the shot clock","Start a visible count"]};
 }
 
-/* Build two questions per signal file (T1 identify + T2 usage) */
+/* Two questions per signal: identify (T1) + usage (T2) */
 const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
   const name = prettySignalName(file);
   const u = usageOptions(name);
@@ -673,16 +178,14 @@ const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
     stem:'Identify this referee signal.',
     context:null,
     image:img,
-    choices: shuffle([name, 'Stop the clock', 'TV time-out', 'Visible count'].filter((v,i,a)=>a.indexOf(v)===i)), // ensure unique
+    choices: unique(['Stop the clock','TV time-out','Visible count', name]), // ensure correct present
     answer: null, explain:`Signal: ${name}.`
   };
+  idQ.choices = shuffle(idQ.choices);
   idQ.answer = idQ.choices.indexOf(name);
-  // If the random fillers accidentally include exact answer but duplicates, ensure answer present:
-  if(idQ.answer === -1){ idQ.choices[0] = name; idQ.answer = 0; }
 
   // T2 Usage
-  const usageDistractors = u.d;
-  const usageChoices = shuffle([u.correct, ...usageDistractors]);
+  const usageChoices = shuffle([u.correct, ...u.d]);
   const useQ = {
     id:`sig-${idx+1}-b`,
     topic:'Referees & Officials',
@@ -698,8 +201,7 @@ const SIGNAL_QUESTIONS = SIGNAL_FILES.flatMap((file, idx) => {
   return [idQ, useQ];
 });
 
-/* ---- Hand-written rules questions (curated) ---- */
-/* At least two per topic mix; T1 = recall; T2 = scenario understanding */
+/* Hand-written rules questions (T1/T2), concise stems & relevant distractors */
 const RULE_QUESTIONS = [
   /* Playing Court & Equipment */
   {id:'pc-1', topic:'Playing Court & Equipment', taxonomy:'T1',
@@ -711,27 +213,27 @@ const RULE_QUESTIONS = [
    stem:'What is the radius of the two-point arc in FIBA 3x3?',
    context:null,
    choices:['6.75 m','6.25 m','7.00 m','6.50 m'],
-   answer:0, explain:'Arc radius is 6.75 m from the point below basket centre.'},
+   answer:0, explain:'Arc radius is 6.75 m.'},
   {id:'pc-3', topic:'Playing Court & Equipment', taxonomy:'T2',
-   stem:'A venue lacks space for full boundary areas. The organiser adapts markings to fit the space for a grassroots event. What is correct under FIBA 3x3?',
-   context:'Grassroots event with limited space.',
+   stem:'A venue adapts court markings for a grassroots event. What is correct under FIBA 3x3?',
+   context:'Limited space at a community tournament.',
    choices:[
      'Adaptation of markings is allowed at grassroots level',
      'Official events may also ignore the arc distance',
      'Lines can be any width if visible',
      'No shot clock is allowed at grassroots level'
    ],
-   answer:0, explain:'Adaptation is allowed for grassroots; official competitions must fully comply.'},
+   answer:0, explain:'Adaptation allowed for grassroots; official competitions must fully comply.'},
 
   /* Teams & Uniforms */
   {id:'tm-1', topic:'Teams & Uniforms', taxonomy:'T1',
    stem:'How many team members are permitted on a FIBA 3x3 team roster for a game?',
    context:null,
    choices:['4 (3 players + 1 substitute)','5 (3 players + 2 substitutes)','3 only','6 including a coach'],
-   answer:0, explain:'Max 4 entitled to play; 3 on court, 1 substitute.'},
+   answer:0, explain:'Max 4 entitled to play.'},
   {id:'tm-2', topic:'Teams & Uniforms', taxonomy:'T2',
-   stem:'Two teammates wear the same jersey number. What should apply according to uniforms rules?',
-   context:'Pre-game equipment check.',
+   stem:'Two teammates wear the same jersey number. What should apply?',
+   context:'Pre-game check.',
    choices:[
      'Players on the same team must wear different numbers',
      'Identical numbers are allowed if different colours',
@@ -745,17 +247,17 @@ const RULE_QUESTIONS = [
    stem:'How long is regular playing time in FIBA 3x3 official competitions?',
    context:null,
    choices:['1 period of 10 minutes','4 periods of 10 minutes','2 halves of 10 minutes','1 period of 12 minutes'],
-   answer:0, explain:'Regular time is one period of 10 minutes.'},
+   answer:0, explain:'One period of 10 minutes.'},
   {id:'pr-2', topic:'Playing Regulations', taxonomy:'T2',
    stem:'The score is tied at the end of regular time. What decides the game in overtime?',
-   context:'Start of overtime.',
+   context:'Start of OT.',
    choices:[
      'First team to score 2 points wins',
      'Three-minute extra period',
      'First team to reach 25 points wins',
-     'Jump ball then normal play to horn'
+     'Jump ball then play to horn'
    ],
-   answer:0, explain:'OT: first to 2 points wins.'},
+   answer:0, explain:'OT: first to 2 points.'},
   {id:'pr-3', topic:'Playing Regulations', taxonomy:'T2',
    stem:'After a defensive rebound, the player shoots immediately from inside the arc without clearing. What is the correct ruling?',
    context:'Ball not cleared behind the arc.',
@@ -765,7 +267,7 @@ const RULE_QUESTIONS = [
      'Travel violation on rebounder',
      'Double-dribble violation on rebounder'
    ],
-   answer:0, explain:'Defensive team must clear before attempting to score.'},
+   answer:0, explain:'Defense must clear before attempting to score.'},
 
   /* Violations */
   {id:'vi-1', topic:'Violations', taxonomy:'T1',
@@ -775,7 +277,7 @@ const RULE_QUESTIONS = [
      'Placing the hand under the ball and bringing it to a pause',
      'Changing hands while dribbling',
      'Taking steps while the ball is in the air',
-     'Starting a dribble after a pass is deflected'
+     'Starting a dribble after a deflection'
    ],
    answer:0, explain:'Hand under the ball + pause = carry.'},
   {id:'vi-2', topic:'Violations', taxonomy:'T2',
@@ -801,7 +303,7 @@ const RULE_QUESTIONS = [
 
   /* Fouls */
   {id:'fl-1', topic:'Fouls', taxonomy:'T1',
-   stem:'At team foul 7, what is the standard penalty for a common non-shooting foul?',
+   stem:'At team foul 7, what is the penalty for a common non-shooting foul?',
    context:null,
    choices:['Two free throws','One free throw','Check-ball only','Two free throws and possession'],
    answer:0, explain:'Team fouls 7–9 = 2 FTs.'},
@@ -809,12 +311,12 @@ const RULE_QUESTIONS = [
    stem:'A defender commits excessive contact on a drive. It is the defender’s first such foul. What penalty applies?',
    context:'Forceful contact with risk.',
    choices:[
-     'Unsportsmanlike foul: 2 free throws (no possession), or if goal made: count + 2 FTs',
+     'Unsportsmanlike foul: 2 free throws (no possession); if goal made: count + 2 FTs',
      'Technical foul: 1 free throw',
      'Disqualifying foul automatically',
      'Personal foul only; check-ball'
    ],
-   answer:0, explain:'Unsportsmanlike: first U = 2 FTs (no possession); if in act and made, count +2 FTs.'},
+   answer:0, explain:'Unsportsmanlike first U = 2 FTs; if in act & made, count + 2 FTs.'},
   {id:'fl-3', topic:'Fouls', taxonomy:'T2',
    stem:'Two opponents commit contact fouls on each other at about the same time. What is the ruling?',
    context:'Simultaneous contact by opponents.',
@@ -834,28 +336,24 @@ const RULE_QUESTIONS = [
    answer:0, explain:'Two referees.'},
   {id:'of-2', topic:'Referees & Officials', taxonomy:'T2',
    stem:'What can a team request a video Challenge for near the end of the game?',
-   context:'End-game situation with IRS available.',
+   context:'IRS available.',
    choices:[
      'Whether a last shot beat the shot clock and/or counts for 1 or 2 points',
      'Any no-call anywhere on the floor',
      'A routine substitution question',
      'Whether a coach may call time-out during live ball'
    ],
-   answer:0, explain:'Challengeable items include last-shot timing and value, among others per list.'
-  },
+   answer:0, explain:'Challengeable items include last-shot timing/value (plus other specified cases).'}
 ];
 
-/* Build final QUESTIONS array */
-const QUESTIONS = [
-  ...RULE_QUESTIONS,
-  ...SIGNAL_QUESTIONS
-];
+/* Final pool */
+const QUESTIONS = [...RULE_QUESTIONS, ...SIGNAL_QUESTIONS];
 
 /* ==============================
    QUIZ ENGINE
    ============================== */
 
-const STORAGE_KEY = 'fiba3x3_quiz_state_v1';
+const STORAGE_KEY = 'fiba3x3_quiz_state_v2';
 
 function shuffle(arr){
   const a = arr.slice();
@@ -865,40 +363,19 @@ function shuffle(arr){
   }
   return a;
 }
-
+function unique(arr){ return [...new Set(arr)]; }
 function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
-/* Build topic filter chips */
-const topics = [...new Set(QUESTIONS.map(q=>q.topic))].sort();
-const topicsEl = document.getElementById('topics');
-const topicState = new Map(topics.map(t=>[t,true]));
-function renderTopicChips(){
-  topicsEl.innerHTML='';
-  topics.forEach(t=>{
-    const b=document.createElement('button');
-    b.className='pill topic-chip'+(topicState.get(t)?' active':'');
-    b.textContent=t;
-    b.onclick=()=>{ topicState.set(t,!topicState.get(t)); b.classList.toggle('active'); startQuiz(true); };
-    topicsEl.appendChild(b);
-  });
-}
-renderTopicChips();
-
-/* Session state */
-let order = [];         // indices into pool
-let pool = [];          // filtered + shuffled questions (with shuffled choices)
-let idx = 0;            // current index in order
-let answers = {};       // qid -> {choice, correct}
-let seen = new Set();   // for progress
-let wrong = new Set();  // for summary
+let order = [];
+let pool = [];
+let idx = 0;
+let answers = {};
+let wrong = new Set();
 
 function buildPool(){
-  const activeTopics = new Set(topics.filter(t=>topicState.get(t)));
-  const raw = QUESTIONS.filter(q=>activeTopics.has(q.topic));
-  // Shuffle questions and also shuffle their choices deterministically at load
+  const raw = QUESTIONS;
   pool = shuffle(raw).map(q=>{
     const qq = deepClone(q);
-    // shuffle choices while preserving correct index
     const pairs = q.choices.map((c,i)=>({c,i}));
     const mixed = shuffle(pairs);
     qq.choices = mixed.map(p=>p.c);
@@ -910,7 +387,7 @@ function buildPool(){
 }
 
 function saveState(){
-  const state = {answers, idx, order, topics: Object.fromEntries(topicState)};
+  const state = {answers, idx, order};
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 function loadState(){
@@ -918,23 +395,18 @@ function loadState(){
   if(!s) return false;
   try{
     const state = JSON.parse(s);
-    Object.entries(state.topics||{}).forEach(([k,v])=>topicState.set(k,v));
-    renderTopicChips();
     buildPool();
-    // Ensure order length matches
     if(Array.isArray(state.order) && state.order.length===order.length){ order = state.order; }
     idx = Math.min(Math.max(0, state.idx||0), order.length-1);
     answers = state.answers||{};
-    Object.keys(answers).forEach(id=>{
-      if(!answers[id].correct) wrong.add(id);
-    });
+    Object.keys(answers).forEach(id=>{ if(!answers[id].correct) wrong.add(id); });
     return true;
   }catch(e){ return false; }
 }
 
-function startQuiz(keepAnswers=false){
+function startQuiz(resetAnswers=true){
   buildPool();
-  if(!keepAnswers){ answers={}; wrong.clear(); }
+  if(resetAnswers){ answers={}; wrong.clear(); sessionStorage.removeItem(STORAGE_KEY); }
   document.getElementById('screen-quiz').style.display='';
   document.getElementById('screen-summary').style.display='none';
   updateUI();
@@ -949,17 +421,16 @@ function currentQ(){
 function updateUI(){
   const q = currentQ();
   if(!q){ showSummary(); return; }
-  // header
   document.getElementById('progress').textContent = `Question ${idx+1} / ${order.length}`;
   document.getElementById('topic-pill').textContent = q.topic;
-  // image
+
   const imgWrap = document.getElementById('image-area');
   if(q.image){ imgWrap.style.display='block'; document.getElementById('q-image').src = q.image; document.getElementById('q-image').alt = 'Signal image'; }
   else { imgWrap.style.display='none'; }
-  // stem/context
+
   document.getElementById('stem').textContent = q.stem;
   document.getElementById('context').textContent = q.context || '';
-  // choices
+
   const choices = document.getElementById('choices');
   choices.innerHTML='';
   q.choices.forEach((text,i)=>{
@@ -970,12 +441,12 @@ function updateUI(){
     choices.appendChild(d);
   });
 
-  // restore selection
   const prev = answers[q.id];
   const feedback = document.getElementById('feedback');
   feedback.style.display='none';
   feedback.className='feedback';
   feedback.textContent='';
+
   if(prev){
     markChoices(prev.choice, q.answer);
     feedback.style.display='block';
@@ -983,7 +454,6 @@ function updateUI(){
     feedback.innerHTML = (prev.correct?'✔ Correct. ':'✖ Incorrect. ') + `<span class="muted">${q.explain}</span>`;
   }
 
-  // back/skip visibility
   document.getElementById('back').disabled = (idx===0);
   document.getElementById('answered').textContent = `${Object.keys(answers).length} answered`;
 }
@@ -1017,9 +487,7 @@ function nextQ(){
 function backQ(){
   if(idx>0){ idx--; updateUI(); saveState(); }
 }
-function skipQ(){
-  nextQ();
-}
+function skipQ(){ nextQ(); }
 
 function showSummary(){
   document.getElementById('screen-quiz').style.display='none';
@@ -1030,7 +498,7 @@ function showSummary(){
   const correct = Object.values(answers).filter(a=>a.correct).length;
   document.getElementById('scoreline').textContent = `You answered ${correct} of ${total} correctly.`;
 
-  // weak topics
+  // Weak topics
   const byTopic = {};
   order.forEach((ordIdx)=>{
     const q = pool[ordIdx];
@@ -1046,7 +514,7 @@ function showSummary(){
   }).join(' ');
   weakWrap.innerHTML = `<div class="row" style="flex-wrap:wrap; gap:8px; margin:10px 0">${topicList}</div>`;
 
-  // wrong list
+  // Wrong / skipped list
   const wrongWrap = document.getElementById('wrong-list');
   const rows = order.map(i=>{
     const q = pool[i], a = answers[q.id];
@@ -1072,12 +540,11 @@ function showSummary(){
 document.getElementById('next').onclick = nextQ;
 document.getElementById('back').onclick = backQ;
 document.getElementById('skip').onclick = skipQ;
-document.getElementById('restart').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(false); };
-document.getElementById('again').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(false); };
+document.getElementById('restart').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(true); };
+document.getElementById('again').onclick = ()=>{ sessionStorage.removeItem(STORAGE_KEY); startQuiz(true); };
 document.getElementById('review-wrong').onclick = ()=>{
-  // filter pool to wrong only
   const wrongIds = new Set(Object.keys(answers).filter(id=>!answers[id].correct));
-  if(!wrongIds.size){ startQuiz(false); return; }
+  if(!wrongIds.size){ startQuiz(true); return; }
   pool = pool.filter(q=>wrongIds.has(q.id));
   order = [...pool.keys()];
   idx=0;
@@ -1086,7 +553,7 @@ document.getElementById('review-wrong').onclick = ()=>{
 };
 
 /* Init */
-if(!loadState()){ startQuiz(false); }
+if(!loadState()){ startQuiz(true); }
 </script>
 </body>
 </html>
