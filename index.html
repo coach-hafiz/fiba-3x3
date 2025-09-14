@@ -1,293 +1,527 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FIBA Ref Signals — Training Quiz</title>
-  <style>
-    :root{--bg:#0f1115;--card:#171a21;--muted:#8a93a6;--text:#e8ecf3;--accent:#ff7a00;--ok:#1db954;--bad:#ff4d4f}
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-    body{margin:0;background:linear-gradient(180deg,#0e1014,#0b0d11);color:var(--text);min-height:100vh}
-    .wrap{max-width:900px;margin:0 auto;padding:24px}
-    .header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand .dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
-    .card{background:var(--card);border:1px solid #212632;border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-    .qtext{font-size:1.2rem;line-height:1.45;margin:6px 0 14px}
-    .imgbox{display:flex;justify-content:center;margin:10px 0 14px}
-    .imgbox img{max-width:100%;height:auto;border-radius:12px;border:1px solid #2a3040}
-    .answers{display:grid;gap:10px;margin-top:6px}
-    .ans{padding:14px 16px;border:1px solid #2a3040;border-radius:12px;background:#12161e;cursor:pointer;transition:.15s}
-    .ans:hover{border-color:#3a4256;transform:translateY(-1px)}
-    .ans[disabled]{opacity:.85;cursor:not-allowed}
-    .ans.correct{border-color:var(--ok);background:#0f1a13}
-    .ans.wrong{border-color:var(--bad);background:#1a0f10}
-    .meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.95rem;margin:10px 0 4px}
-    .expl{margin-top:10px;padding:12px 14px;border-radius:12px;background:#12161e;border:1px dashed #2a3040}
-    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
-    button{border:none;border-radius:12px;padding:12px 16px;font-weight:600;cursor:pointer}
-    .next{background:var(--accent);color:#111}
-    .next[disabled]{opacity:.5;cursor:not-allowed}
-    .ghost{background:transparent;color:var(--muted);border:1px solid #2a3040}
-    .pill{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;color:var(--muted);font-size:.85rem}
-    .footer{margin-top:18px;color:var(--muted);font-size:.85rem;text-align:center}
-    /* Summary */
-    .summary h2{margin:0 0 10px}
-    .list{display:grid;gap:14px;margin-top:16px}
-    .mini{border:1px solid #2a3040;border-radius:14px;padding:14px;background:#12161e}
-    .mini h4{margin:0 0 6px;font-size:1rem}
-    .tag{font-size:.8rem;color:#b0bad0;margin-left:6px}
-    .badtxt{color:var(--bad)}
-    .oktxt{color:var(--ok)}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FIBA 3x3 Rules & Referee Signals — Training Tool</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--muted:#8a93a6;--text:#e8ecf3;--accent:#ff7a00;--ok:#1db954;--bad:#ff4d4f}
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{margin:0;background:linear-gradient(180deg,#0e1014,#0b0d11);color:var(--text);min-height:100vh}
+.wrap{max-width:1000px;margin:0 auto;padding:22px}
+.header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{display:flex;gap:12px;align-items:center}
+.dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
+.tiny{color:#b0bad0;font-size:.9rem}
+.pill{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;color:#b0bad0;font-size:.85rem}
+.controls{display:flex;gap:10px;align-items:center}
+.card{background:var(--card);border:1px solid #212632;border-radius:18px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.meta{display:flex;justify-content:space-between;gap:10px;color:#b0bad0;font-size:.95rem;margin:6px 0 10px}
+.qtext{font-size:1.18rem;line-height:1.45;margin:2px 0 10px}
+.context{color:#b9c3d7;font-size:.95rem;margin:8px 0 10px}
+.answers{display:grid;gap:10px;margin-top:10px}
+@media(min-width:780px){.answers{grid-template-columns:1fr 1fr}}
+.ans{padding:14px 16px;border:1px solid #2a3040;border-radius:12px;background:#12161e;cursor:pointer;text-align:left;transition:.15s}
+.ans:hover{border-color:#3a4256;transform:translateY(-1px)}
+.ans[disabled]{opacity:.85;cursor:not-allowed}
+.ans.correct{border-color:var(--ok);background:#0f1a13}
+.ans.wrong{border-color:var(--bad);background:#1a0f10}
+.imgbox{display:flex;justify-content:center;margin:12px 0}
+.imgbox img{max-width:100%;height:auto;border-radius:12px;border:1px solid #2a3040}
+.expl{margin-top:12px;padding:12px 14px;border-radius:12px;background:#12161e;border:1px dashed #2a3040}
+.btn{border:none;border-radius:12px;padding:11px 14px;font-weight:600;cursor:pointer}
+.btn.next{background:var(--accent);color:#111}
+.btn.ghost{background:transparent;border:1px solid #2a3040;color:#b0bad0}
+.btn.next[disabled]{opacity:.5;cursor:not-allowed}
+.summary h2{margin:0 0 10px}
+.list{display:grid;gap:14px;margin-top:14px}
+.mini{border:1px solid #2a3040;border-radius:14px;padding:14px;background:#12161e}
+.mini h4{margin:0 0 6px;font-size:1rem}
+.ok{color:var(--ok)} .bad{color:var(--bad)}
+label{font-size:.85rem;color:#b0bad0}
+input[type="text"]{background:#0f1219;border:1px solid #2a3040;color:#e8ecf3;border-radius:10px;padding:8px 10px;min-width:300px}
+.topicBar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
+.topic{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;background:#10141c;font-size:.85rem}
+.topic.active{border-color:#3d465b;background:#141a25}
+.footer{margin-top:16px;color:#8a93a6;font-size:.85rem;text-align:center}
+.small{font-size:.8rem;color:#98a2b3}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <div class="brand">
-        <div class="dot"></div>
-        <div>
-          <div style="font-weight:800;letter-spacing:.2px">FIBA Ref Signals — Training</div>
-          <div style="color:#9aa4b6;font-size:.9rem">Immediate feedback • One question per page • Offline bank</div>
-        </div>
+<div class="wrap">
+  <div class="header">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <div style="font-weight:800;letter-spacing:.2px">FIBA 3x3 Rules & Referee Signals — Training Tool</div>
+        <div class="tiny">One question per page • Fixed bank • Offline friendly</div>
       </div>
-      <div class="pill" id="progressPill">Q 1 / 1</div>
     </div>
-
-    <div class="card" id="stage"><!-- question or summary renders here --></div>
-    <div class="footer">Tip: Use “Retry wrong only” at the end to focus practice.</div>
+    <div class="controls">
+      <div class="topicBar" id="topicBar"></div>
+      <div class="pill" id="progress">Q 1 / 1</div>
+    </div>
   </div>
 
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <label for="imgbase">Image Base Path</label>
+      <input id="imgbase" type="text" placeholder="(optional) e.g. https://raw.githubusercontent.com/USER/REPO/branch/path/"/>
+      <button class="btn ghost" id="savebase">Save</button>
+      <span class="small">Filenames are exactly as in your repo; this just sets the folder/URL prefix.</span>
+    </div>
+  </div>
+
+  <div class="card" id="stage"><!-- content renders here --></div>
+  <div class="footer">Tip: Use “Retry wrong only” after the summary for targeted practice.</div>
+</div>
+
 <script>
-/* =======================
-   QUESTION BANK (edit me)
-   ======================= */
-/*
-Each question:
-{
-  id: "img-11",
-  tier: "T1" | "T2",
-  category: "Signals",
-  prompt: "What does this signal indicate?",
-  imageSrc: "images/11.Out-of-bounds.jpg", // optional
-  choices: ["Out-of-bounds", "Held ball / jump ball", "Travelling", "Visible count"],
-  correctIndex: 0,
-  explanation: "Pointing with fingers together along the boundary = out-of-bounds direction."
-}
-*/
-const QUESTIONS = [
-  // --- SAMPLE ITEMS (replace/extend with your full bank) ---
-  {
-    id: "img-11", tier: "T1", category: "Signals",
-    prompt: "What does this referee signal indicate?",
-    imageSrc: "images/11.out-of-bounds.jpg",
-    choices: ["Out-of-bounds (direction)", "Held ball / jump ball situation", "Charging with the ball", "Technical foul"],
-    correctIndex: 0,
-    explanation: "Extended arm with fingers together pointing the direction = out-of-bounds / team direction."
-  },
-  {
-    id: "img-12", tier: "T1", category: "Signals",
-    prompt: "Name this signal.",
-    imageSrc: "images/12.held-ball.jpg",
-    choices: ["Double foul", "Held ball / jump ball", "Blocking", "5 seconds"],
-    correctIndex: 1,
-    explanation: "Two thumbs up, arms extended: held ball (jump ball)."
-  },
-  {
-    id: "txt-2pt", tier: "T2", category: "Scoring",
-    prompt: "A basket is made while the official shows the signal in image #4 (two raised fingers). How many points count?",
-    choices: ["1", "2", "3", "It depends on foul/bonus"],
-    correctIndex: 1,
-    explanation: "Two fingers indicates a 2-point goal."
-  },
-  {
-    id: "img-45", tier: "T1", category: "Fouls",
-    prompt: "Identify the foul being signaled.",
-    imageSrc: "images/45.technical-foul.jpg",
-    choices: ["Unsportsmanlike", "Technical", "Disqualifying", "Blocking"],
-    correctIndex: 1,
-    explanation: "‘T’ sign with one hand vertical and the other horizontal = technical foul."
-  },
-  // Add your remaining items here — include *all* images & text rules.
+/* =========================================================
+   Configure image base (prefix only). Filenames remain exact.
+   ========================================================= */
+const IMG_BASE = localStorage.getItem('img_base') || '';
+const baseInput = document.getElementById('imgbase');
+baseInput.value = IMG_BASE;
+document.getElementById('savebase').onclick = () => {
+  localStorage.setItem('img_base', baseInput.value.trim());
+  alert('Saved. Images will load using the new base from the next question.');
+};
+
+/* =========================================================
+   Referee signal items (exact filenames you provided).
+   Two questions per signal (identify + usage).
+   ========================================================= */
+const SIGNALS = [
+  {id:1,  name:"Stop the clock", image:"1. Stop the clock.jpeg", use:"To stop the game clock for reasons other than a foul.", topic:"Referees & Officials"},
+  {id:2,  name:"Stop the clock for foul", image:"2. Stop the clock for foul.jpeg", use:"To stop the clock specifically for a foul.", topic:"Referees & Officials"},
+  {id:3,  name:"1 point", image:"3. 1 Point.jpeg", use:"To validate a successful 1-point goal/free throw.", topic:"Referees & Officials"},
+  {id:4,  name:"2 points", image:"4. 2 points.jpeg", use:"To validate a successful 2-point goal.", topic:"Referees & Officials"},
+  {id:5,  name:"Charged time-out", image:"5. Charged time-out.jpeg", use:"To grant a charged time-out.", topic:"Referees & Officials"},
+  {id:6,  name:"TV time-out", image:"6. TV time-out.jpeg", use:"To indicate a TV/media time-out.", topic:"Referees & Officials"},
+  {id:7,  name:"Cancel score / cancel play", image:"7. Cancel score, cancel play.jpeg", use:"To cancel a score or nullify a play.", topic:"Referees & Officials"},
+  {id:8,  name:"Visible count", image:"8. Visible count.jpeg", use:"To show a visible count (e.g., 5-sec or 12-sec).", topic:"Referees & Officials"},
+  {id:9,  name:"Communication (thumb up)", image:"9. Communication.jpeg", use:"Simple acknowledgement/OK.", topic:"Referees & Officials"},
+  {id:10, name:"Shot clock reset", image:"10. Shot clock reset.jpeg", use:"To show a reset of the shot clock.", topic:"Referees & Officials"},
+  {id:11, name:"Out-of-bounds (direction)", image:"11. Out-of-bounds.jpeg", use:"Ball is out-of-bounds; show direction.", topic:"Referees & Officials"},
+  {id:12, name:"Held ball / jump ball", image:"12. Held ball:jump ball situation.jpeg", use:"Held ball; use alternating-possession.", topic:"Referees & Officials"},
+  {id:13, name:"Travelling", image:"13. Travelling.jpeg", use:"Travelling violation.", topic:"Violations"},
+  {id:14, name:"Illegal dribble / double dribble", image:"14. Illegal Dribble_Double dribbling.jpeg", use:"Illegal dribble (double dribble).", topic:"Violations"},
+  {id:15, name:"Carrying the ball", image:"15. Illegal dribble_Carrying the ball.jpeg", use:"Palming/carrying.", topic:"Violations"},
+  {id:16, name:"3 seconds", image:"16. 3 seconds.jpeg", use:"3-second lane violation.", topic:"Violations"},
+  {id:17, name:"5 seconds", image:"17. 5 seconds.jpeg", use:"5-second throw-in/closely-guarded count.", topic:"Violations"},
+  {id:18, name:"12 seconds", image:"18. 12 seconds.jpeg", use:"12-second shot-clock count (3x3).", topic:"Violations"},
+  {id:19, name:"Deliberate kick or block of the ball", image:"19. Deliberate kick or block of the ball.jpeg", use:"Deliberate kick/body block of the ball.", topic:"Violations"},
+  {id:20, name:"Ball not cleared (3x3)", image:"20. Ball not cleared.jpeg", use:"Ball not cleared behind the arc.", topic:"Violations"},
+  {id:31, name:"Holding", image:"31. Holding.jpeg", use:"Holding foul.", topic:"Fouls"},
+  {id:32, name:"Blocking / Illegal screen", image:"32. Blocking (defense)_Illegal screen (offense).jpeg", use:"Blocking/illegal screen.", topic:"Fouls"},
+  {id:33, name:"Pushing/charging without the ball", image:"33. Pushing or charging without the ball.jpeg", use:"Push/charge without ball.", topic:"Fouls"},
+  {id:34, name:"Handchecking", image:"34. Handchecking.jpeg", use:"Illegal handchecking.", topic:"Fouls"},
+  {id:35, name:"Illegal use of hands", image:"35. Illegal use of hands.jpeg", use:"Illegal hands (hit/hold).", topic:"Fouls"},
+  {id:36, name:"Charging with the ball", image:"36. Charging with the ball.jpeg", use:"Offensive charge (player control).", topic:"Fouls"},
+  {id:37, name:"Illegal contact to the hand", image:"37. Illegal contact to the hand.jpeg", use:"Illegal contact to the hand.", topic:"Fouls"},
+  {id:38, name:"Hooking", image:"38. Hooking.jpeg", use:"Offensive hooking.", topic:"Fouls"},
+  {id:39, name:"Excessive swinging of the elbow", image:"39. Excessive swinging of the elbow.jpeg", use:"Dangerous/excessive elbow swing.", topic:"Fouls"},
+  {id:40, name:"Hit to the head", image:"40. Hit to the head.jpeg", use:"Illegal contact to head/neck.", topic:"Fouls"},
+  {id:41, name:"Foul by team in control of the ball", image:"41. Foul by team in control of the ball.jpeg", use:"Team-control foul (no FTs).", topic:"Fouls"},
+  {id:42, name:"Foul on the act of shooting", image:"42. Foul on the act of shooting.jpeg", use:"Foul during act of shooting.", topic:"Fouls"},
+  {id:43, name:"Foul not on the act of shooting", image:"43. Foul not on the act of shooting.jpeg", use:"Foul not in shooting act.", topic:"Fouls"},
+  {id:44, name:"Double foul", image:"44. Double foul.jpeg", use:"Double foul.", topic:"Fouls"},
+  {id:45, name:"Technical foul", image:"45. Technical foul.jpeg", use:"Technical foul.", topic:"Fouls"},
+  {id:46, name:"Unsportsmanlike foul", image:"46. Unsportsmanlike foul.jpeg", use:"Unsportsmanlike foul.", topic:"Fouls"},
+  {id:47, name:"Disqualifying foul", image:"47. Disqualifying foul.jpeg", use:"Disqualifying foul (DQ).", topic:"Fouls"},
+  {id:48, name:"Fake a foul", image:"48. Fake a foul.jpeg", use:"Warning for faking a foul.", topic:"Fouls"},
+  {id:49, name:"IRS review", image:"49. IRS review.jpeg", use:"Instant Replay System review.", topic:"Referees & Officials"},
+  {id:50, name:"Coach’s challenge", image:"50. Challenge.jpeg", use:"Head coach challenge.", topic:"Referees & Officials"},
+  {id:51, name:"After foul — no free throws", image:"51. After foul without free throw(s).jpeg", use:"Foul with no FTs to follow.", topic:"Referees & Officials"},
+  {id:52, name:"After team-control foul", image:"52. After foul by team in control of the ball.jpeg", use:"Team-control foul (no FTs).", topic:"Referees & Officials"},
+  {id:53, name:"1 free throw", image:"53. 1 free throw.jpeg", use:"Award 1 free throw.", topic:"Referees & Officials"},
+  {id:54, name:"2 free throws", image:"54. 2 free throws.jpeg", use:"Award 2 free throws.", topic:"Referees & Officials"},
+  {id:55, name:"1 free throw (alt graphic)", image:"55. 1 free throw.jpeg", use:"Award 1 free throw.", topic:"Referees & Officials"},
+  {id:56, name:"2 free throws (alt graphic)", image:"56. 2 free throws.jpeg", use:"Award 2 free throws.", topic:"Referees & Officials"}
 ];
 
-/* ===========
-   QUIZ STATE
-   =========== */
-let idx = 0;
-let score = 0;
-let answered = new Map(); // id -> {choice, correct}
-let wrongIds = new Set();
+/* =========================================================
+   Rules question bank — chunked topics + BT1/BT2 questions.
+   Notes:
+   - BT1 = factual recall
+   - BT2 = scenario-based understanding
+   - If your pasted rules differ, edit the items below.
+   ========================================================= */
+const RULE_QUESTIONS = [
+  /* Playing Court & Equipment */
+  q('Playing Court & Equipment','BT1',
+    'What are the official FIBA 3x3 court dimensions?',
+    null,
+    ['15 m x 11 m','28 m x 15 m','16 m x 12 m','14 m x 11 m'],0,
+    'A 3x3 court is 15 m long and 11 m wide (half-court with one basket).'),
+  q('Playing Court & Equipment','BT1',
+    'Which ball specification is used in 3x3?',
+    null,
+    ['Size 6 circumference with size 7 weight','Size 7 circumference and weight','Size 6 circumference and weight','Size 5 circumference, size 6 weight'],0,
+    '3x3 uses a ball with a size-6 circumference and size-7 weight.'),
+  q('Playing Court & Equipment','BT1',
+    'The two-point arc in 3x3 corresponds to which distance?',
+    null,
+    ['6.75 m','6.25 m','7.24 m','6.60 m'],0,
+    'Same distance as the FIBA 6.75 m arc.'),
+  q('Playing Court & Equipment','BT1',
+    'How far is the free-throw line from the backboard plane?',
+    null,
+    ['4.60 m','5.80 m','4.00 m','4.15 m'],0,
+    'FIBA free-throw line is 4.60 m from the backboard plane.'),
+  q('Playing Court & Equipment','BT2',
+    'The event provides two ball types. Which should the crew select?',
+    'Before tip-off, the table has size-7 balls and balls with size-6 circumference/size-7 weight.',
+    ['Use the size-6 circumference/size-7 weight ball','Use size-7 balls only','Either ball is fine if both teams agree','Alternate balls each period'],0,
+    '3x3 requires size-6 circumference with size-7 weight.'),
+  q('Playing Court & Equipment','BT2',
+    'Where is the check-ball administered after a dead ball?',
+    'The ball went out off the defense; the offense will resume play.',
+    ['At the top, behind the arc','On the sideline nearest the out-of-bounds spot','Under the basket','Anywhere behind the arc chosen by the offense'],0,
+    'In 3x3 all check-balls are at the top behind the arc.'),
 
-const stage = document.getElementById('stage');
-const pill  = document.getElementById('progressPill');
+  /* Teams & Uniforms */
+  q('Teams & Uniforms','BT1',
+    'How many players make up a 3x3 team roster for a game?',
+    null,
+    ['3 on court + 1 substitute','5 on court','3 total, no substitutes','2 on court + 2 substitutes'],0,
+    'Teams have three players on court and one substitute (four total).'),
+  q('Teams & Uniforms','BT1',
+    'When can a substitute legally enter?',
+    null,
+    ['During a dead ball, before the check-ball','Any time during play','Only during time-outs','Only after made baskets'],0,
+    'Subs enter on dead balls before the next check-ball.'),
+  q('Teams & Uniforms','BT1',
+    'How many team time-outs are available in 3x3?',
+    null,
+    ['One 30-second time-out per team','Two 60-second time-outs per team','Unlimited 30-second time-outs','No team time-outs are allowed'],0,
+    'Each team has one 30-second time-out; TV/media time-outs are separate.'),
+  q('Teams & Uniforms','BT2',
+    'Can the scorer grant a substitution request during live play?',
+    'A substitute waves to enter while the ball is live.',
+    ['No. Substitutions are only on dead balls before the check-ball','Yes, if the trailing referee sees it','Yes, after any rebound','Only if the defense gains control'],0,
+    'Substitutions are permitted only on dead balls before the next check-ball.'),
 
-function fmtProgress() {
-  pill.textContent = `Q ${Math.min(idx+1, QUESTIONS.length)} / ${QUESTIONS.length}`;
+  /* Playing Regulations */
+  q('Playing Regulations','BT1',
+    'What ends a standard 3x3 game?',
+    null,
+    ['10 minutes elapsed or first to 21 points','Four 10-minute periods','First to 25 points only','Two halves of 12 minutes'],0,
+    'Games are a single 10-minute period, or first to 21.'),
+  q('Playing Regulations','BT1',
+    'How long is the shot clock in 3x3?',
+    null,
+    ['12 seconds','14 seconds','24 seconds','10 seconds'],0,
+    '3x3 uses a 12-second shot clock.'),
+  q('Playing Regulations','BT1',
+    'What decides overtime?',
+    null,
+    ['First team to score 2 points','Three minutes of extra time','First to 4 points','Alternating possessions for 5 plays'],0,
+    'OT is first team to score 2 points; possession by new toss/arrow as authorized.'),
+  q('Playing Regulations','BT2',
+    'What must happen after a defensive rebound?',
+    'A defender secures the rebound under the basket.',
+    ['The team must clear the ball behind the arc before scoring','They may shoot immediately','They must call time-out to reset','They must pass once before shooting'],0,
+    'After any defensive rebound/steal, the ball must be cleared beyond the arc.'),
+  q('Playing Regulations','BT2',
+    'After a made basket, how does play resume?',
+    'Team A scores a lay-up.',
+    ['Immediate change of possession; Team B takes the ball and must clear if they rebound/receive inside the arc','Throw-in from endline','Check-ball at the top','Jump ball'],0,
+    'There is no stoppage after scores in 3x3; play continues.'),
+  q('Playing Regulations','BT2',
+    'Where is every throw-in/check-ball taken after a dead ball?',
+    'The ball went out off Team A.',
+    ['At the top behind the arc (check-ball)','On the endline','Nearest sideline','Anywhere behind the arc chosen by defense'],0,
+    'All restarts are check-balls at the top behind the arc.'),
+
+  /* Violations */
+  q('Violations','BT1',
+    'What is the lane violation in 3x3?',
+    null,
+    ['3 seconds','5 seconds','8 seconds','10 seconds'],0,
+    'Offense may not remain in the lane for more than three seconds.'),
+  q('Violations','BT1',
+    'What is “ball not cleared”?',
+    null,
+    ['Failing to take the ball beyond the arc after a change of team control','Failing to dribble after a rebound','Failing to check the ball after a score','Throwing the ball out of bounds'],0,
+    'After defensive rebound/steal, the new offense must clear beyond the arc.'),
+  q('Violations','BT1',
+    'Which dribbling violations still apply in 3x3?',
+    null,
+    ['Travelling, double dribble, carrying','Only travelling','Only double dribble','None of them'],0,
+    'Standard ball-handling violations apply.'),
+  q('Violations','BT2',
+    'Is this legal: immediate lay-up after a defensive rebound under the rim?',
+    'Defender grabs the ball inside the arc and shoots without clearing.',
+    ['No, ball not cleared violation','Yes, continuous play','No, 5-second throw-in violation','No, double dribble'],0,
+    'Must clear beyond the arc after gaining control on defense.'),
+  q('Violations','BT2',
+    'When does a 12-second shot-clock reset to 12?',
+    'The defense deflects the ball out of bounds.',
+    ['On defensive deflections/out-of-bounds and most defensive fouls','Never in 3x3','Only after a made basket','Only after time-outs'],0,
+    'A new team control for the same offense generally resets to 12 on defensive touch/deflection out.'),
+
+  /* Fouls */
+  q('Fouls','BT1',
+    'What is the team-foul penalty in 3x3 at 7, 8, or 9 team fouls?',
+    null,
+    ['Two free throws to the fouled player','One free throw + possession','No free throws; throw-in only','Three free throws'],0,
+    'At 7–9 team fouls, the penalty is two free throws.'),
+  q('Fouls','BT1',
+    'What is the team-foul penalty at 10 or more?',
+    null,
+    ['Two free throws plus possession','Two free throws only','One free throw','Three free throws plus possession'],0,
+    'At 10+, it’s two free throws and possession.'),
+  q('Fouls','BT1',
+    'Penalty for an unsportsmanlike foul in 3x3?',
+    null,
+    ['Two free throws and possession','One free throw','No free throws; alternating possession','Three free throws'],0,
+    'Unsportsmanlike = two FTs + possession.'),
+  q('Fouls','BT1',
+    'How many team fouls does an unsportsmanlike count as?',
+    null,
+    ['Two','One','Zero','Three'],0,
+    'An unsportsmanlike counts as two team fouls.'),
+  q('Fouls','BT1',
+    'Penalty for a technical foul in 3x3?',
+    null,
+    ['One free throw (play resumes per situation)','Two free throws and possession','No free throws','Two free throws only'],0,
+    'Technical = one FT; possession by rule context.'),
+  q('Fouls','BT1',
+    'Penalty for a disqualifying foul?',
+    null,
+    ['Two free throws and possession (player disqualified)','Two free throws only','One free throw','No free throws'],0,
+    'Disqualifying = two FTs + possession; player is ejected.'),
+  q('Fouls','BT2',
+    'What do you award: 8th team foul, non-shooting defensive foul?',
+    'Defense fouls before a shot; team has 8 fouls.',
+    ['Two free throws','Throw-in at top','One free throw','Two free throws + possession'],0,
+    'At 7–9 team fouls: two FTs.'),
+  q('Fouls','BT2',
+    'What do you award: 10th team foul?',
+    'Team B commits a non-shooting foul; it is their 10th.',
+    ['Two free throws plus possession to A','Two free throws only','Throw-in at top','One free throw'],0,
+    'At 10+: two FTs and possession.'),
+  q('Fouls','BT2',
+    'How do you administer an offensive charge (team-control foul)?',
+    'Ball handler runs into a legal defender.',
+    ['No free throws; Team B gets a check-ball at the top','Two free throws to Team B','One free throw to Team B','Jump ball'],0,
+    'Team-control fouls carry no free throws in 3x3.'),
+
+  /* Referees & Officials */
+  q('Referees & Officials','BT1',
+    'What is the visible-count signal used for in 3x3?',
+    null,
+    ['Counts such as 5-second and 12-second situations','Only for substitutions','Only for time-outs','Only for out-of-bounds'],0,
+    'Officials display a visible count for timing restrictions.'),
+  q('Referees & Officials','BT1',
+    'How are media time-outs handled in standard 3x3 competitions?',
+    null,
+    ['Automatic TV time-outs at first dead balls under 6:59 and 3:00','Teams request them','Only one at 5:00','None are allowed'],0,
+    'TV time-outs are automatic at specified times in many events.'),
+  q('Referees & Officials','BT2',
+    'When may a team request its 30-second time-out?',
+    'A player asks for time-out while the ball is dead.',
+    ['During a dead ball (before check-ball)','Any time while dribbling','Only after made baskets','Only in the last minute'],0,
+    'Team time-outs are granted during dead balls.'),
+  q('Referees & Officials','BT2',
+    'Who can initiate an Instant Replay (IRS) review where available?',
+    'A potential 2-point shot near the arc is disputed.',
+    ['Officials (and, where allowed, the head coach via challenge)','Only the first referee','Only the scorer','Any player on court'],0,
+    'IRS is crew-initiated; some events allow a head-coach challenge.')
+];
+
+/* =========================================================
+   Build signal questions (two per signal) with deterministic
+   distractors from same topic for stable quizzes.
+   ========================================================= */
+function buildSignalQuestions(){
+  const byTopic = SIGNALS.reduce((m,s)=>(m[s.topic]??=[]).push(s),{});
+  const out=[];
+  SIGNALS.forEach((s,i)=>{
+    const pool = byTopic[s.topic].filter(x=>x!==s);
+    const d1 = takeFrom(pool.map(x=>x.name),3,i);
+    const c1 = shuffleDet([s.name,...d1],i);
+    out.push({
+      id:`sig-${s.id}-name`,
+      topic:s.topic,
+      level:'Image',
+      prompt:'Identify this referee signal.',
+      context:null,
+      image: s.image,
+      choices:c1,
+      answer:c1.indexOf(s.name),
+      explain:`Signal: <strong>${s.name}</strong>.`
+    });
+    const d2 = takeFrom(pool.map(x=>x.use),3,i+4);
+    const c2 = shuffleDet([s.use,...d2],i+11);
+    out.push({
+      id:`sig-${s.id}-use`,
+      topic:s.topic,
+      level:'Image',
+      prompt:'When is this signal used?',
+      context:null,
+      image: s.image,
+      choices:c2,
+      answer:c2.indexOf(s.use),
+      explain:`Used to indicate: <strong>${s.use}</strong>.`
+    });
+  });
+  return out;
 }
 
-function renderQuestion(q) {
-  fmtProgress();
-  stage.innerHTML = '';
-  const meta = el('div','meta');
-  meta.innerHTML = `
-    <span>Category: <strong>${q.category}</strong> <span class="tag">• ${q.tier}</span></span>
-    <span>Score: <strong>${score}</strong></span>`;
+/* =========================================================
+   Combine banks; topic chips allow quick filtering (default all).
+   ========================================================= */
+const SIGNAL_QUESTIONS = buildSignalQuestions();
+const BANK = [...RULE_QUESTIONS, ...SIGNAL_QUESTIONS];
+
+const TOPICS = Array.from(new Set(BANK.map(q=>q.topic)));
+const topicBar = document.getElementById('topicBar');
+let activeTopics = new Set(TOPICS); // all by default
+TOPICS.forEach(t=>{
+  const b=document.createElement('button');
+  b.className='topic active';
+  b.textContent=t;
+  b.onclick=()=>{ 
+    if(activeTopics.has(t)) { activeTopics.delete(t); b.classList.remove('active'); }
+    else { activeTopics.add(t); b.classList.add('active'); }
+    restartWithFilter();
+  };
+  topicBar.appendChild(b);
+});
+
+function restartWithFilter(){
+  CURRENT = BANK.filter(q=>activeTopics.has(q.topic));
+  idx=0; score=0; answered.clear(); wrongIds.clear(); renderQuestion(CURRENT[0]);
+}
+
+/* =========================================================
+   Quiz runtime
+   ========================================================= */
+let CURRENT = BANK.slice();
+let idx=0, score=0;
+let answered = new Map(); // id -> {choice, correct}
+let wrongIds = new Set();
+const stage = document.getElementById('stage');
+const progress = document.getElementById('progress');
+
+function imgURL(filename){ const p = localStorage.getItem('img_base')||''; return p ? (p.replace(/\/?$/,'/') + filename) : filename; }
+function fmt(){ progress.textContent = `Q ${Math.min(idx+1,CURRENT.length)} / ${CURRENT.length}`; }
+
+function renderQuestion(q){
+  fmt();
+  stage.innerHTML='';
+  const meta=document.createElement('div'); meta.className='meta';
+  meta.innerHTML=`<span>Topic: <strong>${q.topic}</strong></span><span>Score: <strong>${score}</strong></span>`;
   stage.appendChild(meta);
 
-  const qtext = el('div','qtext', q.prompt);
-  stage.appendChild(qtext);
+  const qt=document.createElement('div'); qt.className='qtext'; qt.textContent=q.prompt; stage.appendChild(qt);
+  if(q.context){ const c=document.createElement('div'); c.className='context'; c.textContent=q.context; stage.appendChild(c); }
 
-  if (q.imageSrc) {
-    const imgBox = el('div','imgbox');
-    const img = new Image();
-    img.alt = 'question image';
-    img.src = q.imageSrc;
-    imgBox.appendChild(img);
-    stage.appendChild(imgBox);
+  if(q.image){
+    const box=document.createElement('div'); box.className='imgbox';
+    const img=new Image(); img.alt='referee signal'; img.src=imgURL(q.image);
+    box.appendChild(img); stage.appendChild(box);
   }
 
-  const answers = el('div','answers');
-  q.choices.forEach((choice, i) => {
-    const b = el('button','ans', choice);
-    b.addEventListener('click', () => selectAnswer(q, i, b, answers));
+  const answers=document.createElement('div'); answers.className='answers';
+  q.choices.forEach((ch,i)=>{
+    const b=document.createElement('button'); b.className='ans'; b.textContent=ch;
+    b.onclick=()=>select(i,b);
     answers.appendChild(b);
   });
   stage.appendChild(answers);
 
-  const expl = el('div','expl'); expl.style.display='none'; stage.appendChild(expl);
+  const expl=document.createElement('div'); expl.className='expl'; expl.style.display='none'; stage.appendChild(expl);
 
-  const controls = el('div','controls');
-  const back = btn('Back', 'ghost', () => {
-    if (idx>0){ idx--; renderQuestion(QUESTIONS[idx]); }
-  });
-  const next = btn('Next', 'next', () => {
-    if (idx < QUESTIONS.length-1) { idx++; renderQuestion(QUESTIONS[idx]); }
-    else renderSummary();
-  });
-  next.disabled = !answered.has(q.id);
-  controls.append(back, next);
-  stage.appendChild(controls);
+  const nav=document.createElement('div'); nav.className='controls';
+  const back=button('Back','ghost',()=>{ if(idx>0){ idx--; renderQuestion(CURRENT[idx]); }});
+  const next=button('Next','next',()=>{ if(idx<CURRENT.length-1){ idx++; renderQuestion(CURRENT[idx]); } else summary(); });
+  next.disabled=!answered.has(q.id);
+  nav.append(back,next); stage.appendChild(nav);
 
-  // If already answered (navigated back), show feedback instantly
-  if (answered.has(q.id)) {
-    const {choice, correct} = answered.get(q.id);
-    lockAnswers(answers, choice, q.correctIndex);
+  if(answered.has(q.id)){
+    const {choice,correct}=answered.get(q.id);
+    lock(answers,choice,q.answer);
     showExpl(expl, correct, q);
   }
 
-  // helpers bound to question scope
-  function selectAnswer(q, choiceIdx, btnEl, answersWrap){
-    if (answered.has(q.id)) return; // already graded
-    const correct = choiceIdx === q.correctIndex;
-    answered.set(q.id, {choice: choiceIdx, correct});
-    if (!correct) wrongIds.add(q.id); else { wrongIds.delete(q.id); score++; }
-    lockAnswers(answersWrap, choiceIdx, q.correctIndex);
-    showExpl(expl, correct, q);
-    // enable Next
-    stage.querySelector('.next').disabled = false;
-    // update header score (training shows live)
-    stage.querySelector('.meta span:last-child strong').textContent = score;
+  function select(i,btn){
+    if(answered.has(q.id)) return;
+    const correct = i===q.answer;
+    answered.set(q.id,{choice:i,correct});
+    if(correct){ score++; wrongIds.delete(q.id); } else wrongIds.add(q.id);
+    lock(answers,i,q.answer); showExpl(expl,correct,q);
+    next.disabled=false; meta.querySelector('strong:last-child').textContent=score;
   }
 }
 
-function lockAnswers(container, chosen, correct){
-  [...container.children].forEach((b, i)=>{
-    b.disabled = true;
-    if (i===correct) b.classList.add('correct');
-    if (i===chosen && i!==correct) b.classList.add('wrong');
+function lock(container, chosen, answer){
+  [...container.children].forEach((b,i)=>{
+    b.disabled=true; if(i===answer) b.classList.add('correct');
+    if(i===chosen && i!==answer) b.classList.add('wrong');
   });
 }
-function showExpl(node, correct, q){
+function showExpl(node, ok, q){
   node.style.display='block';
-  node.innerHTML = `
-    <div><strong>${correct ? 'Correct ✅' : 'Not quite ❌'}</strong></div>
-    <div style="margin-top:6px">${q.explanation || ''}</div>`;
+  node.innerHTML = `<div><strong>${ok?'Correct ✅':'Not quite ❌'}</strong></div>
+  <div style="margin-top:6px">${q.explain||''}</div>`;
 }
 
-/* =========
-   SUMMARY
-   ========= */
-function renderSummary() {
-  pill.textContent = 'Summary';
-  stage.innerHTML = '';
-  const wrap = el('div','summary');
-  wrap.innerHTML = `
-    <h2>Training Summary</h2>
-    <div class="meta"><span>Total questions: <strong>${QUESTIONS.length}</strong></span>
-      <span>Score: <strong class="${score===QUESTIONS.length?'oktxt':'badtxt'}">${score}</strong> / ${QUESTIONS.length} (${Math.round(100*score/QUESTIONS.length)}%)</span>
-    </div>`;
+function summary(){
+  progress.textContent='Summary';
+  stage.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='summary';
+  wrap.innerHTML=`<h2>Training Summary</h2>
+    <div class="meta"><span>Total questions: <strong>${CURRENT.length}</strong></span>
+    <span>Score: <strong class="${score===CURRENT.length?'ok':'bad'}">${score}</strong> / ${CURRENT.length} (${Math.round(100*score/CURRENT.length)}%)</span></div>`;
   stage.appendChild(wrap);
 
-  if (wrongIds.size>0){
-    const list = el('div','list');
-    wrap.appendChild(el('div',null,'Review these:'));
-    [...wrongIds].forEach(id=>{
-      const q = QUESTIONS.find(x=>x.id===id);
-      const you = answered.get(id)?.choice;
-      const mini = el('div','mini');
-      mini.innerHTML = `
-        <h4>${q.prompt}</h4>
-        ${q.imageSrc ? `<div class="imgbox" style="margin:6px 0 10px"><img src="${q.imageSrc}" alt=""></div>`:''}
-        <div>Correct: <strong>${q.choices[q.correctIndex]}</strong></div>
-        <div>Your answer: <span class="badtxt">${q.choices[you]}</span></div>
-        <div class="expl" style="margin-top:10px">${q.explanation||''}</div>`;
+  if(wrongIds.size){
+    const list=document.createElement('div'); list.className='list';
+    wrap.appendChild(document.createTextNode('Review these:'));
+    CURRENT.filter(q=>wrongIds.has(q.id)).forEach(q=>{
+      const you=answered.get(q.id)?.choice;
+      const mini=document.createElement('div'); mini.className='mini';
+      mini.innerHTML=`<h4>${q.prompt} <span class="tiny">(${q.topic})</span></h4>
+      ${q.context?`<div class="context">${q.context}</div>`:''}
+      ${q.image?`<div class="imgbox" style="margin:6px 0 10px"><img src="${imgURL(q.image)}" alt=""></div>`:''}
+      <div>Correct: <strong>${q.choices[q.answer]}</strong></div>
+      <div>Your answer: <span class="bad">${q.choices[you]}</span></div>
+      <div class="expl" style="margin-top:10px">${q.explain||''}</div>`;
       list.appendChild(mini);
     });
     wrap.appendChild(list);
   } else {
-    wrap.appendChild(el('div',null,'Perfect score! 🎉'));
+    wrap.appendChild(document.createTextNode('Perfect score! 🎉'));
   }
 
-  const controls = el('div','controls');
-  controls.append(
-    btn('Retry wrong only', 'ghost', () => {
-      if (wrongIds.size===0){ idx=0; resetAll(); renderQuestion(QUESTIONS[0]); return; }
-      const filtered = QUESTIONS.filter(q=>wrongIds.has(q.id));
-      launchSubset(filtered);
+  const nav=document.createElement('div'); nav.className='controls'; nav.style.marginTop='14px';
+  nav.append(
+    button('Retry wrong only','ghost',()=>{
+      if(!wrongIds.size){ idx=0; score=0; answered.clear(); wrongIds.clear(); renderQuestion(CURRENT[0]); return; }
+      const subset=CURRENT.filter(q=>wrongIds.has(q.id));
+      CURRENT=subset; idx=0; score=0; answered.clear(); wrongIds.clear(); renderQuestion(CURRENT[0]);
     }),
-    btn('Restart full quiz', 'next', () => { idx=0; resetAll(); renderQuestion(QUESTIONS[0]); })
+    button('Restart (keep topic filter)','next',()=>{ CURRENT=BANK.filter(q=>activeTopics.has(q.topic)); idx=0; score=0; answered.clear(); wrongIds.clear(); renderQuestion(CURRENT[0]); })
   );
-  stage.appendChild(controls);
+  stage.appendChild(nav);
 }
 
-function launchSubset(subset){
-  // Temporarily swap in subset
-  window._fullBank = window._fullBank || QUESTIONS.slice();
-  const custom = subset.slice();
-  QUESTIONS.length = 0; custom.forEach(q=>QUESTIONS.push(q));
-  idx=0; resetAll(); renderQuestion(QUESTIONS[0]);
-  // Add a small banner to restore full bank when done
-  const banner = document.createElement('div');
-  banner.className = 'pill'; banner.style.margin='12px 0 0';
-  banner.textContent = `Practicing ${custom.length} missed questions — click to return to full bank`;
-  banner.style.cursor='pointer';
-  banner.onclick = () => {
-    const full = window._fullBank.slice(); QUESTIONS.length=0; full.forEach(q=>QUESTIONS.push(q));
-    window._fullBank=null; idx=0; resetAll(); renderQuestion(QUESTIONS[0]);
-  };
-  stage.parentElement.insertBefore(banner, stage.nextSibling);
-}
+function button(label, kind, on){ const b=document.createElement('button'); b.className=`btn ${kind}`; b.textContent=label; b.onclick=on; return b; }
 
-function resetAll(){
-  score = 0; answered.clear(); wrongIds.clear(); fmtProgress();
-  // remove any practice banner
-  const sib = stage.nextSibling; if (sib && sib.classList?.contains('pill')) sib.remove();
+/* ===== helpers for deterministic options ===== */
+function q(topic,level,stem,context,choices,answerIndex,explain){
+  return { id:`r-${Math.random().toString(36).slice(2)}`, topic, level, prompt:stem, context, choices, answer:answerIndex, explain };
 }
+function takeFrom(arr, n, seed){ if(arr.length===0) return Array(n).fill('—'); const out=[]; let k = seed % arr.length; while(out.length<n){ out.push(arr[k%arr.length]); k+=2; } return out; }
+function shuffleDet(a,seed){ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=(seed+i*7)%(i+1); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
 
-/* ========
-   HELPERS
-   ======== */
-function el(tag, cls, text){ const n=document.createElement(tag); if(cls) n.className=cls; if(text) n.textContent=text; return n; }
-function btn(label, cls, on){ const b=document.createElement('button'); b.textContent=label; b.className=cls==='next'?'next':(cls||''); b.onclick=on; return b; }
-
-/* Kickoff */
-if (QUESTIONS.length === 0) {
-  stage.innerHTML = '<div class="qtext">No questions loaded yet. Add items to the QUESTIONS array.</div>';
-  pill.textContent = 'Empty bank';
-} else {
-  renderQuestion(QUESTIONS[0]);
-}
+/* kickoff */
+if(!CURRENT.length){ stage.innerHTML='<div class="qtext">No questions loaded.</div>'; progress.textContent='Empty bank'; }
+else { renderQuestion(CURRENT[0]); }
 </script>
 </body>
 </html>
