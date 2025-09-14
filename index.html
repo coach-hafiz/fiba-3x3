@@ -1,509 +1,121 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>FIBA 3x3 Rules Trainer (Fixed Bank)</title>
-<style>
-:root{--bg:#0f1115;--card:#171a21;--muted:#8a93a6;--text:#e8ecf3;--accent:#ff7a00;--ok:#1db954;--bad:#ff4d4f}
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-body{margin:0;background:#0b0d11;color:var(--text)}
-.wrap{max-width:1000px;margin:0 auto;padding:22px}
-.header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:10px}
-.brand{display:flex;gap:12px;align-items:center}
-.dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
-.tiny{color:#b0bad0;font-size:.9rem}
-.card{background:var(--card);border:1px solid #212632;border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.35);margin-bottom:12px}
-.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-label{font-size:.85rem;color:#b0bad0}
-input[type="text"]{background:#0f1219;border:1px solid #2a3040;color:#e8ecf3;border-radius:10px;padding:8px 10px;min-width:300px}
-.btn{border:none;border-radius:12px;padding:11px 14px;font-weight:600;cursor:pointer}
-.btn.next{background:var(--accent);color:#111}
-.btn.ghost{background:transparent;border:1px solid #2a3040;color:#b0bad0}
-.btn.next[disabled]{opacity:.5;cursor:not-allowed}
-.pill{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;color:#b0bad0;font-size:.85rem}
-.meta{display:flex;justify-content:space-between;gap:10px;color:#b0bad0;font-size:.95rem;margin:6px 0 10px}
-.qtext{font-size:1.18rem;line-height:1.45;margin:2px 0 10px}
-.context{color:#b9c3d7;font-size:.95rem;margin:8px 0 10px}
-.answers{display:grid;gap:10px;margin-top:10px}
-@media(min-width:780px){.answers{grid-template-columns:1fr 1fr}}
-.ans{padding:14px 16px;border:1px solid #2a3040;border-radius:12px;background:#12161e;cursor:pointer;text-align:left;transition:.15s}
-.ans:hover{border-color:#3a4256;transform:translateY(-1px)}
-.ans[disabled]{opacity:.85;cursor:not-allowed}
-.ans.correct{border-color:var(--ok);background:#0f1a13}
-.ans.wrong{border-color:var(--bad);background:#1a0f10}
-.imgbox{display:flex;justify-content:center;margin:12px 0}
-.imgbox img{max-width:100%;height:auto;border-radius:12px;border:1px solid #2a3040}
-.expl{margin-top:12px;padding:12px 14px;border-radius:12px;background:#12161e;border:1px dashed #2a3040}
-.topic{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;background:#10141c;font-size:.85rem}
-.footer{margin-top:6px;color:#8a93a6;font-size:.85rem;text-align:center}
-details.rules > summary{cursor:pointer;font-weight:700}
-.rulesbox{white-space:pre-wrap;line-height:1.35;background:#0f1219;border:1px solid #2a3040;padding:12px;border-radius:12px;max-height:280px;overflow:auto}
-.small{font-size:.85rem;color:#98a2b3}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="header">
-    <div class="brand">
-      <div class="dot"></div>
-      <div>
-        <div style="font-weight:800;letter-spacing:.2px">FIBA 3x3 Rules Trainer — Fixed Bank</div>
-        <div class="tiny">One question per page • Image base path support • No regeneration</div>
-      </div>
-    </div>
-    <div class="pill" id="progress">Q 1 / 1</div>
-  </div>
+/* ------------------- Referees & Officials — IMAGE SIGNALS ------------------- */
 
-  <div class="card">
-    <div class="controls">
-      <label for="imgbase">Image Base Path</label>
-      <input id="imgbase" type="text" placeholder="e.g. https://raw.githubusercontent.com/USER/REPO/branch/folder/" />
-      <button class="btn ghost" id="savebase">Save</button>
-      <span class="small">Filenames remain exactly as in your repo (e.g., <em>“1. Stop the clock.jpeg”</em>).</span>
-    </div>
-  </div>
+/* 1 */
+{ id:'sig-1-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'1. Stop the clock.jpeg',
+  choices:['Stop the clock','Stop the clock for foul','Cancel score / cancel play','Visible count'], answer:0,
+  explain:'Signal: Stop the clock.' },
+{ id:'sig-1-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'1. Stop the clock.jpeg',
+  choices:['To stop the game clock for reasons other than a foul','To stop the clock specifically for a foul','To indicate TV time-out','To validate 2 points'], answer:0,
+  explain:'Used to stop the clock for a non-foul reason.' },
 
-  <details class="card rules" open>
-    <summary>FIBA 3x3 Rules (paste full text inside)</summary>
-    <div class="rulesbox" id="rulesBox"></div>
-    <div class="small" style="margin-top:6px">
-      The full content lives in this file for offline training. If you want, paste the full text between the
-      <code>&lt;script id="rules-full" type="text/plain"&gt;...&lt;/script&gt;</code> tags below—no code changes required.
-    </div>
-  </details>
+/* 2 */
+{ id:'sig-2-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'2. Stop the clock for foul.jpeg',
+  choices:['Stop the clock for foul','Stop the clock','Technical foul','IRS review'], answer:0,
+  explain:'Signal: Stop the clock for foul.' },
+{ id:'sig-2-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'2. Stop the clock for foul.jpeg',
+  choices:['To stop the clock specifically for a foul','To stop the clock for substitutions','To show a held ball','To grant a time-out'], answer:0,
+  explain:'Used to stop the clock after a foul is called.' },
 
-  <div class="card" id="stage"><!-- question goes here --></div>
-  <div class="footer">Tip: Use “Retry wrong only” after the summary for targeted practice.</div>
-</div>
+/* 3 */
+{ id:'sig-3-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'3. 1 Point.jpeg',
+  choices:['1 point','2 points','Cancel score','Communication (thumb up)'], answer:0,
+  explain:'Signal: 1 point.' },
+{ id:'sig-3-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'3. 1 Point.jpeg',
+  choices:['To validate a successful 1-point goal/free throw','To validate a 2-point goal','To award one free throw','To reset shot clock'], answer:0,
+  explain:'Used to indicate a successful 1-point score.' },
 
-<!-- ========= FULL RULES TEXT GOES HERE (paste your entire content) ========= -->
-<script id="rules-full" type="text/plain">
-[PASTE YOUR FULL “FIBA 3x3” TEXT HERE — the same content you posted earlier.]
-</script>
-<!-- ========================================================================= -->
+/* 4 */
+{ id:'sig-4-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'4. 2 points.jpeg',
+  choices:['2 points','1 point','Cancel score','TV time-out'], answer:0,
+  explain:'Signal: 2 points.' },
+{ id:'sig-4-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'4. 2 points.jpeg',
+  choices:['To validate a successful 2-point goal','To validate a 1-point goal','To signal possession change','To indicate challenge'], answer:0,
+  explain:'Used to indicate a successful 2-point score.' },
 
-<script>
-/* ============== image base path ============== */
-const baseInput = document.getElementById('imgbase');
-baseInput.value = localStorage.getItem('img_base') || '';
-document.getElementById('savebase').onclick = () => {
-  localStorage.setItem('img_base', baseInput.value.trim());
-  alert('Saved. Images will load from this base path next question.');
-};
-const imgURL = (filename) => {
-  const p = localStorage.getItem('img_base') || '';
-  return p ? (p.replace(/\\/?$/,'/') + filename) : filename;
-};
+/* 5 */
+{ id:'sig-5-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'5. Charged time-out.jpeg',
+  choices:['Charged time-out','TV time-out','Visible count','Cancel score'], answer:0,
+  explain:'Signal: Charged time-out.' },
+{ id:'sig-5-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'5. Charged time-out.jpeg',
+  choices:['To grant a team’s 30-second time-out','Automatic under TV timing rules','To acknowledge a request denied','To end a time-out'], answer:0,
+  explain:'Used to grant a team time-out.' },
 
-/* ============== load rules text ============== */
-(function loadRules(){
-  const el = document.getElementById('rules-full');
-  const box = document.getElementById('rulesBox');
-  box.textContent = el ? el.textContent.trim() : '(Rules text not found. Paste it into the script tag with id="rules-full".)';
-})();
+/* 6 */
+{ id:'sig-6-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'6. TV time-out.jpeg',
+  choices:['TV time-out','Charged time-out','Visible count','Shot clock reset'], answer:0,
+  explain:'Signal: TV time-out.' },
+{ id:'sig-6-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'6. TV time-out.jpeg',
+  choices:['At automatic TV time-outs (e.g., first dead ball under 6:59, 3:59)','When a team requests a time-out','To resume play','To announce overtime'], answer:0,
+  explain:'Used for media time-outs per competition rules.' },
 
-/* =======================================================================
-   FIXED, PRE-GENERATED QUESTIONS (NO BUILDERS). 
-   Each object: id, topic, stem, context, image, choices[4], answer (index), explain
-   ======================================================================= */
-const QUESTIONS = [
-  /* ------------------- Playing Court & Equipment ------------------- */
-  { id:'pc-1', topic:'Playing Court & Equipment',
-    stem:'What are the official FIBA 3x3 court dimensions?',
-    context:null, image:null,
-    choices:['15 m x 11 m','28 m x 15 m','16 m x 12 m','14 m x 11 m'], answer:0,
-    explain:'A 3x3 court is 15 m long and 11 m wide.' },
+/* 7 */
+{ id:'sig-7-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'7. Cancel score, cancel play.jpeg',
+  choices:['Cancel score / cancel play','Stop the clock','Technical foul','Disqualifying foul'], answer:0,
+  explain:'Signal: Cancel score / cancel play.' },
+{ id:'sig-7-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'7. Cancel score, cancel play.jpeg',
+  choices:['To cancel a basket or nullify a play','To stop the clock for substitutions','To grant a TV time-out','To call unsportsmanlike foul'], answer:0,
+  explain:'Used to cancel a score or play.' },
 
-  { id:'pc-2', topic:'Playing Court & Equipment',
-    stem:'The 2-point arc in 3x3 corresponds to which distance from the basket?',
-    context:null, image:null,
-    choices:['6.75 m','6.25 m','7.24 m','6.60 m'], answer:0,
-    explain:'FIBA arc is 6.75 m.' },
+/* 8 */
+{ id:'sig-8-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'8. Visible count.jpeg',
+  choices:['Visible count','Shot clock reset','5 seconds','12 seconds'], answer:0,
+  explain:'Signal: Visible count.' },
+{ id:'sig-8-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'8. Visible count.jpeg',
+  choices:['To show a visible count such as 5-sec or 12-sec','To reset the shot clock','To call 3 seconds','To acknowledge substitution'], answer:0,
+  explain:'Used to indicate visible counts.' },
 
-  { id:'pc-3', topic:'Playing Court & Equipment',
-    stem:'Which ball specification is correct for 3x3?',
-    context:'Two types are available in the venue.',
-    image:null,
-    choices:['Size 6 circumference with size 7 weight','Size 7 circumference and weight','Size 6 circumference and weight','Size 5 circumference, size 6 weight'], answer:0,
-    explain:'3x3 uses a ball with size-6 circumference and size-7 weight.' },
+/* 9 */
+{ id:'sig-9-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'9. Communication.jpeg',
+  choices:['Communication (thumb up)','Charged time-out','Technical foul','1 point'], answer:0,
+  explain:'Signal: Communication (thumb up).' },
+{ id:'sig-9-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'9. Communication.jpeg',
+  choices:['To acknowledge/OK communication','To cancel a play','To grant a substitution','To warn for delay'], answer:0,
+  explain:'Used for basic acknowledgement.' },
 
-  { id:'pc-4', topic:'Playing Court & Equipment',
-    stem:'Where is the check-ball administered after a dead ball?',
-    context:'The ball went out off the defense.',
-    image:null,
-    choices:['At the top, behind the arc','Nearest sideline spot','Under the basket','Anywhere behind the arc'], answer:0,
-    explain:'All restarts are check-balls at the top behind the arc.' },
-
-  /* ------------------- Teams & Uniforms ------------------- */
-  { id:'tu-1', topic:'Teams & Uniforms',
-    stem:'How many players make up a 3x3 team roster for a game?',
-    context:null, image:null,
-    choices:['3 players + 1 substitute','5 on court','3 total, no subs','2 players + 2 subs'], answer:0,
-    explain:'Three on court and one substitute (four total).' },
-
-  { id:'tu-2', topic:'Teams & Uniforms',
-    stem:'When can a substitute legally enter?',
-    context:null, image:null,
-    choices:['During a dead ball, before the check-ball','Any time during play','Only during time-outs','Only after made baskets'], answer:0,
-    explain:'Substitutions occur on dead balls prior to the check-ball.' },
-
-  { id:'tu-3', topic:'Teams & Uniforms',
-    stem:'How many team time-outs are available in 3x3?',
-    context:null, image:null,
-    choices:['One 30-second time-out per team','Two 60-second time-outs','Unlimited 30-second time-outs','No time-outs'], answer:0,
-    explain:'Each team has one 30-second time-out; TV time-outs are separate.' },
-
-  { id:'tu-4', topic:'Teams & Uniforms',
-    stem:'Can the table grant a substitution during live play?',
-    context:'A substitute waves to enter while the ball is live.',
-    image:null,
-    choices:['No. Substitutions are only on dead balls before check-ball','Yes, if the trail official sees it','Yes, after any rebound','Only if the defense gains control'], answer:0,
-    explain:'Substitutions are allowed only on dead balls before the next check-ball.' },
-
-  /* ------------------- Playing Regulations ------------------- */
-  { id:'pr-1', topic:'Playing Regulations',
-    stem:'What ends a standard 3x3 game?',
-    context:null, image:null,
-    choices:['10 minutes or first to 21 points','Four 10-minute periods','First to 25 only','Two halves of 12 minutes'], answer:0,
-    explain:'Single 10-minute period or first to 21 points (sudden death 21/22).' },
-
-  { id:'pr-2', topic:'Playing Regulations',
-    stem:'How long is the shot clock in 3x3?',
-    context:null, image:null,
-    choices:['12 seconds','14 seconds','24 seconds','10 seconds'], answer:0,
-    explain:'3x3 uses a 12-second shot clock.' },
-
-  { id:'pr-3', topic:'Playing Regulations',
-    stem:'What decides overtime?',
-    context:null, image:null,
-    choices:['First team to score 2 points','Three minutes extra time','First to 4 points','Five alternating possessions'], answer:0,
-    explain:'Overtime is first to score 2 points.' },
-
-  { id:'pr-4', topic:'Playing Regulations',
-    stem:'What must happen after a defensive rebound?',
-    context:'A defender secures the ball in the lane.',
-    image:null,
-    choices:['Clear behind the arc before scoring','Shoot immediately','Call time-out to reset','Pass once before shooting'], answer:0,
-    explain:'After defensive control, the ball must be cleared beyond the arc.' },
-
-  { id:'pr-5', topic:'Playing Regulations',
-    stem:'After a made basket, how does play resume?',
-    context:'Team A scores a lay-up.',
-    image:null,
-    choices:['Immediate change of possession; Team B continues play','Throw-in from endline','Check-ball at the top','Jump ball'], answer:0,
-    explain:'No throw-in; play continues with the non-scoring team.' },
-
-  /* ------------------- Violations ------------------- */
-  { id:'vi-1', topic:'Violations',
-    stem:'Which lane restriction applies in 3x3?',
-    context:null, image:null,
-    choices:['3 seconds','5 seconds','8 seconds','10 seconds'], answer:0,
-    explain:'Offense may not remain in the restricted area for more than 3 seconds.' },
-
-  { id:'vi-2', topic:'Violations',
-    stem:'What is “ball not cleared” in 3x3?',
-    context:null, image:null,
-    choices:['Failing to go beyond the arc after change of team control','Failing to dribble after a rebound','Failing to check after a score','Throwing the ball out'], answer:0,
-    explain:'After defensive rebound/steal, new offense must clear beyond the arc.' },
-
-  { id:'vi-3', topic:'Violations',
-    stem:'Which ball-handling violations still apply?',
-    context:null, image:null,
-    choices:['Travelling, double dribble, carrying','Only travelling','Only double dribble','None of them'], answer:0,
-    explain:'Standard violations apply in 3x3.' },
-
-  { id:'vi-4', topic:'Violations',
-    stem:'Is this legal: immediate lay-up after a defensive rebound in the lane?',
-    context:'Defender grabs the ball inside the arc and shoots without clearing.',
-    image:null,
-    choices:['No, ball not cleared violation','Yes, continuous play','No, 5-second violation','No, double dribble'], answer:0,
-    explain:'Must clear beyond the arc after defensive control.' },
-
-  { id:'vi-5', topic:'Violations',
-    stem:'When does the 12-second shot clock reset to 12?',
-    context:'The defense deflects the ball out of bounds.',
-    image:null,
-    choices:['On defensive touch/out-of-bounds and most defensive fouls','Never in 3x3','Only after a made basket','Only after time-outs'], answer:0,
-    explain:'New/continued team control with defensive touches typically resets to 12.' },
-
-  /* ------------------- Fouls ------------------- */
-  { id:'fo-1', topic:'Fouls',
-    stem:'What is the team-foul penalty at 7–9 fouls?',
-    context:null, image:null,
-    choices:['Two free throws to the fouled player','One free throw + possession','No free throws','Three free throws'], answer:0,
-    explain:'At 7–9 team fouls: two free throws.' },
-
-  { id:'fo-2', topic:'Fouls',
-    stem:'What is the team-foul penalty at 10 or more?',
-    context:null, image:null,
-    choices:['Two free throws plus possession','Two free throws only','Throw-in only','One free throw'], answer:0,
-    explain:'At 10+: two free throws and possession.' },
-
-  { id:'fo-3', topic:'Fouls',
-    stem:'Penalty for an unsportsmanlike foul?',
-    context:null, image:null,
-    choices:['Two free throws and possession','One free throw','No free throws','Three free throws'], answer:0,
-    explain:'Unsportsmanlike: two FTs + possession (counts as 2 team fouls).' },
-
-  { id:'fo-4', topic:'Fouls',
-    stem:'Penalty for a technical foul in 3x3?',
-    context:null, image:null,
-    choices:['One free throw (resume per situation)','Two free throws + possession','No free throws','Two free throws'], answer:0,
-    explain:'Technical = one FT; possession resumes as per context.' },
-
-  { id:'fo-5', topic:'Fouls',
-    stem:'How do you administer an offensive charge (team-control foul)?',
-    context:'Ball handler runs into a legal defender.',
-    image:null,
-    choices:['No free throws; defense gets a check-ball at top','Two free throws to defense','One free throw to defense','Jump ball'], answer:0,
-    explain:'Team-control fouls carry no FTs in 3x3.' },
-
-  /* ------------------- Referees & Officials — IMAGE SIGNALS (SAMPLE SET) ------------------- */
-  /* Pattern: For each image, include 2 Qs: (1) identify name, (2) when used. 
-     Use EXACT filenames as you provided. Add the rest where marked below. */
-
-  /* 1 */
-  { id:'sig-1-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'1. Stop the clock.jpeg',
-    choices:['Stop the clock','Stop the clock for foul','Cancel score / cancel play','Visible count'], answer:0,
-    explain:'Signal: Stop the clock.' },
-  { id:'sig-1-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'1. Stop the clock.jpeg',
-    choices:['To stop the game clock for reasons other than a foul','To stop the clock specifically for a foul','To indicate TV time-out','To validate 2 points'], answer:0,
-    explain:'Used to stop the clock for a non-foul reason.' },
-
-  /* 2 */
-  { id:'sig-2-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'2. Stop the clock for foul.jpeg',
-    choices:['Stop the clock for foul','Stop the clock','Technical foul','IRS review'], answer:0,
-    explain:'Signal: Stop the clock for foul.' },
-  { id:'sig-2-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'2. Stop the clock for foul.jpeg',
-    choices:['To stop the clock specifically for a foul','To stop the clock for substitutions','To show a held ball','To grant a time-out'], answer:0,
-    explain:'Used to stop the clock after a foul is called.' },
-
-  /* 3 */
-  { id:'sig-3-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'3. 1 Point.jpeg',
-    choices:['1 point','2 points','Cancel score','Communication (thumb up)'], answer:0,
-    explain:'Signal: 1 point.' },
-  { id:'sig-3-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'3. 1 Point.jpeg',
-    choices:['To validate a successful 1-point goal/free throw','To validate a 2-point goal','To award one free throw','To reset shot clock'], answer:0,
-    explain:'Used to indicate a successful 1-point score.' },
-
-  /* 4 */
-  { id:'sig-4-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'4. 2 points.jpeg',
-    choices:['2 points','1 point','Cancel score','TV time-out'], answer:0,
-    explain:'Signal: 2 points.' },
-  { id:'sig-4-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'4. 2 points.jpeg',
-    choices:['To validate a successful 2-point goal','To validate a 1-point goal','To signal possession change','To indicate challenge'], answer:0,
-    explain:'Used to indicate a successful 2-point score.' },
-
-  /* 5 */
-  { id:'sig-5-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'5. Charged time-out.jpeg',
-    choices:['Charged time-out','TV time-out','Visible count','Cancel score'], answer:0,
-    explain:'Signal: Charged time-out.' },
-  { id:'sig-5-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'5. Charged time-out.jpeg',
-    choices:['To grant a team’s 30-second time-out','Automatic under TV timing rules','To acknowledge a request denied','To end a time-out'], answer:0,
-    explain:'Used to grant a team time-out.' },
-
-  /* 6 */
-  { id:'sig-6-a', topic:'Referees & Officials',
-    stem:'Identify this referee signal.', context:null,
-    image:'6. TV time-out.jpeg',
-    choices:['TV time-out','Charged time-out','Visible count','Shot clock reset'], answer:0,
-    explain:'Signal: TV time-out.' },
-  { id:'sig-6-b', topic:'Referees & Officials',
-    stem:'When is this signal used?', context:null,
-    image:'6. TV time-out.jpeg',
-    choices:['At automatic TV time-outs (e.g., first dead ball under 6:59, 3:59)','When a team requests a time-out','To resume play','To announce overtime'], answer:0,
-    explain:'Used for media time-outs per competition rules.' },
-
-  /* ... CONTINUE adding all image signals in the same two-question pattern ...
-     EXACT FILENAMES (provided by you):
-     7. Cancel score, cancel play.jpeg
-     8. Visible count.jpeg
-     9. Communication.jpeg
-     10. Shot clock reset.jpeg
-     11. Out-of-bounds.jpeg
-     12. Held ball:jump ball situation.jpeg
-     13. Travelling.jpeg
-     14. Illegal Dribble_Double dribbling.jpeg
-     15. Illegal dribble_Carrying the ball.jpeg
-     16. 3 seconds.jpeg
-     17. 5 seconds.jpeg
-     18. 12 seconds.jpeg
-     19. Deliberate kick or block of the ball.jpeg
-     20. Ball not cleared.jpeg
-     31. Holding.jpeg
-     32. Blocking (defense)_Illegal screen (offense).jpeg
-     33. Pushing or charging without the ball.jpeg
-     34. Handchecking.jpeg
-     35. Illegal use of hands.jpeg
-     36. Charging with the ball.jpeg
-     37. Illegal contact to the hand.jpeg
-     38. Hooking.jpeg
-     39. Excessive swinging of the elbow.jpeg
-     40. Hit to the head.jpeg
-     41. Foul by team in control of the ball.jpeg
-     42. Foul on the act of shooting.jpeg
-     43. Foul not on the act of shooting.jpeg
-     44. Double foul.jpeg
-     45. Technical foul.jpeg
-     46. Unsportsmanlike foul.jpeg
-     47. Disqualifying foul.jpeg
-     48. Fake a foul.jpeg
-     49. IRS review.jpeg
-     50. Challenge.jpeg
-     51. After foul without free throw(s).jpeg
-     52. After foul by team in control of the ball.jpeg
-     53. 1 free throw.jpeg
-     54. 2 free throws.jpeg
-     55. 1 free throw.jpeg
-     56. 2 free throws.jpeg
-  */
-
-];
-
-/* ================== Quiz Runtime (single Q per page) ================== */
-let idx = 0, score = 0;
-const answered = new Map(); // id -> {choice, correct}
-const wrongIds = new Set();
-const stage = document.getElementById('stage');
-const progress = document.getElementById('progress');
-
-function fmt(){ progress.textContent = `Q ${Math.min(idx+1,QUESTIONS.length)} / ${QUESTIONS.length}`; }
-function render(){
-  const q = QUESTIONS[idx];
-  fmt();
-  stage.innerHTML = '';
-
-  const meta = document.createElement('div');
-  meta.className = 'meta';
-  meta.innerHTML = `<span>Topic: <span class="topic">${q.topic}</span></span><span>Score: <strong>${score}</strong></span>`;
-  stage.appendChild(meta);
-
-  const qt = document.createElement('div'); qt.className='qtext'; qt.textContent=q.stem; stage.appendChild(qt);
-  if(q.context){ const c=document.createElement('div'); c.className='context'; c.textContent=q.context; stage.appendChild(c); }
-
-  if(q.image){
-    const box=document.createElement('div'); box.className='imgbox';
-    const img=new Image(); img.alt='referee signal'; img.src=imgURL(q.image);
-    box.appendChild(img); stage.appendChild(box);
-  }
-
-  const answers=document.createElement('div'); answers.className='answers';
-  q.choices.forEach((ch,i)=>{
-    const b=document.createElement('button'); b.className='ans'; b.textContent=ch;
-    b.onclick=()=>select(i,b,q,answers);
-    answers.appendChild(b);
-  });
-  stage.appendChild(answers);
-
-  const expl=document.createElement('div'); expl.className='expl'; expl.style.display='none'; stage.appendChild(expl);
-
-  const nav=document.createElement('div'); nav.className='controls';
-  const back=btn('Back','ghost',()=>{ if(idx>0){ idx--; render(); }});
-  const next=btn(idx<QUESTIONS.length-1?'Next':'Finish','next',()=>{ if(idx<QUESTIONS.length-1){ idx++; render(); } else summary(); });
-  next.disabled=!answered.has(q.id);
-  nav.append(back,next); stage.appendChild(nav);
-
-  if(answered.has(q.id)){
-    const {choice,correct}=answered.get(q.id);
-    lock(answers,choice,q.answer);
-    showExpl(expl, correct, q);
-    meta.querySelector('strong').textContent = score;
-    next.disabled=false;
-  }
-}
-
-function select(i,btn,q,container){
-  if(answered.has(q.id)) return;
-  const correct = i===q.answer;
-  answered.set(q.id,{choice:i,correct});
-  if(correct){ score++; wrongIds.delete(q.id); } else wrongIds.add(q.id);
-  lock(container,i,q.answer);
-  const expl=stage.querySelector('.expl'); showExpl(expl,correct,q);
-  stage.querySelector('.meta strong').textContent = score;
-  stage.querySelector('.btn.next').disabled=false;
-}
-function lock(container, chosen, answer){
-  [...container.children].forEach((b,i)=>{
-    b.disabled=true; if(i===answer) b.classList.add('correct');
-    if(i===chosen && i!==answer) b.classList.add('wrong');
-  });
-}
-function showExpl(node, ok, q){
-  node.style.display='block';
-  node.innerHTML = `<div><strong>${ok?'Correct ✅':'Not quite ❌'}</strong></div>
-  <div style="margin-top:6px">${q.explain||''}</div>`;
-}
-function btn(label, kind, on){ const b=document.createElement('button'); b.className=`btn ${kind}`; b.textContent=label; b.onclick=on; return b; }
-
-function summary(){
-  progress.textContent='Summary';
-  stage.innerHTML='';
-  const wrap=document.createElement('div'); wrap.className='summary';
-  wrap.innerHTML=`<h2>Training Summary</h2>
-    <div class="meta"><span>Total questions: <strong>${QUESTIONS.length}</strong></span>
-    <span>Score: <strong class="${score===QUESTIONS.length?'ok':'bad'}">${score}</strong> / ${QUESTIONS.length} (${Math.round(100*score/QUESTIONS.length)}%)</span></div>`;
-  stage.appendChild(wrap);
-
-  if(wrongIds.size){
-    const list=document.createElement('div'); list.className='answers'; list.style.display='block';
-    stage.append('Review these:');
-    QUESTIONS.filter(q=>wrongIds.has(q.id)).forEach(q=>{
-      const you=answered.get(q.id)?.choice;
-      const mini=document.createElement('div'); mini.className='card';
-      mini.innerHTML=`<div class="qtext">${q.stem} <span class="tiny">(${q.topic})</span></div>
-      ${q.context?`<div class="context">${q.context}</div>`:''}
-      ${q.image?`<div class="imgbox"><img src="${imgURL(q.image)}" alt=""></div>`:''}
-      <div>Correct: <strong>${q.choices[q.answer]}</strong></div>
-      <div>Your answer: <span style="color:var(--bad)">${q.choices[you]}</span></div>
-      <div class="expl" style="margin-top:10px">${q.explain||''}</div>`;
-      list.appendChild(mini);
-    });
-    stage.appendChild(list);
-  } else {
-    stage.appendChild(document.createTextNode('Perfect score! 🎉'));
-  }
-
-  const nav=document.createElement('div'); nav.className='controls'; nav.style.marginTop='12px';
-  nav.append(
-    btn('Retry wrong only','ghost',()=>{
-      if(!wrongIds.size){ idx=0; score=0; answered.clear(); wrongIds.clear(); render(); return; }
-      const subset = QUESTIONS.filter(q=>wrongIds.has(q.id));
-      QUESTIONS.length = 0; subset.forEach(x=>QUESTIONS.push(x));
-      idx=0; score=0; answered.clear(); wrongIds.clear(); render();
-    }),
-    btn('Restart full quiz','next',()=>{ window.location.reload(); })
-  );
-  stage.appendChild(nav);
-}
-
-/* start */
-if(!QUESTIONS.length){
-  stage.innerHTML='<div class="qtext">No questions loaded.</div>';
-  progress.textContent='Empty bank';
-} else {
-  render();
-}
-</script>
-</body>
-</html>
+/* 10 */
+{ id:'sig-10-a', topic:'Referees & Officials',
+  stem:'Identify this referee signal.', context:null,
+  image:'10. Shot clock reset.jpeg',
+  choices:['Shot clock reset','Visible count','Cancel score','TV time-out'], answer:0,
+  explain:'Signal: Shot clock reset.' },
+{ id:'sig-10-b', topic:'Referees & Officials',
+  stem:'When is this signal used?', context:null,
+  image:'10. Shot clock reset.jpeg',
+  choices:['To indicate a reset of the shot clock','To show a new count','To grant a substitution','To cancel a play'], answer:0,
+  explain:'Used to show the shot clock has been reset.' },
