@@ -1,542 +1,293 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>FIBA 3x3 MCQ Quiz — Stable</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FIBA Ref Signals — Training Quiz</title>
   <style>
-    :root { --bg:#0e1117; --panel:#161b22; --ink:#e6edf3; --muted:#9da7b3; --accent:#f6c945; --good:#2ea043; --bad:#f85149; }
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    header{padding:14px 18px;border-bottom:1px solid #232a34;background:linear-gradient(180deg,#0f1320,#0e1117);display:flex;justify-content:space-between;align-items:center}
-    h1{margin:0;font-size:18px}
-    .reset{background:#0b1320;border:1px solid #243044;color:#c8d1dc;border-radius:8px;padding:8px 10px;font-weight:600;cursor:pointer}
-    main{max-width:960px;margin:0 auto;padding:18px}
-    .card{background:var(--panel);border:1px solid #232a34;border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(0,0,0,.20)}
-    .meta{display:flex;gap:12px;align-items:center;margin:8px 0 14px;color:var(--muted);font-size:13px}
-    .pill{display:inline-block;background:#111826;border:1px solid #233043;border-radius:999px;padding:6px 10px}
-    .progress-wrap{height:8px;background:#0b0f16;border-radius:999px;overflow:hidden;border:1px solid #1f2630;flex:1}
-    .progress{height:100%;background:linear-gradient(90deg,var(--accent),#ffd86b);width:0%}
-    .q-text{font-size:18px;margin:10px 0 14px}
-    .options{display:grid;gap:10px}
-    .opt{border:1px solid #2a3442;border-radius:10px;padding:12px 14px;cursor:pointer;background:#111826;transition:transform .05s ease,border-color .2s}
-    .opt:hover{transform:translateY(-1px)}
-    .opt.selected{outline:2px solid #39506b}
-    .opt.correct{border-color:var(--good);background:rgba(46,160,67,.12)}
-    .opt.incorrect{border-color:var(--bad);background:rgba(248,81,73,.10)}
-    .feedback{margin-top:10px;font-size:14px}
-    .feedback.good{color:var(--good)} .feedback.bad{color:var(--bad)}
-    .controls{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
-    button{background:#1f6feb;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
-    button.secondary{background:#0b1320;border:1px solid #243044;color:#c8d1dc}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .img-wrap{display:flex;justify-content:center;margin:6px 0 12px}
-    .img-wrap img{max-width:360px;max-height:220px;width:auto;height:auto;border-radius:10px;border:1px solid #273244;background:#0b0f16}
-    .summary h2{margin-top:0}
-    .summary .badlist{margin:10px 0 0;padding-left:18px}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-    details{border:1px dashed #2a3442;border-radius:10px;padding:10px;margin-top:10px}
-    details summary{cursor:pointer;color:#d2dbe7}
-    .foot{margin-top:18px;color:var(--muted);font-size:12px}
-    .alert{padding:10px;border-radius:8px;border:1px solid #3b2b17;background:#17120b;color:#fff;margin-bottom:12px}
+    :root{--bg:#0f1115;--card:#171a21;--muted:#8a93a6;--text:#e8ecf3;--accent:#ff7a00;--ok:#1db954;--bad:#ff4d4f}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#0e1014,#0b0d11);color:var(--text);min-height:100vh}
+    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
+    .card{background:var(--card);border:1px solid #212632;border-radius:18px;padding:22px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+    .qtext{font-size:1.2rem;line-height:1.45;margin:6px 0 14px}
+    .imgbox{display:flex;justify-content:center;margin:10px 0 14px}
+    .imgbox img{max-width:100%;height:auto;border-radius:12px;border:1px solid #2a3040}
+    .answers{display:grid;gap:10px;margin-top:6px}
+    .ans{padding:14px 16px;border:1px solid #2a3040;border-radius:12px;background:#12161e;cursor:pointer;transition:.15s}
+    .ans:hover{border-color:#3a4256;transform:translateY(-1px)}
+    .ans[disabled]{opacity:.85;cursor:not-allowed}
+    .ans.correct{border-color:var(--ok);background:#0f1a13}
+    .ans.wrong{border-color:var(--bad);background:#1a0f10}
+    .meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.95rem;margin:10px 0 4px}
+    .expl{margin-top:10px;padding:12px 14px;border-radius:12px;background:#12161e;border:1px dashed #2a3040}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+    button{border:none;border-radius:12px;padding:12px 16px;font-weight:600;cursor:pointer}
+    .next{background:var(--accent);color:#111}
+    .next[disabled]{opacity:.5;cursor:not-allowed}
+    .ghost{background:transparent;color:var(--muted);border:1px solid #2a3040}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid #2a3040;color:var(--muted);font-size:.85rem}
+    .footer{margin-top:18px;color:var(--muted);font-size:.85rem;text-align:center}
+    /* Summary */
+    .summary h2{margin:0 0 10px}
+    .list{display:grid;gap:14px;margin-top:16px}
+    .mini{border:1px solid #2a3040;border-radius:14px;padding:14px;background:#12161e}
+    .mini h4{margin:0 0 6px;font-size:1rem}
+    .tag{font-size:.8rem;color:#b0bad0;margin-left:6px}
+    .badtxt{color:var(--bad)}
+    .oktxt{color:var(--ok)}
   </style>
 </head>
 <body>
-  <header>
-    <h1>FIBA 3x3 Quiz</h1>
-    <button class="reset" id="resetBtn">Reset quiz</button>
-  </header>
-
-  <main>
-    <div id="warnBox" class="alert" style="display:none"></div>
-
-    <div class="card">
-      <div class="meta">
-        <span class="pill" id="catPill">Category</span>
-        <div class="progress-wrap"><div class="progress" id="progress"></div></div>
-        <span class="pill" id="countPill">Q 1/1</span>
-      </div>
-
-      <div id="imageZone" class="img-wrap" style="display:none"></div>
-      <div class="q-text" id="qText">Loading…</div>
-      <div class="options" id="options"></div>
-      <div id="feedback" class="feedback"></div>
-
-      <div class="controls">
-        <button id="backBtn" class="secondary">← Back</button>
-        <div style="display:flex;gap:10px">
-          <button id="nextBtn">Next →</button>
-          <button id="finishBtn" style="display:none">Finish</button>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div style="font-weight:800;letter-spacing:.2px">FIBA Ref Signals — Training</div>
+          <div style="color:#9aa4b6;font-size:.9rem">Immediate feedback • One question per page • Offline bank</div>
         </div>
       </div>
-
-      <section id="summary" class="summary" style="display:none;margin-top:8px">
-        <h2>Summary</h2>
-        <p>Total: <b id="sumTotal">0</b> · Correct: <b id="sumCorrect">0</b> · Wrong: <b id="sumWrong">0</b></p>
-        <details open>
-          <summary>Wrong questions & explanations</summary>
-          <ol id="wrongList" class="badlist"></ol>
-        </details>
-        <details>
-          <summary>Rule categories to review</summary>
-          <ul id="catList" class="badlist"></ul>
-        </details>
-        <div class="foot">Your answers are saved locally. Use “Reset quiz” to clear & reshuffle.</div>
-      </section>
+      <div class="pill" id="progressPill">Q 1 / 1</div>
     </div>
 
-    <!-- Paste your FULL rules text between these tags -->
-    <script type="text/plain" id="rules">
-PLAYING COURT AND EQUIPMENT
-(keep your full text here; I left only the heading so this demo loads. The generator works best with the full paste.)
-    </script>
+    <div class="card" id="stage"><!-- question or summary renders here --></div>
+    <div class="footer">Tip: Use “Retry wrong only” at the end to focus practice.</div>
+  </div>
 
-    <script>
-    (function(){
-      // ---------- SAFE UTILITIES ----------
-      const warnBox = document.getElementById('warnBox');
-      function showWarn(msg){
-        warnBox.textContent = msg;
-        warnBox.style.display = 'block';
-      }
-      function tryLocalStorage(){
-        try{
-          const k='__t'; localStorage.setItem(k,'1'); localStorage.removeItem(k);
-          return localStorage;
-        }catch(e){ return null; }
-      }
-      const LS = tryLocalStorage();
-      if(!LS){ showWarn('Note: Your browser blocked local storage. Answers will not persist after closing the tab.'); }
+<script>
+/* =======================
+   QUESTION BANK (edit me)
+   ======================= */
+/*
+Each question:
+{
+  id: "img-11",
+  tier: "T1" | "T2",
+  category: "Signals",
+  prompt: "What does this signal indicate?",
+  imageSrc: "images/11.Out-of-bounds.jpg", // optional
+  choices: ["Out-of-bounds", "Held ball / jump ball", "Travelling", "Visible count"],
+  correctIndex: 0,
+  explanation: "Pointing with fingers together along the boundary = out-of-bounds direction."
+}
+*/
+const QUESTIONS = [
+  // --- SAMPLE ITEMS (replace/extend with your full bank) ---
+  {
+    id: "img-11", tier: "T1", category: "Signals",
+    prompt: "What does this referee signal indicate?",
+    imageSrc: "images/11.out-of-bounds.jpg",
+    choices: ["Out-of-bounds (direction)", "Held ball / jump ball situation", "Charging with the ball", "Technical foul"],
+    correctIndex: 0,
+    explanation: "Extended arm with fingers together pointing the direction = out-of-bounds / team direction."
+  },
+  {
+    id: "img-12", tier: "T1", category: "Signals",
+    prompt: "Name this signal.",
+    imageSrc: "images/12.held-ball.jpg",
+    choices: ["Double foul", "Held ball / jump ball", "Blocking", "5 seconds"],
+    correctIndex: 1,
+    explanation: "Two thumbs up, arms extended: held ball (jump ball)."
+  },
+  {
+    id: "txt-2pt", tier: "T2", category: "Scoring",
+    prompt: "A basket is made while the official shows the signal in image #4 (two raised fingers). How many points count?",
+    choices: ["1", "2", "3", "It depends on foul/bonus"],
+    correctIndex: 1,
+    explanation: "Two fingers indicates a 2-point goal."
+  },
+  {
+    id: "img-45", tier: "T1", category: "Fouls",
+    prompt: "Identify the foul being signaled.",
+    imageSrc: "images/45.technical-foul.jpg",
+    choices: ["Unsportsmanlike", "Technical", "Disqualifying", "Blocking"],
+    correctIndex: 1,
+    explanation: "‘T’ sign with one hand vertical and the other horizontal = technical foul."
+  },
+  // Add your remaining items here — include *all* images & text rules.
+];
 
-      function safePRNG(seed){
-        // Mulberry32 – tiny, stable
-        let t = seed >>> 0;
-        return function(){
-          t += 0x6D2B79F5;
-          let r = Math.imul(t ^ t>>>15, 1 | t);
-          r ^= r + Math.imul(r ^ r>>>7, 61 | r);
-          return ((r ^ r>>>14) >>> 0) / 4294967296;
-        };
-      }
-      function getSeed(){
-        try{
-          if (window.crypto && crypto.getRandomValues){
-            return (crypto.getRandomValues(new Uint32Array(1))[0]>>>0) || (Date.now()>>>0);
-          }
-        }catch(e){}
-        return (Date.now()>>>0);
-      }
-      function shuffleInPlace(a, rnd){
-        for(let i=a.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-        return a;
-      }
-      function hashString(s){
-        let h=2166136261>>>0;
-        for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h,16777619); }
-        return (h>>>0).toString(16);
-      }
-      function escapeRegex(x){ return x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+/* ===========
+   QUIZ STATE
+   =========== */
+let idx = 0;
+let score = 0;
+let answered = new Map(); // id -> {choice, correct}
+let wrongIds = new Set();
 
-      // ---------- CONFIG: Add signal images (filenames become answers) ----------
-      const signalImages = [
-        // "signals/travelling.png",
-        // "signals/charging.jpg",
-        // "signals/blocking.png",
-        // "signals/unsportsmanlike.png",
-        // "signals/technical.png"
-      ];
+const stage = document.getElementById('stage');
+const pill  = document.getElementById('progressPill');
 
-      // ---------- PARSE RULES ----------
-      const rulesText = document.getElementById('rules').textContent.trim();
-      const RULES_HASH = hashString(rulesText + JSON.stringify(signalImages));
+function fmtProgress() {
+  pill.textContent = `Q ${Math.min(idx+1, QUESTIONS.length)} / ${QUESTIONS.length}`;
+}
 
-      function isHeading(line){
-        if(!line) return false;
-        const s = line.trim();
-        const noDot = !/[.!?]$/.test(s);
-        const capsish = /^[A-Z0-9 .:;'()/-]+$/.test(s);
-        const lenOK = s.length <= 42;
-        return (capsish && lenOK) || (noDot && lenOK && /^[A-Z]/.test(s));
-      }
-      function parseRules(raw){
-        const lines = raw.split(/\r?\n/);
-        const categories = [];
-        const catMap = {};
-        let current = null, buf = [];
-        const flush = ()=>{
-          const para = buf.join(' ').trim();
-          if(para && current){ (catMap[current] ??= []).push(para); }
-          buf = [];
-        };
-        for(const L of lines){
-          const line = (L||'').replace(/\s+$/,'');
-          if(isHeading(line)){
-            if(buf.length && current) flush();
-            current = line.trim().replace(/\s+/g,' ').toUpperCase();
-            if(!categories.includes(current)) categories.push(current);
-          } else if(line.trim()===''){
-            if(buf.length) flush();
-          } else {
-            buf.push(line.trim());
-          }
-        }
-        if(buf.length && current) flush();
-        return {categories, catMap};
-      }
-      function concise(p){
-        let s = p.replace(/\s+/g,' ').trim();
-        s = s.replace(/\(Diagram[^)]+\)/gi,'').replace(/\(see[^)]+\)/gi,'');
-        if(s.length>320){ s = s.slice(0,300).replace(/[,;:]?\s+\S+$/,'') + '…'; }
-        return s;
-      }
+function renderQuestion(q) {
+  fmtProgress();
+  stage.innerHTML = '';
+  const meta = el('div','meta');
+  meta.innerHTML = `
+    <span>Category: <strong>${q.category}</strong> <span class="tag">• ${q.tier}</span></span>
+    <span>Score: <strong>${score}</strong></span>`;
+  stage.appendChild(meta);
 
-      // ---------- RELEVANT DISTRACTORS (controlled single-change) ----------
-      const TERM_MAP = [
-        ['inside the arc','behind the arc'],
-        ['behind the arc','inside the arc'],
-        ['restricted area','no-charge semi-circle area'],
-        ['no-charge semi-circle area','restricted area'],
-        ['baseline','endline'],
-        ['endline','baseline'],
-        ['sidelines','baseline'],
-        ['free throw','field goal'],
-        ['field goal','free throw'],
-        ['offensive','defensive'],
-        ['defensive','offensive'],
-        ['live ball','dead ball'],
-        ['dead ball','live ball'],
-        ['1 point','2 points'],
-        ['2 points','1 point'],
-        ['12 seconds','10 seconds'],
-        ['10 minutes','12 minutes'],
-      ];
-      function firstVariant(s){
-        for(const [a,b] of TERM_MAP){
-          const re = new RegExp(`\\b${escapeRegex(a)}\\b`,'i');
-          if(re.test(s)) return {from:a,to:b};
-        }
-        return null;
-      }
-      function tweakNumber(s){
-        let m = s.match(/(\d+(?:\.\d+)?)\s?m\b/i);
-        if(m){
-          const num = parseFloat(m[1]);
-          const alt = Math.max(0.1, +(num * 1.15).toFixed(2));
-          return s.replace(m[0], `${alt} m`);
-        }
-        m = s.match(/\b(\d{1,2})\s?seconds?\b/i);
-        if(m){
-          const v = Math.max(1, parseInt(m[1],10) + 2);
-          return s.replace(m[0], `${v} seconds`);
-        }
-        m = s.match(/\b(\d{1,2})\s?minutes?\b/i);
-        if(m){
-          const v = Math.max(1, parseInt(m[1],10) + 2);
-          return s.replace(m[0], `${v} minutes`);
-        }
-        m = s.match(/\b(1|2)\s?points?\b/i);
-        if(m){
-          const alt = m[1]==='1' ? '2 points' : '1 point';
-          return s.replace(m[0], alt);
-        }
-        return null;
-      }
-      function makeRelevantDistractors(correct, need, rnd){
-        const out = new Set();
-        let guard = 0;
-        while(out.size < need && guard < 80){
-          let c = correct;
-          if(rnd() < 0.6){
-            const numT = tweakNumber(c);
-            if(numT) c = numT;
-            else {
-              const v = firstVariant(c);
-              if(v) c = c.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
-              else c = c.replace(/\bshall\b/ig,'must'); // gentle phrasing only
-            }
-          } else {
-            const v = firstVariant(c);
-            if(v) c = c.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
-            else {
-              const numT = tweakNumber(c);
-              if(numT) c = numT;
-            }
-          }
-          if(c !== correct && Math.abs(c.length - correct.length) <= Math.max(12, correct.length*0.3)){
-            out.add(c);
-          }
-          guard++;
-        }
-        // fallback: ensure we have exactly 'need'
-        const list = Array.from(out);
-        while(list.length < need){
-          const v = firstVariant(correct);
-          if(v){
-            const c2 = correct.replace(new RegExp(`\\b${escapeRegex(v.from)}\\b`,'i'), v.to);
-            if(c2 !== correct && !list.includes(c2)) list.push(c2);
-          } else {
-            const m = correct.match(/\b(\d{1,2})\s?seconds?\b/i);
-            if(m){
-              const base = parseInt(m[1],10);
-              const alt = `${base+ (list.length%2?1:-1)} seconds`;
-              const c2 = correct.replace(m[0], alt);
-              if(c2 !== correct && !list.includes(c2)) list.push(c2);
-            } else break;
-          }
-        }
-        return list.slice(0, need).map(t => ({t, ok:false}));
-      }
+  const qtext = el('div','qtext', q.prompt);
+  stage.appendChild(qtext);
 
-      // ---------- BUILD QUESTIONS ----------
-      function buildQuestions(rnd){
-        const {categories, catMap} = parseRules(rulesText);
-        const qs = [];
-        for(const cat of categories){
-          const paras = (catMap[cat]||[]).filter(p=>/\w/.test(p));
-          for(const p of paras){
-            const stem = concise(p);
-            if(stem.length < 15) continue;
-            const prompt = `Scenario (${cat}): Which option best reflects this rule in play?`;
-            const correct = stem;
-            const distractors = makeRelevantDistractors(correct, 4, rnd);
-            const options = [{t:correct, ok:true}, ...distractors];
-            shuffleInPlace(options, rnd);
-            qs.push({ type:'rule', category:cat, paragraph:p, prompt, options,
-              explain:`Rule reference: <span class="mono">${correct}</span>` });
-          }
-        }
-        if(signalImages.length){
-          const names = signalImages.map(s=>s.split('/').pop().replace(/\.[a-z0-9]+$/i,''));
-          for(const src of signalImages){
-            const ans = src.split('/').pop().replace(/\.[a-z0-9]+$/i,'');
-            const pool = names.filter(n=>n!==ans); shuffleInPlace(pool, rnd);
-            const opts = [{t:ans, ok:true}, ...pool.slice(0,4).map(t=>({t, ok:false}))];
-            shuffleInPlace(opts, rnd);
-            qs.push({ type:'signal', category:'REFEREE HAND SIGNALS', image:src,
-              prompt:'Referee Signal: Identify the correct name.', options:opts,
-              explain:`Answer is the filename: <span class="mono">${ans}</span>` });
-          }
-        }
-        shuffleInPlace(qs, rnd);
-        return qs;
-      }
+  if (q.imageSrc) {
+    const imgBox = el('div','imgbox');
+    const img = new Image();
+    img.alt = 'question image';
+    img.src = q.imageSrc;
+    imgBox.appendChild(img);
+    stage.appendChild(imgBox);
+  }
 
-      // ---------- SESSION (persistent) ----------
-      const STORAGE_KEY = 'fiba3x3_quiz_stable_v1';
-      function loadSession(){
-        if(!LS) return null;
-        try{
-          const raw = LS.getItem(STORAGE_KEY);
-          if(!raw) return null;
-          const s = JSON.parse(raw);
-          if(!s || s.rulesHash !== RULES_HASH) return null;
-          return s;
-        }catch(e){ return null; }
-      }
-      function saveSession(s){ if(LS){ try{ LS.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){} } }
-      function clearSession(){ if(LS){ try{ LS.removeItem(STORAGE_KEY); }catch(e){} } }
+  const answers = el('div','answers');
+  q.choices.forEach((choice, i) => {
+    const b = el('button','ans', choice);
+    b.addEventListener('click', () => selectAnswer(q, i, b, answers));
+    answers.appendChild(b);
+  });
+  stage.appendChild(answers);
 
-      let session = loadSession();
-      if(!session){
-        const seed = getSeed();
-        const rnd = safePRNG(seed);
-        const questions = buildQuestions(rnd);
-        session = {
-          rulesHash: RULES_HASH,
-          seed,
-          i: 0,
-          questions,
-          answers: Array(questions.length).fill(null),
-          correctness: Array(questions.length).fill(null),
-          finished: false
-        };
-        saveSession(session);
-      }
-      const rnd = safePRNG(session.seed);
+  const expl = el('div','expl'); expl.style.display='none'; stage.appendChild(expl);
 
-      // ---------- UI ----------
-      const qText = document.getElementById('qText');
-      const optionsEl = document.getElementById('options');
-      const feedbackEl = document.getElementById('feedback');
-      const imageZone = document.getElementById('imageZone');
-      const backBtn = document.getElementById('backBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      const finishBtn = document.getElementById('finishBtn');
-      const catPill = document.getElementById('catPill');
-      const countPill = document.getElementById('countPill');
-      const progressBar = document.getElementById('progress');
-      const resetBtn = document.getElementById('resetBtn');
+  const controls = el('div','controls');
+  const back = btn('Back', 'ghost', () => {
+    if (idx>0){ idx--; renderQuestion(QUESTIONS[idx]); }
+  });
+  const next = btn('Next', 'next', () => {
+    if (idx < QUESTIONS.length-1) { idx++; renderQuestion(QUESTIONS[idx]); }
+    else renderSummary();
+  });
+  next.disabled = !answered.has(q.id);
+  controls.append(back, next);
+  stage.appendChild(controls);
 
-      const summaryBox = document.getElementById('summary');
-      const sumTotal = document.getElementById('sumTotal');
-      const sumCorrect = document.getElementById('sumCorrect');
-      const sumWrong = document.getElementById('sumWrong');
-      const wrongList = document.getElementById('wrongList');
-      const catList = document.getElementById('catList');
+  // If already answered (navigated back), show feedback instantly
+  if (answered.has(q.id)) {
+    const {choice, correct} = answered.get(q.id);
+    lockAnswers(answers, choice, q.correctIndex);
+    showExpl(expl, correct, q);
+  }
 
-      function render(){
-        const total = session.questions.length;
-        if(total === 0){
-          qText.textContent = 'No questions generated. Paste full rules text into the page.';
-          document.querySelector('.controls').style.display = 'none';
-          return;
-        }
-        const idx = Math.max(0, Math.min(session.i, total-1));
-        const q = session.questions[idx];
+  // helpers bound to question scope
+  function selectAnswer(q, choiceIdx, btnEl, answersWrap){
+    if (answered.has(q.id)) return; // already graded
+    const correct = choiceIdx === q.correctIndex;
+    answered.set(q.id, {choice: choiceIdx, correct});
+    if (!correct) wrongIds.add(q.id); else { wrongIds.delete(q.id); score++; }
+    lockAnswers(answersWrap, choiceIdx, q.correctIndex);
+    showExpl(expl, correct, q);
+    // enable Next
+    stage.querySelector('.next').disabled = false;
+    // update header score (training shows live)
+    stage.querySelector('.meta span:last-child strong').textContent = score;
+  }
+}
 
-        catPill.textContent = q.category;
-        countPill.textContent = `Q ${idx+1}/${total}`;
-        progressBar.style.width = `${(idx/total)*100}%`;
+function lockAnswers(container, chosen, correct){
+  [...container.children].forEach((b, i)=>{
+    b.disabled = true;
+    if (i===correct) b.classList.add('correct');
+    if (i===chosen && i!==correct) b.classList.add('wrong');
+  });
+}
+function showExpl(node, correct, q){
+  node.style.display='block';
+  node.innerHTML = `
+    <div><strong>${correct ? 'Correct ✅' : 'Not quite ❌'}</strong></div>
+    <div style="margin-top:6px">${q.explanation || ''}</div>`;
+}
 
-        qText.innerHTML = q.prompt;
+/* =========
+   SUMMARY
+   ========= */
+function renderSummary() {
+  pill.textContent = 'Summary';
+  stage.innerHTML = '';
+  const wrap = el('div','summary');
+  wrap.innerHTML = `
+    <h2>Training Summary</h2>
+    <div class="meta"><span>Total questions: <strong>${QUESTIONS.length}</strong></span>
+      <span>Score: <strong class="${score===QUESTIONS.length?'oktxt':'badtxt'}">${score}</strong> / ${QUESTIONS.length} (${Math.round(100*score/QUESTIONS.length)}%)</span>
+    </div>`;
+  stage.appendChild(wrap);
 
-        imageZone.style.display = (q.type==='signal') ? 'flex' : 'none';
-        imageZone.innerHTML = '';
-        if(q.type==='signal'){
-          const img = document.createElement('img');
-          img.alt = 'Referee Signal';
-          img.src = q.image;
-          imageZone.appendChild(img);
-        }
+  if (wrongIds.size>0){
+    const list = el('div','list');
+    wrap.appendChild(el('div',null,'Review these:'));
+    [...wrongIds].forEach(id=>{
+      const q = QUESTIONS.find(x=>x.id===id);
+      const you = answered.get(id)?.choice;
+      const mini = el('div','mini');
+      mini.innerHTML = `
+        <h4>${q.prompt}</h4>
+        ${q.imageSrc ? `<div class="imgbox" style="margin:6px 0 10px"><img src="${q.imageSrc}" alt=""></div>`:''}
+        <div>Correct: <strong>${q.choices[q.correctIndex]}</strong></div>
+        <div>Your answer: <span class="badtxt">${q.choices[you]}</span></div>
+        <div class="expl" style="margin-top:10px">${q.explanation||''}</div>`;
+      list.appendChild(mini);
+    });
+    wrap.appendChild(list);
+  } else {
+    wrap.appendChild(el('div',null,'Perfect score! 🎉'));
+  }
 
-        optionsEl.innerHTML = '';
-        feedbackEl.textContent = '';
-        const prev = session.answers[idx];
+  const controls = el('div','controls');
+  controls.append(
+    btn('Retry wrong only', 'ghost', () => {
+      if (wrongIds.size===0){ idx=0; resetAll(); renderQuestion(QUESTIONS[0]); return; }
+      const filtered = QUESTIONS.filter(q=>wrongIds.has(q.id));
+      launchSubset(filtered);
+    }),
+    btn('Restart full quiz', 'next', () => { idx=0; resetAll(); renderQuestion(QUESTIONS[0]); })
+  );
+  stage.appendChild(controls);
+}
 
-        q.options.forEach((opt, k)=>{
-          const div = document.createElement('div');
-          div.className = 'opt';
-          div.setAttribute('role','button');
-          div.setAttribute('tabindex','0');
-          div.innerHTML = `<b>${String.fromCharCode(65+k)}.</b> ${opt.t}`;
+function launchSubset(subset){
+  // Temporarily swap in subset
+  window._fullBank = window._fullBank || QUESTIONS.slice();
+  const custom = subset.slice();
+  QUESTIONS.length = 0; custom.forEach(q=>QUESTIONS.push(q));
+  idx=0; resetAll(); renderQuestion(QUESTIONS[0]);
+  // Add a small banner to restore full bank when done
+  const banner = document.createElement('div');
+  banner.className = 'pill'; banner.style.margin='12px 0 0';
+  banner.textContent = `Practicing ${custom.length} missed questions — click to return to full bank`;
+  banner.style.cursor='pointer';
+  banner.onclick = () => {
+    const full = window._fullBank.slice(); QUESTIONS.length=0; full.forEach(q=>QUESTIONS.push(q));
+    window._fullBank=null; idx=0; resetAll(); renderQuestion(QUESTIONS[0]);
+  };
+  stage.parentElement.insertBefore(banner, stage.nextSibling);
+}
 
-          div.addEventListener('click',()=>{
-            session.answers[idx] = k;
-            const ok = q.options[k].ok===true;
-            session.correctness[idx] = ok;
-            saveSession(session);
+function resetAll(){
+  score = 0; answered.clear(); wrongIds.clear(); fmtProgress();
+  // remove any practice banner
+  const sib = stage.nextSibling; if (sib && sib.classList?.contains('pill')) sib.remove();
+}
 
-            [...optionsEl.children].forEach(c=>c.classList.remove('selected','correct','incorrect'));
-            div.classList.add('selected');
-            if(ok){
-              div.classList.add('correct');
-              feedbackEl.className = 'feedback good';
-              feedbackEl.textContent = '✔ Correct!';
-            } else {
-              div.classList.add('incorrect');
-              feedbackEl.className = 'feedback bad';
-              feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
-              // show correct
-              [...optionsEl.children].forEach((c,ci)=>{ if(q.options[ci].ok) c.classList.add('correct'); });
-            }
-          });
+/* ========
+   HELPERS
+   ======== */
+function el(tag, cls, text){ const n=document.createElement(tag); if(cls) n.className=cls; if(text) n.textContent=text; return n; }
+function btn(label, cls, on){ const b=document.createElement('button'); b.textContent=label; b.className=cls==='next'?'next':(cls||''); b.onclick=on; return b; }
 
-          optionsEl.appendChild(div);
-        });
-
-        // Reapply saved selection & feedback
-        if(prev !== null){
-          const ok = session.correctness[idx] === true;
-          const chosen = optionsEl.children[prev];
-          if(chosen){
-            chosen.classList.add('selected');
-            if(ok){
-              chosen.classList.add('correct');
-              feedbackEl.className = 'feedback good';
-              feedbackEl.textContent = '✔ Correct!';
-            } else {
-              chosen.classList.add('incorrect');
-              feedbackEl.className = 'feedback bad';
-              feedbackEl.innerHTML = `✖ Incorrect. ${q.explain}`;
-              [...optionsEl.children].forEach((c,ci)=>{ if(q.options[ci].ok) c.classList.add('correct'); });
-            }
-          }
-        }
-
-        backBtn.disabled = idx===0;
-        const last = idx===total-1;
-        nextBtn.style.display = last ? 'none':'inline-block';
-        finishBtn.style.display = last ? 'inline-block':'none';
-        summaryBox.style.display = 'none';
-      }
-
-      function showSummary(){
-        const total = session.questions.length;
-        const correct = session.correctness.filter(x=>x===true).length;
-        const wrong = total - correct;
-        sumTotal.textContent = total;
-        sumCorrect.textContent = correct;
-        sumWrong.textContent = wrong;
-
-        wrongList.innerHTML = '';
-        const catCount = {};
-        session.questions.forEach((q, i)=>{
-          if(session.correctness[i]===false){
-            const li = document.createElement('li');
-            const chosenIdx = session.answers[i];
-            const chosen = chosenIdx!=null ? q.options[chosenIdx].t : '(no answer)';
-            const correctText = q.options.find(o=>o.ok).t;
-            li.innerHTML = `<div style="margin-bottom:6px"><b>Q${i+1} — ${q.category}</b></div>
-                            <div><i>Prompt:</i> ${q.prompt}</div>
-                            ${q.type==='signal' ? `<div class="img-wrap" style="margin:8px 0"><img src="${q.image}" alt="signal" style="max-width:220px;max-height:140px"></div>`:''}
-                            <div style="margin:4px 0">Your answer: <span class="bad">${chosen}</span></div>
-                            <div>Correct answer: <span class="good">${correctText}</span></div>
-                            <div style="margin-top:4px">${q.explain}</div>`;
-            wrongList.appendChild(li);
-            catCount[q.category] = (catCount[q.category]||0)+1;
-          }
-        });
-
-        catList.innerHTML = '';
-        Object.entries(catCount).sort((a,b)=>b[1]-a[1]).forEach(([cat,cnt])=>{
-          const li = document.createElement('li');
-          li.textContent = `${cat} — ${cnt} question(s) to review`;
-          catList.appendChild(li);
-        });
-
-        progressBar.style.width = '100%';
-        summaryBox.style.display = 'block';
-        qText.textContent = 'Quiz complete!';
-        optionsEl.innerHTML = '';
-        imageZone.style.display = 'none';
-        feedbackEl.textContent = '';
-        backBtn.disabled = true;
-        nextBtn.style.display = 'none';
-        finishBtn.style.display = 'none';
-
-        session.finished = true;
-        saveSession(session);
-      }
-
-      // Buttons
-      document.getElementById('backBtn').addEventListener('click',()=>{
-        if(session.i>0){ session.i--; saveSession(session); render(); }
-      });
-      document.getElementById('nextBtn').addEventListener('click',()=>{
-        if(session.answers[session.i]===null){
-          feedbackEl.className = 'feedback bad';
-          feedbackEl.textContent = 'Please choose an answer before continuing.';
-          return;
-        }
-        if(session.i < session.questions.length-1){ session.i++; saveSession(session); render(); }
-      });
-      document.getElementById('finishBtn').addEventListener('click',()=>{
-        if(session.answers[session.i]===null){
-          feedbackEl.className = 'feedback bad';
-          feedbackEl.textContent = 'Please choose an answer before finishing.';
-          return;
-        }
-        showSummary();
-      });
-      document.getElementById('resetBtn').addEventListener('click',()=>{
-        if(confirm('Reset quiz? This clears saved answers and reshuffles questions.')){
-          clearSession(); location.reload();
-        }
-      });
-
-      // Start
-      render();
-    })();
-    </script>
-  </main>
+/* Kickoff */
+if (QUESTIONS.length === 0) {
+  stage.innerHTML = '<div class="qtext">No questions loaded yet. Add items to the QUESTIONS array.</div>';
+  pill.textContent = 'Empty bank';
+} else {
+  renderQuestion(QUESTIONS[0]);
+}
+</script>
 </body>
 </html>
